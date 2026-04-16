@@ -1,5 +1,5 @@
 import { db } from "./index";
-import { employees, skills, metrics, versionLogs } from "./schema";
+import { employees, skills, metrics, versionLogs, tasks, taskOutputs } from "./schema";
 import { randomUUID } from "crypto";
 
 const now = new Date();
@@ -366,6 +366,8 @@ async function seed() {
   console.log("Seeding database...");
 
   // Clear existing data
+  await db.delete(taskOutputs);
+  await db.delete(tasks);
   await db.delete(versionLogs);
   await db.delete(metrics);
   await db.delete(skills);
@@ -425,6 +427,61 @@ async function seed() {
   }
 
   console.log(`Seeded ${SEED_EMPLOYEES.length} employees.`);
+
+  // Seed running + recent completed tasks
+  const TASK_TYPES: Record<string, string[]> = {
+    management: ["项目审计", "预警分析", "决策报告", "人员盘点", "知识整理"],
+    design: ["PRD编写", "交互设计", "架构评审", "测试方案"],
+    production: ["脚本创作", "角色设计", "视频分镜", "内容质检", "资源入库", "数据清洗"],
+  };
+
+  const activeEmployees = SEED_EMPLOYEES.filter((e) => e.status === "active");
+
+  for (const emp of activeEmployees) {
+    const types = TASK_TYPES[emp.team];
+    // 2 running tasks per active employee
+    for (let i = 0; i < 2; i++) {
+      const taskId = randomUUID();
+      const started = new Date(Date.now() - Math.random() * 3600000);
+      await db.insert(tasks).values({
+        id: taskId,
+        employeeId: emp.id,
+        team: emp.team,
+        name: `${types[i % types.length]} #${Math.floor(Math.random() * 900) + 100}`,
+        type: types[i % types.length],
+        status: "running",
+        progress: Math.floor(Math.random() * 80) + 10,
+        currentStep: "AI正在处理中...",
+        startTime: started,
+        estimatedEndTime: new Date(started.getTime() + 1800000),
+        actualEndTime: null,
+        metadata: null,
+      });
+    }
+    // 10 completed tasks per active employee
+    for (let i = 0; i < 10; i++) {
+      const taskId = randomUUID();
+      const daysAgo = Math.floor(Math.random() * 30);
+      const started = new Date(Date.now() - daysAgo * 86400000 - Math.random() * 3600000);
+      const duration = 600000 + Math.random() * 3600000;
+      await db.insert(tasks).values({
+        id: taskId,
+        employeeId: emp.id,
+        team: emp.team,
+        name: `${types[i % types.length]} #${Math.floor(Math.random() * 900) + 100}`,
+        type: types[i % types.length],
+        status: "completed",
+        progress: 100,
+        currentStep: "已完成",
+        startTime: started,
+        estimatedEndTime: new Date(started.getTime() + duration),
+        actualEndTime: new Date(started.getTime() + duration),
+        metadata: null,
+      });
+    }
+  }
+
+  console.log(`Seeded tasks for ${activeEmployees.length} active employees.`);
 }
 
 seed().catch(console.error);
