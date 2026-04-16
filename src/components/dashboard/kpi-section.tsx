@@ -17,7 +17,8 @@ export function KpiSection({ data }: { data: SummaryData }) {
     <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
       <KpiCard
         title="AI员工"
-        value={`${data.activeEmployees}/${data.totalEmployees}`}
+        numericValue={data.activeEmployees}
+        displaySuffix={`/${data.totalEmployees}`}
         subtitle={`在岗率 ${Math.round(data.activeRate * 100)}%`}
         accent="blue"
         trend="up"
@@ -25,7 +26,7 @@ export function KpiSection({ data }: { data: SummaryData }) {
       />
       <KpiCard
         title="本月任务量"
-        value={data.monthlyTaskCount.toLocaleString()}
+        numericValue={data.monthlyTaskCount}
         subtitle="已完成任务数"
         accent="green"
         trend="up"
@@ -33,7 +34,9 @@ export function KpiSection({ data }: { data: SummaryData }) {
       />
       <KpiCard
         title="节省人力"
-        value={`${data.humanTimeSavedHours}h`}
+        numericValue={data.humanTimeSavedHours}
+        displaySuffix="h"
+        decimals={1}
         subtitle={`约 ¥${data.humanTimeSavedCost.toLocaleString()}`}
         accent="yellow"
         trend="up"
@@ -41,7 +44,8 @@ export function KpiSection({ data }: { data: SummaryData }) {
       />
       <KpiCard
         title="平均采纳率"
-        value={`${Math.round(data.avgAdoptionRate * 100)}%`}
+        numericValue={Math.round(data.avgAdoptionRate * 100)}
+        displaySuffix="%"
         subtitle="AI产出被采用比例"
         accent="purple"
         trend="up"
@@ -49,7 +53,8 @@ export function KpiSection({ data }: { data: SummaryData }) {
       />
       <KpiCard
         title="平均准确率"
-        value={`${Math.round(data.avgAccuracyRate * 100)}%`}
+        numericValue={Math.round(data.avgAccuracyRate * 100)}
+        displaySuffix="%"
         subtitle="一次性通过质检"
         accent="green"
         trend="neutral"
@@ -57,7 +62,7 @@ export function KpiSection({ data }: { data: SummaryData }) {
       />
       <KpiCard
         title="覆盖业务数"
-        value={data.projectsCovered.toLocaleString()}
+        numericValue={data.projectsCovered}
         subtitle="涉及任务类型数"
         accent="blue"
         trend="up"
