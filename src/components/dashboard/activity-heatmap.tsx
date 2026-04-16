@@ -65,14 +65,14 @@ export function ActivityHeatmap({ data }: { data: HeatmapData }) {
       bottom: -10,
       show: false,
       inRange: {
-        color: ["#eff6ff", "#bfdbfe", "#60a5fa", "#3b82f6", "#2563eb"],
+        color: ["#fff7ed", "#fed7aa", "#fb923c", "#f97316", "#ea580c"],
       },
     },
     series: [
       {
         type: "heatmap",
         data: heatData,
-        itemStyle: { borderRadius: 2, borderColor: "#f8fafc", borderWidth: 1 },
+        itemStyle: { borderRadius: 2, borderColor: "#ffffff", borderWidth: 1 },
       },
     ],
   };

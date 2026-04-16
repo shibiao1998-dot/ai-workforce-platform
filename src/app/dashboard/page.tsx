@@ -84,12 +84,12 @@ async function getHeatmap() {
   const completedTasks = await db
     .select({
       employeeId: tasks.employeeId,
-      date: sql<string>`date(${tasks.actualEndTime} / 1000, 'unixepoch')`,
+      date: sql<string>`date(${tasks.actualEndTime}, 'unixepoch')`,
       count: sql<number>`count(*)`,
     })
     .from(tasks)
     .where(eq(tasks.status, "completed"))
-    .groupBy(tasks.employeeId, sql`date(${tasks.actualEndTime} / 1000, 'unixepoch')`);
+    .groupBy(tasks.employeeId, sql`date(${tasks.actualEndTime}, 'unixepoch')`);
 
   const empRows = await db
     .select({ id: employees.id, name: employees.name, team: employees.team })
