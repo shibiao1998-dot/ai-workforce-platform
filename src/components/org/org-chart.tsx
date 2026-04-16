@@ -28,15 +28,15 @@ interface OrgChartProps {
 }
 
 const STATUS_COLOR: Record<string, string> = {
-  active: "#00ff88",
-  developing: "#ffd93d",
-  planned: "#64748b",
+  active: "#16a34a",
+  developing: "#d97706",
+  planned: "#9ca3af",
 };
 
 const TEAM_COLOR: Record<string, string> = {
-  management: "#c084fc",
-  design: "#00d4ff",
-  production: "#00ff88",
+  management: "#7c3aed",
+  design: "#2563eb",
+  production: "#16a34a",
 };
 
 const TEAM_LABEL: Record<string, string> = {
@@ -58,16 +58,16 @@ function buildLayout(employees: OrgEmployee[]): { nodes: Node[]; edges: Edge[] }
     position: { x: 600, y: 0 },
     data: { label: "AI Workforce" },
     style: {
-      background: "linear-gradient(135deg, #1a1a2e, #0a0a1a)",
-      border: "1.5px solid #00d4ff",
+      background: "#ffffff",
+      border: "2px solid #2563eb",
       borderRadius: 12,
-      color: "#00d4ff",
+      color: "#2563eb",
       fontWeight: 700,
       fontSize: 14,
       padding: "8px 16px",
       minWidth: 140,
-      textAlign: "center",
-      boxShadow: "0 0 20px rgba(0,212,255,0.3)",
+      textAlign: "center" as const,
+      boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
     },
   });
 
@@ -93,15 +93,15 @@ function buildLayout(employees: OrgEmployee[]): { nodes: Node[]; edges: Edge[] }
       position: { x: teamXPositions[team], y: 120 },
       data: { label: `${TEAM_LABEL[team]}\n(${teamEmps.length}人)` },
       style: {
-        background: "linear-gradient(135deg, #1a1a2e, #0a0a1a)",
-        border: `1.5px solid ${color}`,
+        background: "#ffffff",
+        border: `2px solid ${color}`,
         borderRadius: 10,
         color,
         fontWeight: 600,
         fontSize: 12,
         padding: "6px 14px",
         minWidth: 130,
-        textAlign: "center",
+        textAlign: "center" as const,
         whiteSpace: "pre-line",
       },
     });
@@ -132,14 +132,14 @@ function buildLayout(employees: OrgEmployee[]): { nodes: Node[]; edges: Edge[] }
           employeeId: emp.id,
         },
         style: {
-          background: "linear-gradient(135deg, #1a1a2e, #0a0a1a)",
-          border: `1.5px solid ${STATUS_COLOR[emp.status]}40`,
+          background: "#ffffff",
+          border: `1.5px solid ${STATUS_COLOR[emp.status]}`,
           borderRadius: 8,
-          color: "#e2e8f0",
+          color: "#1e293b",
           fontSize: 11,
           padding: "6px 10px",
           minWidth: 120,
-          textAlign: "center",
+          textAlign: "center" as const,
           cursor: "pointer",
         },
       });
@@ -187,31 +187,31 @@ export function OrgChart({ employees }: OrgChartProps) {
         fitViewOptions={{ padding: 0.1 }}
         minZoom={0.3}
         maxZoom={2}
-        style={{ background: "#0a0a1a" }}
+        style={{ background: "#f8fafc" }}
       >
         <Background
           variant={BackgroundVariant.Dots}
           gap={24}
           size={1}
-          color="#1e293b"
+          color="#cbd5e1"
         />
         <Controls
           style={{
-            background: "#1a1a2e",
-            border: "1px solid #334155",
+            background: "#ffffff",
+            border: "1px solid #e2e8f0",
             borderRadius: 8,
           }}
         />
         <MiniMap
-          style={{ background: "#1a1a2e", border: "1px solid #334155" }}
+          style={{ background: "#ffffff", border: "1px solid #e2e8f0" }}
           nodeColor={(node) => {
-            if (node.id === "root") return "#00d4ff";
+            if (node.id === "root") return "#2563eb";
             if (node.id.startsWith("team-")) {
               const team = node.id.replace("team-", "");
-              return TEAM_COLOR[team] ?? "#334155";
+              return TEAM_COLOR[team] ?? "#e2e8f0";
             }
             const emp = employees.find((e) => e.id === node.id);
-            return emp ? STATUS_COLOR[emp.status] : "#334155";
+            return emp ? STATUS_COLOR[emp.status] : "#e2e8f0";
           }}
         />
       </ReactFlow>
