@@ -453,7 +453,7 @@ async function seed() {
     await db.insert(employees).values({
       id: employeeId,
       name: emp.name,
-      avatar: null,
+      avatar: `/avatars/${emp.name}.png`,
       title: emp.title,
       team: emp.team,
       status: emp.status,
