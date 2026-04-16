@@ -18,19 +18,23 @@ export function DashboardShell({ summary, teamComparison, heatmap }: DashboardSh
   return (
     <div className="p-8 space-y-8">
       {/* Header */}
-      <div>
+      <div className="animate-fade-in-up">
         <h1 className="text-3xl font-bold text-foreground">AI 驾驶舱</h1>
         <p className="text-muted-foreground mt-1">AI团队全局视图 · 实时数据</p>
       </div>
 
       {/* KPI Cards */}
-      <KpiSection data={summary} />
+      <div className="animate-fade-in-up animate-delay-100">
+        <KpiSection data={summary} />
+      </div>
 
       {/* Team comparison */}
-      <TeamComparisonChart data={teamComparison} />
+      <div className="animate-fade-in-up animate-delay-200">
+        <TeamComparisonChart data={teamComparison} />
+      </div>
 
       {/* Heatmap + Feed */}
-      <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
+      <div className="animate-fade-in-up animate-delay-300 grid grid-cols-1 gap-6 xl:grid-cols-3">
         <div className="xl:col-span-2">
           <ActivityHeatmap data={heatmap} />
         </div>
