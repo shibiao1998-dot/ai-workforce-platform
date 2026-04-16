@@ -10,15 +10,15 @@ const STATUS_MAP: Record<
 > = {
   active: {
     label: "在岗",
-    className: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
+    className: "bg-green-50 text-green-700",
   },
   developing: {
     label: "开发中",
-    className: "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400",
+    className: "bg-amber-50 text-amber-700",
   },
   planned: {
     label: "规划中",
-    className: "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400",
+    className: "bg-gray-100 text-gray-600",
   },
 };
 
