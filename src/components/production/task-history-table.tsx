@@ -36,15 +36,15 @@ interface HistoryTask {
 const STATUS_CONFIG = {
   running: {
     label: "执行中",
-    className: "bg-blue-500/20 text-blue-400 border-blue-500/30",
+    className: "bg-blue-50 text-blue-700 border-blue-200",
   },
   completed: {
     label: "已完成",
-    className: "bg-green-500/20 text-green-400 border-green-500/30",
+    className: "bg-green-50 text-green-700 border-green-200",
   },
   failed: {
     label: "失败",
-    className: "bg-red-500/20 text-red-400 border-red-500/30",
+    className: "bg-red-50 text-red-700 border-red-200",
   },
 };
 

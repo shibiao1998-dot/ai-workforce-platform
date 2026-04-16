@@ -21,9 +21,9 @@ interface RunningTask {
 }
 
 const TEAM_GRADIENT: Record<string, string> = {
-  management: "from-purple-500/10 to-purple-500/5",
-  design: "from-blue-500/10 to-blue-500/5",
-  production: "from-green-500/10 to-green-500/5",
+  management: "from-purple-50 to-white",
+  design: "from-blue-50 to-white",
+  production: "from-green-50 to-white",
 };
 
 function formatDuration(startTime: string | null): string {
@@ -61,7 +61,7 @@ export function RunningTasksPanel() {
         <div className="flex items-center gap-2">
           <h2 className="text-lg font-semibold">实时任务面板</h2>
           <span className="flex items-center gap-1 text-xs text-muted-foreground">
-            <span className="h-1.5 w-1.5 rounded-full bg-green-400 animate-pulse" />
+            <span className="h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse" />
             {tasks.length} 个任务执行中
           </span>
         </div>
@@ -95,7 +95,7 @@ export function RunningTasksPanel() {
                 </div>
                 <Badge
                   variant="outline"
-                  className="bg-blue-500/20 text-blue-400 border-blue-500/30 text-xs flex-shrink-0"
+                  className="bg-blue-50 text-blue-700 border-blue-200 text-xs flex-shrink-0"
                 >
                   执行中
                 </Badge>

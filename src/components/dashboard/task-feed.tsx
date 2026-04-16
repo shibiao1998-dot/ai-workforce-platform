@@ -18,15 +18,15 @@ interface TaskItem {
 }
 
 const TEAM_COLOR: Record<string, string> = {
-  management: "text-[#c084fc]",
-  design: "text-[#00d4ff]",
-  production: "text-[#00ff88]",
+  management: "text-[#7c3aed]",
+  design: "text-[#2563eb]",
+  production: "text-[#16a34a]",
 };
 
 const STATUS_CONFIG = {
-  running: { label: "执行中", className: "bg-blue-500/20 text-blue-400 border-blue-500/30" },
-  completed: { label: "已完成", className: "bg-green-500/20 text-green-400 border-green-500/30" },
-  failed: { label: "失败", className: "bg-red-500/20 text-red-400 border-red-500/30" },
+  running: { label: "执行中", className: "bg-blue-50 text-blue-700 border-blue-200" },
+  completed: { label: "已完成", className: "bg-green-50 text-green-700 border-green-200" },
+  failed: { label: "失败", className: "bg-red-50 text-red-700 border-red-200" },
 };
 
 export function TaskFeed() {
@@ -50,7 +50,7 @@ export function TaskFeed() {
         <div className="flex items-center justify-between">
           <CardTitle className="text-sm font-medium text-muted-foreground">最近任务动态</CardTitle>
           <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
-            <span className="h-1.5 w-1.5 rounded-full bg-green-400 animate-pulse" />
+            <span className="h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse" />
             实时更新
           </span>
         </div>

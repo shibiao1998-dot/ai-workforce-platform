@@ -40,15 +40,15 @@ interface EmployeeManagerProps {
 const STATUS_CONFIG = {
   active: {
     label: "在岗",
-    className: "bg-green-500/20 text-green-400 border-green-500/30",
+    className: "bg-green-50 text-green-700 border-green-200",
   },
   developing: {
     label: "开发中",
-    className: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30",
+    className: "bg-amber-50 text-amber-700 border-amber-200",
   },
   planned: {
     label: "规划中",
-    className: "bg-gray-500/20 text-gray-400 border-gray-500/30",
+    className: "bg-gray-100 text-gray-600 border-gray-200",
   },
 };
 
