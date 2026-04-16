@@ -36,7 +36,7 @@ export default async function RosterPage() {
   return (
     <div className="p-8">
       <div className="mb-8 animate-fade-in-up">
-        <h1 className="text-3xl font-bold text-foreground">AI 员工花名册</h1>
+        <h1 className="text-2xl font-bold text-foreground">AI 员工花名册</h1>
         <p className="text-muted-foreground mt-1">
           共 {employeeList.length} 名 AI 员工，
           {employeeList.filter((e) => e.status === "active").length} 名在岗运行
