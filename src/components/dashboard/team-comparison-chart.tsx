@@ -21,34 +21,34 @@ export function TeamComparisonChart({ data }: { data: TeamData[] }) {
     tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
     legend: {
       data: ["任务总量", "节省人力(h)"],
-      textStyle: { color: "#94a3b8" },
+      textStyle: { color: "#475569" },
       top: 0,
     },
     grid: { left: "3%", right: "4%", bottom: "3%", containLabel: true },
     xAxis: {
       type: "category",
       data: labels,
-      axisLabel: { color: "#94a3b8" },
-      axisLine: { lineStyle: { color: "#334155" } },
+      axisLabel: { color: "#64748b" },
+      axisLine: { lineStyle: { color: "#cbd5e1" } },
     },
     yAxis: {
       type: "value",
-      axisLabel: { color: "#94a3b8" },
-      splitLine: { lineStyle: { color: "#1e293b" } },
+      axisLabel: { color: "#64748b" },
+      splitLine: { lineStyle: { color: "#e2e8f0" } },
     },
     series: [
       {
         name: "任务总量",
         type: "bar",
         data: data.map((d) => d.totalTasks),
-        itemStyle: { color: "#00d4ff", borderRadius: [4, 4, 0, 0] },
+        itemStyle: { color: "#2563eb", borderRadius: [4, 4, 0, 0] },
         barMaxWidth: 60,
       },
       {
         name: "节省人力(h)",
         type: "bar",
         data: data.map((d) => d.totalHoursSaved),
-        itemStyle: { color: "#00ff88", borderRadius: [4, 4, 0, 0] },
+        itemStyle: { color: "#16a34a", borderRadius: [4, 4, 0, 0] },
         barMaxWidth: 60,
       },
     ],
@@ -64,9 +64,9 @@ export function TeamComparisonChart({ data }: { data: TeamData[] }) {
         { name: "准确率", max: 100 },
         { name: "节省人力", max: Math.max(...data.map((d) => d.totalHoursSaved)) * 1.2 },
       ],
-      axisLine: { lineStyle: { color: "#334155" } },
-      splitLine: { lineStyle: { color: "#1e293b" } },
-      name: { textStyle: { color: "#94a3b8" } },
+      axisLine: { lineStyle: { color: "#cbd5e1" } },
+      splitLine: { lineStyle: { color: "#e2e8f0" } },
+      name: { textStyle: { color: "#64748b" } },
     },
     series: [
       {
@@ -81,7 +81,7 @@ export function TeamComparisonChart({ data }: { data: TeamData[] }) {
         areaStyle: { opacity: 0.15 },
       },
     ],
-    color: ["#00d4ff", "#00ff88", "#ffd93d"],
+    color: ["#2563eb", "#16a34a", "#d97706"],
   };
 
   return (

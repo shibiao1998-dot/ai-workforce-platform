@@ -52,7 +52,7 @@ export function ActivityHeatmap({ data }: { data: HeatmapData }) {
     yAxis: {
       type: "category",
       data: employeeNames,
-      axisLabel: { color: "#94a3b8", fontSize: 11 },
+      axisLabel: { color: "#64748b", fontSize: 11 },
       axisLine: { show: false },
       axisTick: { show: false },
     },
@@ -65,14 +65,14 @@ export function ActivityHeatmap({ data }: { data: HeatmapData }) {
       bottom: -10,
       show: false,
       inRange: {
-        color: ["#0f172a", "#0c4a6e", "#0369a1", "#0284c7", "#00d4ff"],
+        color: ["#eff6ff", "#bfdbfe", "#60a5fa", "#3b82f6", "#2563eb"],
       },
     },
     series: [
       {
         type: "heatmap",
         data: heatData,
-        itemStyle: { borderRadius: 2, borderColor: "#0a0a1a", borderWidth: 1 },
+        itemStyle: { borderRadius: 2, borderColor: "#f8fafc", borderWidth: 1 },
       },
     ],
   };
