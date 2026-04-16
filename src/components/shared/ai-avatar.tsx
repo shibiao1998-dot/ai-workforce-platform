@@ -4,6 +4,8 @@ interface AiAvatarProps {
   avatar: string | null;
   name: string;
   size?: "sm" | "md" | "lg" | "xl";
+  fill?: boolean;
+  className?: string;
 }
 
 const SIZE_MAP = { sm: 40, md: 56, lg: 80, xl: 120 } as const;
@@ -22,28 +24,9 @@ function hash(str: string): number {
   return Math.abs(h);
 }
 
-export function AiAvatar({ employeeId, team, avatar, name, size = "md" }: AiAvatarProps) {
-  const px = SIZE_MAP[size];
+function RobotSvg({ employeeId, team, size }: { employeeId: string; team: string; size: number }) {
   const palette = PALETTES[team] ?? PALETTES.production;
-
-  if (avatar) {
-    return (
-      <img
-        src={avatar}
-        alt={name}
-        width={px}
-        height={px}
-        style={{
-          width: px,
-          height: px,
-          borderRadius: Math.round(px * 0.2),
-          objectFit: "cover",
-          display: "block",
-        }}
-      />
-    );
-  }
-
+  const px = size;
   const h = hash(employeeId);
   const cx = px / 2;
   const headCY = px * 0.52;
@@ -54,7 +37,6 @@ export function AiAvatar({ employeeId, team, avatar, name, size = "md" }: AiAvat
   const lx = cx - eyeSpacing;
   const rx = cx + eyeSpacing;
 
-  // Antenna (h % 3)
   const antennaVariant = h % 3;
   const antennaBase = headCY - headR;
   const Antenna = () => {
@@ -86,15 +68,10 @@ export function AiAvatar({ employeeId, team, avatar, name, size = "md" }: AiAvat
     );
   };
 
-  // Head ((h >> 2) % 3)
   const headVariant = (h >> 2) % 3;
   const Head = () => {
-    if (headVariant === 0) {
-      return <circle cx={cx} cy={headCY} r={headR} fill={palette.bg} />;
-    }
-    if (headVariant === 1) {
-      return <rect x={cx - headR} y={headCY - headR} width={headR * 2} height={headR * 2} rx={headR * 0.3} fill={palette.bg} />;
-    }
+    if (headVariant === 0) return <circle cx={cx} cy={headCY} r={headR} fill={palette.bg} />;
+    if (headVariant === 1) return <rect x={cx - headR} y={headCY - headR} width={headR * 2} height={headR * 2} rx={headR * 0.3} fill={palette.bg} />;
     const pts = Array.from({ length: 6 }, (_, i) => {
       const angle = (Math.PI / 180) * (60 * i - 90);
       return `${cx + headR * Math.cos(angle)},${headCY + headR * Math.sin(angle)}`;
@@ -102,7 +79,6 @@ export function AiAvatar({ employeeId, team, avatar, name, size = "md" }: AiAvat
     return <polygon points={pts} fill={palette.bg} />;
   };
 
-  // Eyes ((h >> 4) % 4)
   const eyeVariant = (h >> 4) % 4;
   const er = headR * 0.18;
   const Eyes = () => {
@@ -132,7 +108,6 @@ export function AiAvatar({ employeeId, team, avatar, name, size = "md" }: AiAvat
         </>
       );
     }
-    // Visor
     const visorW = eyeSpacing * 2 + er * 2;
     return (
       <>
@@ -143,19 +118,12 @@ export function AiAvatar({ employeeId, team, avatar, name, size = "md" }: AiAvat
     );
   };
 
-  // Mouth ((h >> 6) % 3)
   const mouthVariant = (h >> 6) % 3;
   const mw = headR * 0.5;
   const Mouth = () => {
     if (mouthVariant === 0) {
       return (
-        <path
-          d={`M ${cx - mw} ${mouthY} Q ${cx} ${mouthY + mw * 0.6} ${cx + mw} ${mouthY}`}
-          fill="none"
-          stroke={palette.light}
-          strokeWidth={2}
-          strokeLinecap="round"
-        />
+        <path d={`M ${cx - mw} ${mouthY} Q ${cx} ${mouthY + mw * 0.6} ${cx + mw} ${mouthY}`} fill="none" stroke={palette.light} strokeWidth={2} strokeLinecap="round" />
       );
     }
     if (mouthVariant === 1) {
@@ -165,27 +133,90 @@ export function AiAvatar({ employeeId, team, avatar, name, size = "md" }: AiAvat
     return (
       <polyline
         points={`${cx - mw},${mouthY} ${cx - step},${mouthY - mw * 0.3} ${cx},${mouthY} ${cx + step},${mouthY - mw * 0.3} ${cx + mw},${mouthY}`}
-        fill="none"
-        stroke={palette.light}
-        strokeWidth={2}
-        strokeLinecap="round"
-        strokeLinejoin="round"
+        fill="none" stroke={palette.light} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"
       />
     );
   };
+
+  return (
+    <svg width={px} height={px} viewBox={`0 0 ${px} ${px}`} aria-label={`${team} robot`}>
+      <Antenna />
+      <Head />
+      <Eyes />
+      <Mouth />
+    </svg>
+  );
+}
+
+export function AiAvatar({ employeeId, team, avatar, name, size = "md", fill, className }: AiAvatarProps) {
+  const px = SIZE_MAP[size];
+  const palette = PALETTES[team] ?? PALETTES.production;
+
+  // Fill mode — image fills container, or SVG centered in container
+  if (fill) {
+    if (avatar) {
+      return (
+        <img
+          src={avatar}
+          alt={name}
+          className={className}
+          style={{
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            objectPosition: "top",
+            display: "block",
+          }}
+        />
+      );
+    }
+    return (
+      <div
+        className={className}
+        style={{
+          width: "100%",
+          height: "100%",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          background: palette.light,
+        }}
+      >
+        <RobotSvg employeeId={employeeId} team={team} size={120} />
+      </div>
+    );
+  }
+
+  // Fixed-size mode (existing behavior)
+  if (avatar) {
+    return (
+      <img
+        src={avatar}
+        alt={name}
+        width={px}
+        height={px}
+        className={className}
+        style={{
+          width: px,
+          height: px,
+          borderRadius: Math.round(px * 0.2),
+          objectFit: "cover",
+          display: "block",
+        }}
+      />
+    );
+  }
 
   return (
     <svg
       width={px}
       height={px}
       viewBox={`0 0 ${px} ${px}`}
+      className={className}
       style={{ borderRadius: Math.round(px * 0.2), background: palette.light, display: "block" }}
       aria-label={name}
     >
-      <Antenna />
-      <Head />
-      <Eyes />
-      <Mouth />
+      <RobotSvg employeeId={employeeId} team={team} size={px} />
     </svg>
   );
 }
