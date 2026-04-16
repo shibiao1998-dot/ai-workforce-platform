@@ -87,10 +87,8 @@ export function EmployeeManager({ initialEmployees }: EmployeeManagerProps) {
       <div className="flex justify-between items-center">
         <h3 className="font-medium">AI员工列表 ({employees.length}人)</h3>
         <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger asChild>
-            <Button size="sm">
-              <Plus className="h-4 w-4 mr-1" />新增员工
-            </Button>
+          <DialogTrigger render={<Button size="sm" />}>
+            <Plus className="h-4 w-4 mr-1" />新增员工
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
@@ -117,7 +115,7 @@ export function EmployeeManager({ initialEmployees }: EmployeeManagerProps) {
                 <Label>所属团队</Label>
                 <Select
                   value={form.team}
-                  onValueChange={(v) => setForm({ ...form, team: v })}
+                  onValueChange={(v) => setForm({ ...form, team: v ?? form.team })}
                 >
                   <SelectTrigger>
                     <SelectValue />
@@ -133,7 +131,7 @@ export function EmployeeManager({ initialEmployees }: EmployeeManagerProps) {
                 <Label>状态</Label>
                 <Select
                   value={form.status}
-                  onValueChange={(v) => setForm({ ...form, status: v })}
+                  onValueChange={(v) => setForm({ ...form, status: v ?? form.status })}
                 >
                   <SelectTrigger>
                     <SelectValue />
@@ -173,14 +171,16 @@ export function EmployeeManager({ initialEmployees }: EmployeeManagerProps) {
               <p className="text-xs text-muted-foreground">{emp.title}</p>
             </div>
             <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 text-muted-foreground hover:text-destructive"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
+              <AlertDialogTrigger
+                render={
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                  />
+                }
+              >
+                <Trash2 className="h-4 w-4" />
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>

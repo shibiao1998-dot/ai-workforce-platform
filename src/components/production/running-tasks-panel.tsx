@@ -65,7 +65,7 @@ export function RunningTasksPanel() {
             {tasks.length} 个任务执行中
           </span>
         </div>
-        <Select value={teamFilter} onValueChange={setTeamFilter}>
+        <Select value={teamFilter} onValueChange={(v) => setTeamFilter(v ?? "all")}>
           <SelectTrigger className="w-36">
             <SelectValue placeholder="全部团队" />
           </SelectTrigger>

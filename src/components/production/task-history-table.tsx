@@ -100,7 +100,7 @@ export function TaskHistoryTable({ initialTasks }: TaskHistoryTableProps) {
             className="pl-9"
           />
         </div>
-        <Select value={teamFilter} onValueChange={setTeamFilter}>
+        <Select value={teamFilter} onValueChange={(v) => setTeamFilter(v ?? "all")}>
           <SelectTrigger className="w-36">
             <SelectValue placeholder="全部团队" />
           </SelectTrigger>
@@ -111,7 +111,7 @@ export function TaskHistoryTable({ initialTasks }: TaskHistoryTableProps) {
             <SelectItem value="production">生产团队</SelectItem>
           </SelectContent>
         </Select>
-        <Select value={statusFilter} onValueChange={setStatusFilter}>
+        <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v ?? "all")}>
           <SelectTrigger className="w-32">
             <SelectValue placeholder="全部状态" />
           </SelectTrigger>
