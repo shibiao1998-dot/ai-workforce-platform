@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { AiAvatar } from "@/components/shared/ai-avatar";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import type { EmployeeListItem } from "@/lib/types";
@@ -35,7 +36,6 @@ interface EmployeeCardProps {
 export function EmployeeCard({ employee }: EmployeeCardProps) {
   const status = STATUS_MAP[employee.status];
   const teamLabel = TEAM_MAP[employee.team];
-  const avatarChar = employee.name.slice(2, 3);
 
   return (
     <Link href={`/roster/${employee.id}`} className="block group/link">
@@ -43,9 +43,13 @@ export function EmployeeCard({ employee }: EmployeeCardProps) {
         <CardContent className="flex flex-col gap-3 pt-4">
           {/* Header: avatar + name + status */}
           <div className="flex items-start gap-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-violet-500 to-indigo-500 text-white text-base font-semibold select-none">
-              {avatarChar}
-            </div>
+            <AiAvatar
+              employeeId={employee.id}
+              team={employee.team}
+              avatar={employee.avatar}
+              name={employee.name}
+              size="sm"
+            />
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2">
                 <span className="font-medium text-foreground truncate">
