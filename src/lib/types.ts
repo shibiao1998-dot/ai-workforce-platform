@@ -11,6 +11,7 @@ export interface Employee {
   title: string;
   team: TeamType;
   status: EmployeeStatus;
+  subTeam: string | null;
   soul: string | null;
   identity: string | null;
   description: string | null;
@@ -28,6 +29,19 @@ export interface Skill {
   description: string | null;
   level: number;
   category: string | null;
+  skillMetrics?: SkillMetric[];
+}
+
+export interface SkillMetric {
+  id: string;
+  skillId: string;
+  employeeId: string;
+  period: string;
+  invocationCount: number;
+  successRate: number | null;
+  avgResponseTime: number | null;
+  lastUsedAt: Date | null;
+  createdAt: Date | null;
 }
 
 export interface Metric {
@@ -98,4 +112,6 @@ export interface EmployeeListItem {
   monthlyTaskCount: number;
   adoptionRate: number | null;
   accuracyRate: number | null;
+  description: string | null;
+  subTeam: string | null;
 }

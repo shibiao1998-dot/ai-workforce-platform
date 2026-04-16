@@ -28,6 +28,8 @@ export default async function RosterPage() {
       monthlyTaskCount: m?.taskCount ?? 0,
       adoptionRate: m?.adoptionRate ?? null,
       accuracyRate: m?.accuracyRate ?? null,
+      description: emp.description,
+      subTeam: emp.subTeam,
     };
   });
 

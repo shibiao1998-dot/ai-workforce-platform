@@ -7,6 +7,7 @@ export const employees = sqliteTable("employees", {
   title: text("title").notNull(),
   team: text("team", { enum: ["management", "design", "production"] }).notNull(),
   status: text("status", { enum: ["active", "developing", "planned"] }).notNull(),
+  subTeam: text("sub_team"),
   soul: text("soul"),
   identity: text("identity"),
   description: text("description"),
@@ -21,6 +22,18 @@ export const skills = sqliteTable("skills", {
   description: text("description"),
   level: integer("level").notNull().default(3),
   category: text("category"),
+});
+
+export const skillMetrics = sqliteTable("skill_metrics", {
+  id: text("id").primaryKey(),
+  skillId: text("skill_id").notNull().references(() => skills.id, { onDelete: "cascade" }),
+  employeeId: text("employee_id").notNull().references(() => employees.id, { onDelete: "cascade" }),
+  period: text("period").notNull(),
+  invocationCount: integer("invocation_count").notNull().default(0),
+  successRate: real("success_rate"),
+  avgResponseTime: real("avg_response_time"),
+  lastUsedAt: integer("last_used_at", { mode: "timestamp" }),
+  createdAt: integer("created_at", { mode: "timestamp" }),
 });
 
 export const metrics = sqliteTable("metrics", {

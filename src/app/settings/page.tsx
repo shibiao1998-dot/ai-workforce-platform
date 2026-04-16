@@ -14,6 +14,8 @@ async function getData() {
       title: employees.title,
       team: employees.team,
       status: employees.status,
+      description: employees.description,
+      subTeam: employees.subTeam,
     })
     .from(employees);
 
@@ -38,6 +40,8 @@ async function getData() {
       monthlyTaskCount: m?.taskCount ?? 0,
       adoptionRate: m?.adoptionRate ?? null,
       accuracyRate: m?.accuracyRate ?? null,
+      description: emp.description,
+      subTeam: emp.subTeam,
     };
   });
 
