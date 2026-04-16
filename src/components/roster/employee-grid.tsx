@@ -7,6 +7,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import type { EmployeeListItem, TeamType } from "@/lib/types";
 import { EmployeeCard } from "./employee-card";
+import { EmployeeDetailModal } from "./employee-detail-modal";
 
 type TabValue = "all" | TeamType;
 
@@ -24,6 +25,8 @@ interface EmployeeGridProps {
 export function EmployeeGrid({ employees }: EmployeeGridProps) {
   const [activeTab, setActiveTab] = useState<TabValue>("all");
   const [search, setSearch] = useState("");
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
 
   const filtered = employees.filter((emp) => {
     const matchTeam = activeTab === "all" || emp.team === activeTab;
@@ -34,6 +37,11 @@ export function EmployeeGrid({ employees }: EmployeeGridProps) {
       emp.title.toLowerCase().includes(q);
     return matchTeam && matchSearch;
   });
+
+  function handleCardClick(id: string) {
+    setSelectedId(id);
+    setModalOpen(true);
+  }
 
   return (
     <div className="flex flex-col gap-6">
@@ -76,10 +84,21 @@ export function EmployeeGrid({ employees }: EmployeeGridProps) {
       ) : (
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {filtered.map((emp) => (
-            <EmployeeCard key={emp.id} employee={emp} />
+            <EmployeeCard
+              key={emp.id}
+              employee={emp}
+              onClick={() => handleCardClick(emp.id)}
+            />
           ))}
         </div>
       )}
+
+      {/* Detail modal */}
+      <EmployeeDetailModal
+        employeeId={selectedId}
+        open={modalOpen}
+        onOpenChange={setModalOpen}
+      />
     </div>
   );
 }
