@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { AvatarUpload } from "@/components/shared/avatar-upload";
 
 interface ProfileTabProps {
   employee: Employee;
@@ -59,10 +60,16 @@ export function ProfileTab({ employee, onSave }: ProfileTabProps) {
       <CardHeader>
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-4">
-            {/* Avatar placeholder */}
-            <div className="size-20 rounded-xl bg-muted flex items-center justify-center text-2xl font-bold text-muted-foreground flex-shrink-0">
-              {employee.name.charAt(0)}
-            </div>
+            <AvatarUpload
+              employeeId={employee.id}
+              team={employee.team}
+              avatar={employee.avatar}
+              name={employee.name}
+              size="lg"
+              onUpload={async (dataUrl) => {
+                await onSave({ avatar: dataUrl });
+              }}
+            />
             <div className="flex flex-col gap-1">
               <CardTitle className="text-lg">{employee.name}</CardTitle>
               <StatusBadge status={employee.status} />
