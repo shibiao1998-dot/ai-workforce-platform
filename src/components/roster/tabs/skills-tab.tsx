@@ -1,6 +1,6 @@
 import { Skill } from "@/lib/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Star } from "lucide-react";
+import { Star, Zap, CheckCircle, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface SkillsTabProps {
@@ -21,6 +21,35 @@ function StarRating({ level }: { level: number }) {
           )}
         />
       ))}
+    </div>
+  );
+}
+
+function SkillMetricsRow({ skill }: { skill: Skill }) {
+  const skillMetrics = skill.skillMetrics;
+  if (!skillMetrics || skillMetrics.length === 0) return null;
+
+  // 取最新 period 的数据
+  const latest = [...skillMetrics].sort((a, b) => b.period.localeCompare(a.period))[0];
+
+  return (
+    <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground">
+      <span className="flex items-center gap-0.5">
+        <Zap className="size-3" />
+        调用 {latest.invocationCount}次
+      </span>
+      {latest.successRate !== null && (
+        <span className="flex items-center gap-0.5">
+          <CheckCircle className="size-3" />
+          成功率 {Math.round(latest.successRate * 100)}%
+        </span>
+      )}
+      {latest.avgResponseTime !== null && (
+        <span className="flex items-center gap-0.5">
+          <Clock className="size-3" />
+          响应 {latest.avgResponseTime.toFixed(1)}s
+        </span>
+      )}
     </div>
   );
 }
@@ -63,6 +92,7 @@ export function SkillsTab({ skills }: SkillsTabProps) {
                     {skill.description && (
                       <span className="text-xs text-muted-foreground">{skill.description}</span>
                     )}
+                    <SkillMetricsRow skill={skill} />
                   </div>
                   <StarRating level={skill.level} />
                 </div>

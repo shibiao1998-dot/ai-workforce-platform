@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { db } from "@/db";
-import { skills, metrics, versionLogs } from "@/db/schema";
+import { skills, metrics, versionLogs, skillMetrics } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { EmployeeDetail } from "@/components/roster/employee-detail";
 import { Employee } from "@/lib/types";
@@ -20,15 +20,25 @@ export default async function EmployeePage({
     notFound();
   }
 
-  const [empSkills, empMetrics, empVersionLogs] = await Promise.all([
+  const [empSkills, empMetrics, empVersionLogs, empSkillMetrics] = await Promise.all([
     db.select().from(skills).where(eq(skills.employeeId, id)),
     db.select().from(metrics).where(eq(metrics.employeeId, id)),
     db.select().from(versionLogs).where(eq(versionLogs.employeeId, id)),
+    db.select().from(skillMetrics).where(eq(skillMetrics.employeeId, id)),
   ]);
+
+  const skillMetricsMap = new Map<string, typeof empSkillMetrics>();
+  for (const sm of empSkillMetrics) {
+    if (!skillMetricsMap.has(sm.skillId)) skillMetricsMap.set(sm.skillId, []);
+    skillMetricsMap.get(sm.skillId)!.push(sm);
+  }
 
   const employee: Employee = {
     ...emp,
-    skills: empSkills,
+    skills: empSkills.map(s => ({
+      ...s,
+      skillMetrics: skillMetricsMap.get(s.id) ?? [],
+    })),
     metrics: empMetrics.map((m) => ({
       ...m,
       customMetrics: m.customMetrics
