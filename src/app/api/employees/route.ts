@@ -37,6 +37,8 @@ export async function GET(req: NextRequest) {
       title: emp.title,
       team: emp.team,
       status: emp.status,
+      description: emp.description ?? null,
+      subTeam: emp.subTeam ?? null,
       monthlyTaskCount: m?.taskCount ?? 0,
       adoptionRate: m?.adoptionRate ?? null,
       accuracyRate: m?.accuracyRate ?? null,

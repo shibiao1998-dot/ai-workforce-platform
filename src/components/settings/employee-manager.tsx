@@ -71,7 +71,7 @@ export function EmployeeManager({ initialEmployees }: EmployeeManagerProps) {
     const created = await res.json();
     setEmployees((prev) => [
       ...prev,
-      { ...created, monthlyTaskCount: 0, adoptionRate: null, accuracyRate: null },
+      { ...created, description: created.description ?? null, subTeam: created.subTeam ?? null, monthlyTaskCount: 0, adoptionRate: null, accuracyRate: null },
     ]);
     setForm({ name: "", title: "", team: "management", status: "planned" });
     setOpen(false);
