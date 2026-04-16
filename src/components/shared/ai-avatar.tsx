@@ -3,10 +3,10 @@ interface AiAvatarProps {
   team: string;
   avatar: string | null;
   name: string;
-  size?: "sm" | "md" | "lg";
+  size?: "sm" | "md" | "lg" | "xl";
 }
 
-const SIZE_MAP = { sm: 40, md: 56, lg: 80 } as const;
+const SIZE_MAP = { sm: 40, md: 56, lg: 80, xl: 120 } as const;
 
 const PALETTES: Record<string, { bg: string; accent: string; light: string }> = {
   management: { bg: "#7c3aed", accent: "#a78bfa", light: "#ede9fe" },
