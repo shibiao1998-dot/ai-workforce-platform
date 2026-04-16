@@ -1,0 +1,4 @@
+{"type":"server-started","port":49606,"host":"127.0.0.1","url_host":"localhost","url":"http://localhost:49606","screen_dir":"/Users/bill_huang/workspace/claudecode/myproject/AIproject/.superpowers/brainstorm/51813-1776244073/content","state_dir":"/Users/bill_huang/workspace/claudecode/myproject/AIproject/.superpowers/brainstorm/51813-1776244073/state"}
+{"type":"screen-added","file":"/Users/bill_huang/workspace/claudecode/myproject/AIproject/.superpowers/brainstorm/51813-1776244073/content/metrics-system.html"}
+{"type":"screen-added","file":"/Users/bill_huang/workspace/claudecode/myproject/AIproject/.superpowers/brainstorm/51813-1776244073/content/information-architecture.html"}
+{"type":"server-stopped","reason":"idle timeout"}

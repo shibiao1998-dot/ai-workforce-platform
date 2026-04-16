@@ -50,7 +50,7 @@ export function EmployeeDetail({ employee: initialEmployee }: EmployeeDetailProp
   return (
     <div className="flex flex-col gap-4">
       <div>
-        <Button variant="ghost" size="sm" render={<Link href="/roster" />}>
+        <Button variant="ghost" size="sm" nativeButton={false} render={<Link href="/roster" />}>
           <ArrowLeft />
           返回花名册
         </Button>

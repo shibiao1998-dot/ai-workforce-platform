@@ -1,0 +1,136 @@
+<h2>平台信息架构</h2>
+<p class="subtitle">页面层级、导航结构与核心跳转路径</p>
+
+<!-- 整体架构图 -->
+<div class="section">
+  <h3>全局导航结构</h3>
+  <div class="mockup">
+    <div class="mockup-header">AI Workforce Platform — 页面地图</div>
+    <div class="mockup-body" style="padding:24px;">
+      <!-- 顶部导航 -->
+      <div style="background:#0f0f23;border-radius:8px;padding:12px 20px;display:flex;align-items:center;gap:24px;margin-bottom:24px;border:1px solid #1e1e3a;">
+        <div style="color:#00d4ff;font-weight:bold;font-size:16px;margin-right:auto;">AI Workforce</div>
+        <div style="color:#fff;padding:6px 14px;background:#1a1a3e;border-radius:6px;font-size:13px;">驾驶舱</div>
+        <div style="color:#888;font-size:13px;">花名册</div>
+        <div style="color:#888;font-size:13px;">生产看板</div>
+        <div style="color:#888;font-size:13px;">组织架构</div>
+        <div style="color:#888;font-size:13px;">设置</div>
+      </div>
+
+      <!-- 页面层级 -->
+      <div style="display:grid;grid-template-columns:1fr;gap:16px;">
+
+        <!-- L1: 驾驶舱 -->
+        <div style="background:#1a1a2e;border-radius:8px;padding:16px;border-left:4px solid #00d4ff;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+            <span style="color:#00d4ff;font-weight:bold;">L1 驾驶舱首页</span>
+            <span style="color:#555;font-size:12px;">/dashboard</span>
+          </div>
+          <div style="color:#999;font-size:13px;line-height:1.6;">
+            6大核心指标卡片 → 三条业务线数据对比图 → AI员工活跃度热力图 → 最近任务动态流
+          </div>
+          <div style="color:#00d4ff;font-size:12px;margin-top:8px;">点击指标卡片 → 下钻到对应团队看板 | 点击员工名 → 跳转花名册详情</div>
+        </div>
+
+        <!-- L1: 花名册 -->
+        <div style="background:#1a1a2e;border-radius:8px;padding:16px;border-left:4px solid #00ff88;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+            <span style="color:#00ff88;font-weight:bold;">L1 AI员工花名册</span>
+            <span style="color:#555;font-size:12px;">/roster</span>
+          </div>
+          <div style="color:#999;font-size:13px;line-height:1.6;">
+            按团队分Tab（管理/设计/生产）→ 员工缩略卡片网格（头像、名称、职位、状态徽标、核心技能标签）
+          </div>
+          <div style="margin-top:12px;margin-left:20px;border-left:2px solid #00ff88;padding-left:12px;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+              <span style="color:#00ff88;font-size:13px;font-weight:bold;">L2 员工详情页</span>
+              <span style="color:#555;font-size:12px;">/roster/:id</span>
+            </div>
+            <div style="color:#999;font-size:13px;line-height:1.6;">
+              多Tab页签：<br>
+              · <strong style="color:#ccc;">Profile</strong> — 头像、名称、职位、Soul、Identity、个人简介（可编辑）<br>
+              · <strong style="color:#ccc;">Skills</strong> — 技能列表、擅长领域、能力等级（可编辑）<br>
+              · <strong style="color:#ccc;">数据</strong> — 该员工的个人指标仪表盘（任务量、采纳率、准确率趋势图）<br>
+              · <strong style="color:#ccc;">成长日志</strong> — 版本迭代时间线（V1.0→V2.0，每次升级说明）
+            </div>
+          </div>
+        </div>
+
+        <!-- L1: 生产看板 -->
+        <div style="background:#1a1a2e;border-radius:8px;padding:16px;border-left:4px solid #ff6b6b;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+            <span style="color:#ff6b6b;font-weight:bold;">L1 生产看板</span>
+            <span style="color:#555;font-size:12px;">/production</span>
+          </div>
+          <div style="color:#999;font-size:13px;line-height:1.6;">
+            上半区：实时任务面板（正在执行的任务卡片 → 员工、任务名、进度条、预估完成时间）<br>
+            下半区：历史任务列表（可筛选、可搜索 → 每行展开可查看产出内容）
+          </div>
+          <div style="margin-top:12px;margin-left:20px;border-left:2px solid #ff6b6b;padding-left:12px;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+              <span style="color:#ff6b6b;font-size:13px;font-weight:bold;">L2 任务详情</span>
+              <span style="color:#555;font-size:12px;">/production/:taskId</span>
+            </div>
+            <div style="color:#999;font-size:13px;line-height:1.6;">
+              任务基本信息 → 执行步骤时间线 → 产出内容预览/下载 → 关联AI员工
+            </div>
+          </div>
+        </div>
+
+        <!-- L1: 组织架构 -->
+        <div style="background:#1a1a2e;border-radius:8px;padding:16px;border-left:4px solid #c084fc;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+            <span style="color:#c084fc;font-weight:bold;">L1 团队组织架构</span>
+            <span style="color:#555;font-size:12px;">/org</span>
+          </div>
+          <div style="color:#999;font-size:13px;line-height:1.6;">
+            树状/节点图展示3条业务线 → 24个AI员工的层级归属关系 → 点击节点跳转员工详情
+          </div>
+        </div>
+
+        <!-- L1: 设置 -->
+        <div style="background:#1a1a2e;border-radius:8px;padding:16px;border-left:4px solid #666;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+            <span style="color:#999;font-weight:bold;">L1 系统设置</span>
+            <span style="color:#555;font-size:12px;">/settings</span>
+          </div>
+          <div style="color:#999;font-size:13px;line-height:1.6;">
+            AI员工管理（增删改）→ 指标基准值配置（人工耗时等）→ 用户与权限管理
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 核心交互路径 -->
+<div class="section">
+  <h3>核心交互路径</h3>
+  <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px;">
+    <div style="background:#1a1a2e;border-radius:8px;padding:16px;">
+      <div style="color:#00d4ff;font-weight:bold;font-size:13px;margin-bottom:8px;">路径1：高层巡检</div>
+      <div style="color:#999;font-size:13px;line-height:1.8;">
+        驾驶舱 → 看到采纳率偏低 → 点击下钻 → 看到AI审计官采纳率61% → 点击进入详情 → 查看成长日志，看到V2.0在迭代中
+      </div>
+    </div>
+    <div style="background:#1a1a2e;border-radius:8px;padding:16px;">
+      <div style="color:#00ff88;font-weight:bold;font-size:13px;margin-bottom:8px;">路径2：找人办事</div>
+      <div style="color:#999;font-size:13px;line-height:1.8;">
+        花名册 → 筛选"生产团队" → 找到AI编剧 → 查看Skills确认能力 → （未来）直接发起任务
+      </div>
+    </div>
+    <div style="background:#1a1a2e;border-radius:8px;padding:16px;">
+      <div style="color:#ff6b6b;font-weight:bold;font-size:13px;margin-bottom:8px;">路径3：生产监控</div>
+      <div style="color:#999;font-size:13px;line-height:1.8;">
+        生产看板 → 看到AI入库员正在执行3D资源入库 → 进度78% → 预计15分钟完成 → 查看历史产出
+      </div>
+    </div>
+    <div style="background:#1a1a2e;border-radius:8px;padding:16px;">
+      <div style="color:#c084fc;font-weight:bold;font-size:13px;margin-bottom:8px;">路径4：投资人展示</div>
+      <div style="color:#999;font-size:13px;line-height:1.8;">
+        组织架构 → 一图看懂24人AI团队 → 驾驶舱看核心ROI → 花名册展示每个角色的深度 → 生产看板证明"真的在干活"
+      </div>
+    </div>
+  </div>
+</div>

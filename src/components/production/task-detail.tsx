@@ -56,7 +56,7 @@ export function TaskDetail({ task }: { task: TaskDetailData }) {
   const status = STATUS_CONFIG[task.status];
   return (
     <div className="p-8 max-w-3xl">
-      <Button variant="ghost" size="sm" render={<Link href="/production" />} className="mb-6 -ml-2">
+      <Button variant="ghost" size="sm" nativeButton={false} render={<Link href="/production" />} className="mb-6 -ml-2">
         <ArrowLeft className="h-4 w-4 mr-1" />返回生产看板
       </Button>
 
