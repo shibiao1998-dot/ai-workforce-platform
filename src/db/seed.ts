@@ -1,5 +1,5 @@
 import { db } from "./index";
-import { employees, skills, metrics, versionLogs, tasks, taskOutputs } from "./schema";
+import { employees, skills, metrics, versionLogs, tasks, taskOutputs, metricConfigs } from "./schema";
 import { randomUUID } from "crypto";
 
 const now = new Date();
@@ -368,6 +368,7 @@ async function seed() {
   // Clear existing data
   await db.delete(taskOutputs);
   await db.delete(tasks);
+  await db.delete(metricConfigs);
   await db.delete(versionLogs);
   await db.delete(metrics);
   await db.delete(skills);
@@ -482,6 +483,28 @@ async function seed() {
   }
 
   console.log(`Seeded tasks for ${activeEmployees.length} active employees.`);
+
+  // Seed default metric configs
+  const DEFAULT_TASK_TYPES = [
+    { taskType: "项目审计", humanBaseline: 4, description: "人工审计一个项目约4小时" },
+    { taskType: "PRD编写", humanBaseline: 8, description: "人工写一份PRD约1天" },
+    { taskType: "人员盘点", humanBaseline: 6, description: "人工盘点一次约6小时" },
+    { taskType: "脚本创作", humanBaseline: 3, description: "人工写一篇脚本约3小时" },
+    { taskType: "资源入库", humanBaseline: 0.5, description: "人工处理一条资源约30分钟" },
+    { taskType: "内容质检", humanBaseline: 0.25, description: "人工质检一条内容约15分钟" },
+  ];
+  for (const cfg of DEFAULT_TASK_TYPES) {
+    await db.insert(metricConfigs).values({
+      id: randomUUID(),
+      employeeId: null,
+      taskType: cfg.taskType,
+      humanBaseline: cfg.humanBaseline,
+      costPerHour: 46.875,
+      description: cfg.description,
+      updatedAt: now,
+    });
+  }
+  console.log(`Seeded ${DEFAULT_TASK_TYPES.length} metric configs.`);
 }
 
 seed().catch(console.error);
