@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Employee, VersionLog } from "@/lib/types";
+import { Employee, VersionLog, EmployeePersona } from "@/lib/types";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { AiAvatar } from "@/components/shared/ai-avatar";
@@ -90,6 +90,7 @@ export function EmployeeDetailModal({ employeeId, open, onOpenChange }: Employee
   const status = employee ? STATUS_MAP[employee.status] : null;
   const teamBg = employee ? (TEAM_BG[employee.team] ?? "bg-muted") : "bg-muted";
   const teamLabel = employee ? (TEAM_LABEL[employee.team] ?? employee.team) : "";
+  const persona = employee?.persona ? JSON.parse(employee.persona) as EmployeePersona : null;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -143,6 +144,18 @@ export function EmployeeDetailModal({ employeeId, open, onOpenChange }: Employee
                 )}
                 {employee.description && (
                   <p className="text-sm text-muted-foreground leading-relaxed">{employee.description}</p>
+                )}
+                {persona && (
+                  <div className="flex flex-col gap-2 mt-1">
+                    <p className="text-sm italic text-muted-foreground">&quot;{persona.catchphrase}&quot;</p>
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      <span className="rounded-full bg-primary/10 text-primary px-2 py-0.5 text-xs font-medium">{persona.mbti}</span>
+                      <span className="rounded-full bg-muted px-2 py-0.5 text-xs">{persona.age}岁</span>
+                      {persona.personality.map((p: string) => (
+                        <span key={p} className="rounded-full bg-muted px-2 py-0.5 text-xs">{p}</span>
+                      ))}
+                    </div>
+                  </div>
                 )}
               </div>
             </div>
