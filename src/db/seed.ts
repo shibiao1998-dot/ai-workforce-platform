@@ -432,10 +432,126 @@ const SEED_EMPLOYEES = [
   },
 ];
 
+const STEP_TEMPLATES: Record<string, string[]> = {
+  "项目审计": ["数据采集", "指标分析", "风险评估", "审计报告生成", "审核校验"],
+  "绩效评估": ["数据收集", "指标计算", "综合评分", "报告生成", "审核校验"],
+  "版本管理": ["版本规划", "进度追踪", "验收检查", "版本发布"],
+  "生产管理": ["需求分析", "资源调度", "进度监控", "质量验收"],
+  "业务分析": ["数据提取", "多维分析", "趋势研判", "报告输出"],
+  "人员盘点": ["数据采集", "人员筛选", "风险预判", "报告生成"],
+  "激励申报": ["行为识别", "方案设计", "审批流程", "公示输出"],
+  "战略规划": ["调研分析", "战略研判", "路径设计", "文档输出"],
+  "需求文档": ["需求收集", "结构化分析", "文档编写", "评审校验"],
+  "软件设计": ["需求理解", "架构设计", "文档编写", "方案评审"],
+  "产品方案": ["需求分析", "方案设计", "文档输出", "评审反馈"],
+  "需求确认": ["需求接收", "结构化分析", "方案匹配", "确认输出"],
+  "生产评审": ["预算检查", "可行性评估", "建议输出"],
+  "质量检查": ["标准匹配", "自动打标", "质检报告"],
+  "资源入库": ["格式解析", "分类入库", "质量校验", "入库报告"],
+  "剧本创作": ["主题分析", "大纲生成", "场景描写", "对白编写", "文档输出"],
+  "角色设计": ["角色解析", "风格匹配", "定妆照生成", "设定文档"],
+  "图像生成": ["需求解析", "素材匹配", "图像生成", "质量检查"],
+  "音频制作": ["文本解析", "音色匹配", "语音合成", "BGM匹配", "音频输出"],
+  "字幕制作": ["文本提取", "时间线同步", "排版设计", "效果渲染", "文件输出"],
+};
+
+const COT_THOUGHTS = [
+  "需要综合考虑多个维度的数据指标，采用加权平均来提升评估准确性。",
+  "发现部分历史数据存在缺失，需要先进行数据补全再进行分析。",
+  "当前方案的执行效率可以通过并行处理来进一步优化。",
+  "对比了三种算法方案，最终选择了准确率最高的方案 B。",
+  "注意到上游数据格式有变更，需要适配新的解析逻辑。",
+  "检测到异常数据点，已自动标记并排除在统计范围外。",
+  "参考了历史任务的执行经验，调整了参数阈值。",
+  "需要额外校验数据的一致性，确保输出结果的可靠性。",
+];
+
+const REFLECTION_TEMPLATES = [
+  { problems: "部分数据源存在延迟，导致实时性不够理想。", lessons: "应提前检查数据源的可用性和响应时间。", improvements: "建议增加数据源健康检查机制，对延迟数据进行标注。" },
+  { problems: "初始方案中未考虑到极端情况的处理。", lessons: "边界条件需要在设计阶段就充分考虑。", improvements: "1. 增加异常值检测\n2. 建立降级处理策略\n3. 添加详细的错误日志。" },
+  { problems: "执行过程中发现历史数据格式不统一。", lessons: "数据标准化应前置到流程的第一步。", improvements: "建议建立统一的数据格式规范，并在入口处进行格式校验。" },
+  { problems: "多步骤串行执行耗时较长。", lessons: "部分步骤存在并行化的可能性。", improvements: "1. 识别可并行的步骤\n2. 引入异步处理机制\n3. 优化资源调度策略。" },
+];
+
+const OUTPUT_TITLES: Record<string, string[]> = {
+  document: ["需求分析报告", "评估报告 v1.0", "设计文档", "分析摘要", "调研报告"],
+  report: ["数据汇总表", "统计分析表", "绩效评分表", "趋势分析图表"],
+  resource: ["素材包", "模板文件", "配置文件"],
+  media: ["演示视频", "效果预览", "音频成品"],
+  other: ["备注文档", "参考资料"],
+};
+
+function generateSteps(taskId: string, taskType: string, taskStatus: "running" | "completed" | "failed") {
+  const templateKey = Object.keys(STEP_TEMPLATES).find(k => taskType.includes(k)) ?? Object.keys(STEP_TEMPLATES)[0];
+  const stepNames = STEP_TEMPLATES[templateKey];
+  const steps = [];
+
+  for (let i = 0; i < stepNames.length; i++) {
+    const stepId = randomUUID();
+    let status: "pending" | "running" | "completed" | "failed" | "skipped" = "pending";
+    let thought: string | null = null;
+    let startedAt: Date | null = null;
+    let completedAt: Date | null = null;
+
+    if (taskStatus === "completed") {
+      status = "completed";
+      startedAt = new Date(Date.now() - (stepNames.length - i) * 180000);
+      completedAt = new Date(startedAt.getTime() + 60000 + Math.random() * 240000);
+      if (Math.random() > 0.4) thought = COT_THOUGHTS[Math.floor(Math.random() * COT_THOUGHTS.length)];
+    } else if (taskStatus === "running") {
+      const runningIdx = Math.floor(Math.random() * (stepNames.length - 1)) + 1;
+      if (i < runningIdx) {
+        status = "completed";
+        startedAt = new Date(Date.now() - (runningIdx - i) * 180000);
+        completedAt = new Date(startedAt.getTime() + 60000 + Math.random() * 240000);
+        if (Math.random() > 0.5) thought = COT_THOUGHTS[Math.floor(Math.random() * COT_THOUGHTS.length)];
+      } else if (i === runningIdx) {
+        status = "running";
+        startedAt = new Date(Date.now() - Math.random() * 120000);
+      }
+    } else if (taskStatus === "failed") {
+      const failIdx = Math.floor(Math.random() * (stepNames.length - 1)) + 1;
+      if (i < failIdx) {
+        status = "completed";
+        startedAt = new Date(Date.now() - (failIdx - i) * 180000);
+        completedAt = new Date(startedAt.getTime() + 60000 + Math.random() * 240000);
+      } else if (i === failIdx) {
+        status = "failed";
+        startedAt = new Date(Date.now() - 60000);
+      } else {
+        status = "skipped";
+      }
+    }
+
+    steps.push({ id: stepId, taskId, stepOrder: i + 1, name: stepNames[i], status, thought, startedAt, completedAt });
+  }
+  return steps;
+}
+
+function generateOutputs(taskId: string, count: number) {
+  const types: Array<"document" | "resource" | "report" | "media" | "other"> = ["document", "document", "report", "report", "resource", "media", "other"];
+  const outputs = [];
+  for (let i = 0; i < count; i++) {
+    const type = types[Math.floor(Math.random() * types.length)];
+    const titles = OUTPUT_TITLES[type];
+    outputs.push({
+      id: randomUUID(),
+      taskId,
+      type,
+      title: titles[Math.floor(Math.random() * titles.length)],
+      content: type === "document" || type === "report" ? "这是一份自动生成的模拟内容。该文档包含了任务执行过程中产生的分析数据、关键发现和建议措施。内容经过AI审核，确保数据准确性和逻辑完整性。" : null,
+      url: type === "media" || type === "resource" ? `/outputs/${randomUUID().slice(0, 8)}.${type === "media" ? "mp4" : "zip"}` : null,
+      createdAt: new Date(Date.now() - Math.random() * 86400000),
+    });
+  }
+  return outputs;
+}
+
 async function seed() {
   console.log("Seeding database...");
 
   // Clear existing data (respect FK order)
+  await db.delete(taskSteps);
   await db.delete(taskOutputs);
   await db.delete(tasks);
   await db.delete(metricConfigs);
@@ -536,7 +652,16 @@ async function seed() {
         estimatedEndTime: new Date(started.getTime() + 1800000),
         actualEndTime: null,
         metadata: null,
+        qualityScore: null,
+        retryCount: 0,
+        tokenUsage: Math.floor(1000 + Math.random() * 5000),
+        reflection: null,
       });
+
+      const steps = generateSteps(taskId, types[i % types.length], "running");
+      for (const step of steps) {
+        await db.insert(taskSteps).values(step);
+      }
     }
     // 10 completed tasks per active employee
     for (let i = 0; i < 10; i++) {
@@ -544,6 +669,9 @@ async function seed() {
       const daysAgo = Math.floor(Math.random() * 30);
       const started = new Date(Date.now() - daysAgo * 86400000 - Math.random() * 3600000);
       const duration = 600000 + Math.random() * 3600000;
+      const hasReflection = Math.random() < 0.3;
+      const reflectionData = hasReflection ? REFLECTION_TEMPLATES[Math.floor(Math.random() * REFLECTION_TEMPLATES.length)] : null;
+
       await db.insert(tasks).values({
         id: taskId,
         employeeId: emp.id,
@@ -557,7 +685,22 @@ async function seed() {
         estimatedEndTime: new Date(started.getTime() + duration),
         actualEndTime: new Date(started.getTime() + duration),
         metadata: null,
+        qualityScore: 70 + Math.floor(Math.random() * 28),
+        retryCount: Math.random() < 0.8 ? 0 : Math.floor(Math.random() * 3),
+        tokenUsage: Math.floor(1000 + Math.random() * 7000),
+        reflection: reflectionData ? JSON.stringify(reflectionData) : null,
       });
+
+      const steps = generateSteps(taskId, types[i % types.length], "completed");
+      for (const step of steps) {
+        await db.insert(taskSteps).values(step);
+      }
+
+      const outputCount = 1 + Math.floor(Math.random() * 3);
+      const outputs = generateOutputs(taskId, outputCount);
+      for (const output of outputs) {
+        await db.insert(taskOutputs).values(output);
+      }
     }
   }
 
