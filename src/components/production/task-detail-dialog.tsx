@@ -64,10 +64,10 @@ function calcDuration(start: string | null, end: string | null) {
   return `${Math.floor(mins / 60)}h${mins % 60}m`;
 }
 
-function formatTokenUsage(tokens: number | null) {
+function formatTokenCost(tokens: number | null) {
   if (tokens == null) return "—";
-  if (tokens >= 1000) return `${(tokens / 1000).toFixed(1)}k`;
-  return `${tokens}`;
+  const cost = tokens * 0.000006;
+  return `¥${cost < 0.01 ? cost.toFixed(4) : cost.toFixed(2)}`;
 }
 
 export function TaskDetailDialog({
@@ -134,8 +134,8 @@ export function TaskDetailDialog({
                 <p className="text-xs text-muted-foreground">重试次数</p>
               </div>
               <div className="bg-background p-3 text-center">
-                <p className="text-xl font-bold text-amber-600">{formatTokenUsage(task.tokenUsage)}</p>
-                <p className="text-xs text-muted-foreground">Token 用量</p>
+                <p className="text-xl font-bold text-amber-600">{formatTokenCost(task.tokenUsage)}</p>
+                <p className="text-xs text-muted-foreground">预估费用</p>
               </div>
             </div>
 
@@ -143,10 +143,7 @@ export function TaskDetailDialog({
               <TabsList variant="line">
                 <TabsTrigger value="steps">执行步骤</TabsTrigger>
                 <TabsTrigger value="outputs">产出内容</TabsTrigger>
-                <TabsTrigger
-                  value="reflection"
-                  disabled={task.status !== "completed"}
-                >
+                <TabsTrigger value="reflection">
                   执行反思
                 </TabsTrigger>
               </TabsList>

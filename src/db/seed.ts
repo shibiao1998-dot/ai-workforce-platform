@@ -486,6 +486,8 @@ function generateSteps(taskId: string, taskType: string, taskStatus: "running" |
   const stepNames = STEP_TEMPLATES[templateKey];
   const steps = [];
 
+  const pivotIdx = Math.floor(Math.random() * (stepNames.length - 1)) + 1;
+
   for (let i = 0; i < stepNames.length; i++) {
     const stepId = randomUUID();
     let status: "pending" | "running" | "completed" | "failed" | "skipped" = "pending";
@@ -499,23 +501,21 @@ function generateSteps(taskId: string, taskType: string, taskStatus: "running" |
       completedAt = new Date(startedAt.getTime() + 60000 + Math.random() * 240000);
       if (Math.random() > 0.4) thought = COT_THOUGHTS[Math.floor(Math.random() * COT_THOUGHTS.length)];
     } else if (taskStatus === "running") {
-      const runningIdx = Math.floor(Math.random() * (stepNames.length - 1)) + 1;
-      if (i < runningIdx) {
+      if (i < pivotIdx) {
         status = "completed";
-        startedAt = new Date(Date.now() - (runningIdx - i) * 180000);
+        startedAt = new Date(Date.now() - (pivotIdx - i) * 180000);
         completedAt = new Date(startedAt.getTime() + 60000 + Math.random() * 240000);
         if (Math.random() > 0.5) thought = COT_THOUGHTS[Math.floor(Math.random() * COT_THOUGHTS.length)];
-      } else if (i === runningIdx) {
+      } else if (i === pivotIdx) {
         status = "running";
         startedAt = new Date(Date.now() - Math.random() * 120000);
       }
     } else if (taskStatus === "failed") {
-      const failIdx = Math.floor(Math.random() * (stepNames.length - 1)) + 1;
-      if (i < failIdx) {
+      if (i < pivotIdx) {
         status = "completed";
-        startedAt = new Date(Date.now() - (failIdx - i) * 180000);
+        startedAt = new Date(Date.now() - (pivotIdx - i) * 180000);
         completedAt = new Date(startedAt.getTime() + 60000 + Math.random() * 240000);
-      } else if (i === failIdx) {
+      } else if (i === pivotIdx) {
         status = "failed";
         startedAt = new Date(Date.now() - 60000);
       } else {
@@ -639,6 +639,8 @@ async function seed() {
     for (let i = 0; i < 2; i++) {
       const taskId = randomUUID();
       const started = new Date(Date.now() - Math.random() * 3600000);
+      const hasRunningReflection = Math.random() < 0.5;
+      const runningReflection = hasRunningReflection ? REFLECTION_TEMPLATES[Math.floor(Math.random() * REFLECTION_TEMPLATES.length)] : null;
       await db.insert(tasks).values({
         id: taskId,
         employeeId: emp.id,
@@ -655,7 +657,7 @@ async function seed() {
         qualityScore: null,
         retryCount: 0,
         tokenUsage: Math.floor(1000 + Math.random() * 5000),
-        reflection: null,
+        reflection: runningReflection ? JSON.stringify(runningReflection) : null,
       });
 
       const steps = generateSteps(taskId, types[i % types.length], "running");
