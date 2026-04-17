@@ -4,6 +4,19 @@ export type PeriodType = "daily" | "weekly" | "monthly";
 export type TaskStatus = "running" | "completed" | "failed";
 export type OutputType = "document" | "resource" | "report" | "media" | "other";
 
+export type TaskStepStatus = "pending" | "running" | "completed" | "failed" | "skipped";
+
+export interface TaskStep {
+  id: string;
+  taskId: string;
+  stepOrder: number;
+  name: string;
+  status: TaskStepStatus;
+  thought: string | null;
+  startedAt: string | null;
+  completedAt: string | null;
+}
+
 export interface Employee {
   id: string;
   name: string;
@@ -70,6 +83,10 @@ export interface Task {
   estimatedEndTime: Date | null;
   actualEndTime: Date | null;
   metadata: Record<string, unknown> | null;
+  qualityScore: number | null;
+  retryCount: number | null;
+  tokenUsage: number | null;
+  reflection: string | null;
 }
 
 export interface TaskOutput {
