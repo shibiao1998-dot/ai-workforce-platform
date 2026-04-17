@@ -17,6 +17,20 @@ export interface TaskStep {
   completedAt: string | null;
 }
 
+export interface EmployeePersona {
+  age: number;
+  gender: "male" | "female";
+  personality: string[];
+  catchphrase: string;
+  backstory: string;
+  workStyle: string;
+  interests: string[];
+  fashionStyle: string;
+  mbti: string;
+  visualTraits: string;
+  sceneDescription: string;
+}
+
 export interface Employee {
   id: string;
   name: string;
@@ -29,6 +43,7 @@ export interface Employee {
   identity: string | null;
   description: string | null;
   avatarDescription: string | null;
+  persona: string | null;
   createdAt: Date | null;
   updatedAt: Date | null;
   skills?: Skill[];
