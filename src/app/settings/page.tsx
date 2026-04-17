@@ -48,11 +48,12 @@ async function getData() {
   const configRows = await db
     .select({
       id: metricConfigs.id,
+      employeeId: metricConfigs.employeeId,
+      team: metricConfigs.team,
       taskType: metricConfigs.taskType,
       humanBaseline: metricConfigs.humanBaseline,
       costPerHour: metricConfigs.costPerHour,
       description: metricConfigs.description,
-      team: metricConfigs.team,
     })
     .from(metricConfigs);
 

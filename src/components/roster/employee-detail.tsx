@@ -18,6 +18,7 @@ const STATUS_MAP: Record<Employee["status"], { label: string; variant: "default"
   active: { label: "在岗", variant: "default" },
   developing: { label: "开发中", variant: "secondary" },
   planned: { label: "计划中", variant: "outline" },
+  inactive: { label: "已停用", variant: "outline" },
 };
 
 const TEAM_LABEL: Record<string, string> = {

@@ -20,7 +20,7 @@ interface OrgEmployee {
   name: string;
   title: string;
   team: string;
-  status: "active" | "developing" | "planned";
+  status: "active" | "developing" | "planned" | "inactive";
 }
 
 interface OrgChartProps {

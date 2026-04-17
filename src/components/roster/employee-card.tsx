@@ -21,6 +21,10 @@ const STATUS_MAP: Record<
     label: "规划中",
     className: "bg-gray-100 text-gray-600 border-gray-200",
   },
+  inactive: {
+    label: "已停用",
+    className: "bg-red-50 text-red-600 border-red-200",
+  },
 };
 
 const TEAM_BORDER: Record<EmployeeListItem["team"], string> = {
@@ -58,7 +62,7 @@ export function EmployeeCard({ employee, onClick }: EmployeeCardProps) {
         style={{ borderLeft: `3px solid ${borderColor}` }}
       >
         {/* Portrait area */}
-        <div className={cn("relative h-56 overflow-hidden", teamBg)}>
+        <div className={cn("relative h-80 overflow-hidden", teamBg)}>
           <AiAvatar
             employeeId={employee.id}
             team={employee.team}
@@ -67,7 +71,7 @@ export function EmployeeCard({ employee, onClick }: EmployeeCardProps) {
             fill
           />
           {/* Gradient overlay — blends portrait into white card body */}
-          <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-white via-white/70 to-transparent" />
+          <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-white via-white/70 to-transparent" />
           {/* Status badge */}
           <Badge
             className={cn("absolute top-3 right-3 shadow-sm", status.className)}
