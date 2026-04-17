@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
-import { employees } from "@/db/schema";
-import { eq } from "drizzle-orm";
 import {
   generateAvatarDescription,
   generateSingleAvatar,

@@ -4,7 +4,7 @@ import { employees, skills, metrics, versionLogs, skillMetrics } from "@/db/sche
 import { eq } from "drizzle-orm";
 
 export async function GET(
-  req: NextRequest,
+  _req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
@@ -73,7 +73,7 @@ export async function PUT(
 }
 
 export async function DELETE(
-  req: NextRequest,
+  _req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
