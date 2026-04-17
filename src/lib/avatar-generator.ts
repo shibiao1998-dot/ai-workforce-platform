@@ -31,25 +31,24 @@ export function loadEnvLocal(): void {
 // Style prefix (shared with batch script)
 // ---------------------------------------------------------------------------
 const STYLE_PREFIX =
-  "Create a professional 2D digital illustration portrait of a Chinese professional in LANDSCAPE orientation (wider than tall, 16:9 aspect ratio). " +
-  "Clean modern style with soft shading. Frame the person from chest up, centered in the image with generous space around them. " +
-  "Solid light gradient background, soft studio lighting. " +
-  "The character should look approachable and competent. Do NOT crop tightly — leave breathing room above the head and on both sides.";
+  "Create a stylish 2D digital illustration portrait of a young Chinese professional in LANDSCAPE orientation (16:9, 1376x768). " +
+  "Trendy modern illustration style with bold confident lines, vibrant colors, and dynamic lighting. " +
+  "The character should look young (early-to-late 20s), energetic, fashionable, and highly competent — like a top talent at a cutting-edge tech startup. " +
+  "Frame from chest up, centered with breathing room. Include a detailed background scene specific to their work environment. " +
+  "The overall mood should be cool, professional, and aspirational.";
+
+const TEAM_ACCENT: Record<string, string> = {
+  management: "purple and violet",
+  design: "blue and cyan",
+  production: "green and emerald",
+};
 
 // ---------------------------------------------------------------------------
 // Generate a default appearance description based on team
 // ---------------------------------------------------------------------------
 export function generateAvatarDescription(title: string, team: string): string {
-  switch (team) {
-    case "management":
-      return `Professional in a ${title} role, mature confident expression, business formal attire, neat appearance`;
-    case "design":
-      return `Creative professional in a ${title} role, artistic expressive look, smart casual attire, modern style`;
-    case "production":
-      return `Focused professional in a ${title} role, detail-oriented expression, business casual attire, clean appearance`;
-    default:
-      return `Professional in a ${title} role, competent approachable expression, business casual attire`;
-  }
+  const accent = TEAM_ACCENT[team] || "neutral";
+  return `Young professional in a ${title} role, age mid-20s, trendy streetwear style, confident energetic expression, modern tech workspace background with ${accent} ambient lighting`;
 }
 
 // ---------------------------------------------------------------------------
