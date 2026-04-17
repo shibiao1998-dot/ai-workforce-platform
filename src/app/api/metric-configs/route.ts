@@ -1,11 +1,37 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
 import { metricConfigs } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { eq, and, isNull, isNotNull } from "drizzle-orm";
 import { randomUUID } from "crypto";
 
-export async function GET() {
-  const rows = await db.select().from(metricConfigs);
+export async function GET(req: NextRequest) {
+  const { searchParams } = req.nextUrl;
+  const level = searchParams.get("level");
+  const team = searchParams.get("team");
+  const employeeId = searchParams.get("employeeId");
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const conditions: any[] = [];
+
+  if (level === "global") {
+    conditions.push(isNull(metricConfigs.employeeId));
+    conditions.push(isNull(metricConfigs.team));
+  } else if (level === "team") {
+    conditions.push(isNull(metricConfigs.employeeId));
+    conditions.push(isNotNull(metricConfigs.team));
+    if (team) conditions.push(eq(metricConfigs.team, team as "management" | "design" | "production"));
+  } else if (level === "employee") {
+    conditions.push(isNotNull(metricConfigs.employeeId));
+    if (employeeId) conditions.push(eq(metricConfigs.employeeId, employeeId));
+  } else if (team) {
+    conditions.push(eq(metricConfigs.team, team as "management" | "design" | "production"));
+  }
+
+  const rows =
+    conditions.length > 0
+      ? await db.select().from(metricConfigs).where(and(...conditions))
+      : await db.select().from(metricConfigs);
+
   return NextResponse.json(rows);
 }
 
@@ -15,6 +41,7 @@ export async function POST(req: NextRequest) {
   await db.insert(metricConfigs).values({
     id,
     employeeId: body.employeeId ?? null,
+    team: body.team ?? null,
     taskType: body.taskType,
     humanBaseline: body.humanBaseline,
     costPerHour: body.costPerHour ?? 46.875,
