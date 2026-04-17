@@ -28,12 +28,6 @@ interface TaskRow {
 
 // ──────────────────── 常量 ────────────────────
 
-const TEAM_LABELS: Record<string, string> = {
-  management: "管理",
-  design: "设计",
-  production: "生产",
-};
-
 const STATUS_LABELS: Record<string, string> = {
   running: "执行中",
   completed: "已完成",
