@@ -60,6 +60,7 @@ export async function PUT(
       identity: body.identity,
       description: body.description,
       avatarDescription: body.avatarDescription,
+      persona: body.persona,
       updatedAt: now,
     })
     .where(eq(employees.id, id));
