@@ -4,6 +4,7 @@ import { eq } from "drizzle-orm";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { EmployeeManager } from "@/components/settings/employee-manager";
 import { MetricConfigManager } from "@/components/settings/metric-config-manager";
+import { DataManagementCenter } from "@/components/settings/data-management/data-management-center";
 
 async function getData() {
   const empRows = await db
@@ -60,14 +61,6 @@ async function getData() {
   return { employeeList, configRows };
 }
 
-// temporary until Task 16 creates the real component
-function DataManagementPlaceholder() {
-  return (
-    <div className="text-muted-foreground text-sm py-8 text-center">
-      数据指标管理（开发中）
-    </div>
-  );
-}
 
 export default async function SettingsPage() {
   const { employeeList, configRows } = await getData();
@@ -94,7 +87,7 @@ export default async function SettingsPage() {
           />
         </TabsContent>
         <TabsContent value="data">
-          <DataManagementPlaceholder />
+          <DataManagementCenter />
         </TabsContent>
       </Tabs>
     </div>
