@@ -62,6 +62,21 @@ export const tasks = sqliteTable("tasks", {
   estimatedEndTime: integer("estimated_end_time", { mode: "timestamp" }),
   actualEndTime: integer("actual_end_time", { mode: "timestamp" }),
   metadata: text("metadata"),
+  qualityScore: integer("quality_score"),
+  retryCount: integer("retry_count").default(0),
+  tokenUsage: integer("token_usage"),
+  reflection: text("reflection"),
+});
+
+export const taskSteps = sqliteTable("task_steps", {
+  id: text("id").primaryKey(),
+  taskId: text("task_id").notNull().references(() => tasks.id, { onDelete: "cascade" }),
+  stepOrder: integer("step_order").notNull(),
+  name: text("name").notNull(),
+  status: text("status", { enum: ["pending", "running", "completed", "failed", "skipped"] }).notNull().default("pending"),
+  thought: text("thought"),
+  startedAt: integer("started_at", { mode: "timestamp" }),
+  completedAt: integer("completed_at", { mode: "timestamp" }),
 });
 
 export const taskOutputs = sqliteTable("task_outputs", {

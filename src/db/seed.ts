@@ -1,5 +1,5 @@
 import { db } from "./index";
-import { employees, skills, skillMetrics, metrics, versionLogs, tasks, taskOutputs, metricConfigs } from "./schema";
+import { employees, skills, skillMetrics, metrics, versionLogs, tasks, taskOutputs, taskSteps, metricConfigs } from "./schema";
 import { randomUUID } from "crypto";
 
 const now = new Date();
