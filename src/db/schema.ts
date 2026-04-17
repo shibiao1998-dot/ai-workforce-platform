@@ -12,6 +12,7 @@ export const employees = sqliteTable("employees", {
   identity: text("identity"),
   description: text("description"),
   avatarDescription: text("avatar_description"),
+  persona: text("persona"),
   createdAt: integer("created_at", { mode: "timestamp" }),
   updatedAt: integer("updated_at", { mode: "timestamp" }),
 });
