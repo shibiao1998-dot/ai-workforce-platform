@@ -52,6 +52,7 @@ const SEED_EMPLOYEES = [
     identity: "严谨、数据驱动、以事实说话的审计专家",
     description: "实时自动发起项目审计，可视化判断逻辑链路，给出「关停并转」决策。2026 Q1完成154次审计，覆盖112个项目，采纳率61%。累计846次审计覆盖423个项目。",
     avatarDescription: "Mature male, mid-40s, dark navy suit with tie, silver-rimmed glasses, serious confident expression, short neat hair",
+    persona: null as null,
     skills: [
       { name: "项目审计执行", level: 5, category: "核心能力", description: "自动发起并执行全面项目审计，覆盖质量、进度、成本多维度", baseInvocations: 80, baseSuccessRate: 0.92 },
       { name: "审计逻辑可视化", level: 5, category: "核心能力", description: "将审计判断逻辑链路可视化呈现，支持决策追溯", baseInvocations: 60, baseSuccessRate: 0.90 },
@@ -69,6 +70,7 @@ const SEED_EMPLOYEES = [
     identity: "客观、数据驱动、善于聚合多源数据的评价专家",
     description: "聚合项目过程与结果数据，自动输出项目绩效评价，代替VP审核申诉。",
     avatarDescription: "Male, mid-30s, charcoal business suit, holding a tablet, analytical focused gaze, neat side-parted hair",
+    persona: null as null,
     skills: [
       { name: "项目数据聚合", level: 5, category: "核心能力", description: "自动采集聚合项目过程与结果的多维度数据", baseInvocations: 70, baseSuccessRate: 0.91 },
       { name: "绩效评价模型", level: 5, category: "核心能力", description: "基于量化指标自动生成项目绩效评价报告", baseInvocations: 60, baseSuccessRate: 0.89 },
@@ -86,6 +88,7 @@ const SEED_EMPLOYEES = [
     identity: "节奏感强、善于推动执行、注重交付质量的迭代管理者",
     description: "推动周版本激励与验收，筛选项目与负责人，加速迭代交付。配套完整工具链：目标用户→理想化状态→中短期目标→月度计划→周计划→核心价值→审核与验收。",
     avatarDescription: "Female, late-20s, smart casual blazer over white shirt, energetic determined expression, shoulder-length hair",
+    persona: null as null,
     skills: [
       { name: "版本规划管理", level: 5, category: "核心能力", description: "制定周版本计划，筛选项目与负责人，确保迭代节奏", baseInvocations: 50, baseSuccessRate: 0.90 },
       { name: "迭代交付推动", level: 5, category: "核心能力", description: "追踪版本进度，推动各环节按时交付", baseInvocations: 60, baseSuccessRate: 0.88 },
@@ -103,6 +106,7 @@ const SEED_EMPLOYEES = [
     identity: "流程驱动、全局视野、善于资源调度的管理专家",
     description: "全流程管理资源生产线——需求分析、评估、生产组织、产出验收、看板化。配套完整管理工具集：生产需求漏斗、生产计划、生产任务、管理监控看板。",
     avatarDescription: "Male, mid-30s, dark polo shirt with ID badge, commanding presence, short crew cut",
+    persona: null as null,
     skills: [
       { name: "生产流程编排", level: 5, category: "核心能力", description: "全流程管理从需求到验收的资源生产线", baseInvocations: 70, baseSuccessRate: 0.90 },
       { name: "需求漏斗管理", level: 5, category: "核心能力", description: "管理生产需求漏斗，筛选优先级并分配产能", baseInvocations: 50, baseSuccessRate: 0.88 },
@@ -120,6 +124,7 @@ const SEED_EMPLOYEES = [
     identity: "分析严谨、善于从数据中发现业务洞察的分析师",
     description: "基于业务分类自动总结输出评价，为项目筛选提供量化依据。",
     avatarDescription: "Female, early-30s, light gray suit jacket, data-savvy look, glasses, hair in a low bun",
+    persona: null as null,
     skills: [
       { name: "业务数据分析", level: 5, category: "核心能力", description: "基于业务分类自动完成多维度数据分析", baseInvocations: 60, baseSuccessRate: 0.90 },
       { name: "业务评价输出", level: 5, category: "输出能力", description: "自动总结业务表现并输出量化评价报告", baseInvocations: 50, baseSuccessRate: 0.88 },
@@ -137,6 +142,7 @@ const SEED_EMPLOYEES = [
     identity: "高屋建瓴、善于战略思考、具有全局视野的顾问",
     description: "从战略视角为整体业务发展提供方向建议。",
     avatarDescription: "Male, late-40s, premium dark suit, distinguished silver-streaked hair, wise calm expression",
+    persona: null as null,
     skills: [
       { name: "战略方向研判", level: 4, category: "核心能力", description: "从宏观视角研判业务发展方向与战略机会", baseInvocations: 25, baseSuccessRate: 0.82 },
       { name: "业务定位分析", level: 4, category: "分析能力", description: "分析业务定位与市场匹配度，提出优化建议", baseInvocations: 20, baseSuccessRate: 0.80 },
@@ -153,6 +159,7 @@ const SEED_EMPLOYEES = [
     identity: "细致、洞察力强、以数据为核心的人力分析师",
     description: "基于项目与绩效数据自动完成人员盘点与筛选。2026年3月：发起13人预警，85%获明确管理结论；公司历史上首次实现数据驱动的人员盘点。",
     avatarDescription: "Female, late-20s, soft pink blouse under navy cardigan, warm empathetic expression, long straight hair",
+    persona: null as null,
     skills: [
       { name: "人员数据盘点", level: 5, category: "核心能力", description: "基于项目与绩效数据自动完成人员结构盘点", baseInvocations: 30, baseSuccessRate: 0.88 },
       { name: "预警分析发起", level: 5, category: "核心能力", description: "识别人员风险并自动发起预警，85%获明确管理结论", baseInvocations: 25, baseSuccessRate: 0.85 },
@@ -170,6 +177,7 @@ const SEED_EMPLOYEES = [
     identity: "积极正向、善于发现亮点、擅长激励设计的专员",
     description: "识别并激励AI化正向行为优秀的个人或团队。2026年3月：新增申报4例，激励48人次，已完成内网公示。",
     avatarDescription: "Female, early-30s, bright teal blazer, cheerful inspiring smile, wavy medium-length hair",
+    persona: null as null,
     skills: [
       { name: "正向行为识别", level: 5, category: "核心能力", description: "自动识别AI化正向行为优秀的个人或团队", baseInvocations: 35, baseSuccessRate: 0.88 },
       { name: "激励方案设计", level: 4, category: "核心能力", description: "设计针对性激励方案，覆盖个人与团队维度", baseInvocations: 20, baseSuccessRate: 0.85 },
@@ -187,6 +195,7 @@ const SEED_EMPLOYEES = [
     identity: "流程化思维、善于评估与筛选的立项管理专家",
     description: "自动完成项目立项流程。已有项目备选池前置分析+AI自动立项bot。",
     avatarDescription: "Male, late-20s, business casual shirt rolled sleeves, eager forward-leaning posture, young energetic look",
+    persona: null as null,
     skills: [
       { name: "立项流程自动化", level: 3, category: "核心能力", description: "自动完成项目立项的标准化流程", baseInvocations: 15, baseSuccessRate: 0.78 },
       { name: "备选池分析", level: 4, category: "分析能力", description: "对项目备选池进行前置分析与优先级排序", baseInvocations: 20, baseSuccessRate: 0.82 },
@@ -203,6 +212,7 @@ const SEED_EMPLOYEES = [
     identity: "严格标准、快速判断、善于验收的审核专家",
     description: "快速立项审核、阶段结项目标验收。审核向AI员工正在尝试，尚未接入工具实现全自动化。",
     avatarDescription: "Male, mid-30s, formal white shirt with dark vest, meticulous careful expression, glasses, neat hair",
+    persona: null as null,
     skills: [
       { name: "立项审核", level: 2, category: "核心能力", description: "快速完成项目立项审核，确保合规与可行", baseInvocations: 5, baseSuccessRate: 0.70 },
       { name: "阶段验收", level: 2, category: "核心能力", description: "按标准完成项目阶段结项目标验收", baseInvocations: 5, baseSuccessRate: 0.68 },
@@ -221,6 +231,7 @@ const SEED_EMPLOYEES = [
     identity: "顶层思维、善于规划、以终为始的战略规划者",
     description: "顶层业务战略规划，输出战略方向、业务定位、发展路径。以「Open-Q要做什么样的教育」为例完成首次验证，产出文档版+思维导图版成果。",
     avatarDescription: "Male, mid-40s, dark turtleneck sweater, visionary thoughtful gaze, salt-and-pepper short hair",
+    persona: null as null,
     skills: [
       { name: "战略方向规划", level: 4, category: "核心能力", description: "完成顶层业务战略规划，输出战略方向与业务定位", baseInvocations: 15, baseSuccessRate: 0.82 },
       { name: "发展路径设计", level: 4, category: "核心能力", description: "设计业务发展路径，明确关键里程碑与推进节奏", baseInvocations: 12, baseSuccessRate: 0.80 },
@@ -238,6 +249,7 @@ const SEED_EMPLOYEES = [
     identity: "逻辑严密、善于需求结构化、以交付为导向的产品专家",
     description: "自动完成项目全生命周期中产品经理需要编写的关键事务文档，通过AI监控单据实现阶段间自动触发与衔接。覆盖7类关键事务：目标用户编写、理想化状态编写、核心价值编写、中短期目标编写、阶段结项编写、月度计划编写、周版本编写。",
     avatarDescription: "Female, early-30s, white blouse with subtle pattern, confident articulate expression, bob haircut",
+    persona: null as null,
     skills: [
       { name: "需求文档自动编写", level: 5, category: "核心能力", description: "自动完成目标用户、理想化状态、核心价值等关键事务文档", baseInvocations: 50, baseSuccessRate: 0.88 },
       { name: "项目生命周期管理", level: 5, category: "核心能力", description: "覆盖项目全生命周期7类关键事务的文档生成", baseInvocations: 40, baseSuccessRate: 0.86 },
@@ -255,6 +267,7 @@ const SEED_EMPLOYEES = [
     identity: "方法论导向、结构化思维、善于设计文档输出的设计师",
     description: "按照公司设计方法论输出结构化的业务方案与设计文档。AI已能按设计方法论写案子，产品化包装待推进。",
     avatarDescription: "Male, late-20s, casual hoodie with headphones around neck, creative focused look, slightly messy hair",
+    persona: null as null,
     skills: [
       { name: "设计方法论应用", level: 4, category: "核心能力", description: "按照公司设计方法论完成结构化业务方案设计", baseInvocations: 20, baseSuccessRate: 0.80 },
       { name: "业务方案输出", level: 3, category: "输出能力", description: "输出符合规范的结构化业务方案文档", baseInvocations: 15, baseSuccessRate: 0.78 },
@@ -271,6 +284,7 @@ const SEED_EMPLOYEES = [
     identity: "创意丰富、善于游戏机制设计、以用户体验为核心的设计师",
     description: "游戏体验设计——激励机制、成长体系、互动设计。游戏业务侧已有设计平台上线。",
     avatarDescription: "Male, mid-20s, graphic tee under open flannel shirt, playful creative smile, stylish undercut hair",
+    persona: null as null,
     skills: [
       { name: "激励机制设计", level: 2, category: "核心能力", description: "设计游戏化激励机制，提升用户参与度", baseInvocations: 5, baseSuccessRate: 0.72 },
       { name: "成长体系设计", level: 2, category: "核心能力", description: "设计用户成长体系，含等级、成就、奖励系统", baseInvocations: 4, baseSuccessRate: 0.70 },
@@ -291,6 +305,7 @@ const SEED_EMPLOYEES = [
     identity: "细致、善于需求挖掘与结构化的分析专家",
     description: "完善需求描述，输出结构化需求信息，匹配生产方案。已完成视频类、3D场景类、课程类、平面设计类需求确认Agent；直播类、3D素材类待完成。",
     avatarDescription: "Female, early-30s, structured navy blazer, attentive listening expression, hair pulled back",
+    persona: null as null,
     skills: [
       { name: "需求结构化分析", level: 5, category: "核心能力", description: "将模糊需求转化为结构化、可执行的需求信息", baseInvocations: 50, baseSuccessRate: 0.88 },
       { name: "生产方案匹配", level: 4, category: "核心能力", description: "根据需求特征自动匹配最优生产方案", baseInvocations: 40, baseSuccessRate: 0.85 },
@@ -308,6 +323,7 @@ const SEED_EMPLOYEES = [
     identity: "严谨、善于风险评估、以数据为依据的评审专家",
     description: "检查项目预算/状态，判断是否可生产，给出评审建议。当前脚本实现，计划升级为Agent。",
     avatarDescription: "Male, mid-30s, crisp white shirt with sleeves rolled, evaluative sharp gaze, close-cropped hair",
+    persona: null as null,
     skills: [
       { name: "预算状态检查", level: 4, category: "核心能力", description: "自动检查项目预算与状态，判断生产可行性", baseInvocations: 40, baseSuccessRate: 0.86 },
       { name: "可生产性评估", level: 4, category: "分析能力", description: "从资源、时间、技术维度评估是否可进入生产", baseInvocations: 35, baseSuccessRate: 0.84 },
@@ -324,6 +340,7 @@ const SEED_EMPLOYEES = [
     identity: "严格标准、细节导向、以质量为准绳的质检专家",
     description: "根据标准验收生产成果（AI抽查）；自动打标签。AI自动打标准确率86%（3D资源随机抽样验证）；AI抽查验收待实现。",
     avatarDescription: "Female, late-20s, lab-style white coat over casual top, detail-oriented precise look, glasses, ponytail",
+    persona: null as null,
     skills: [
       { name: "自动打标分类", level: 4, category: "核心能力", description: "对生产成果自动打标签分类，准确率86%", baseInvocations: 60, baseSuccessRate: 0.86 },
       { name: "质量抽查验收", level: 3, category: "核心能力", description: "根据标准对生产成果进行AI抽查验收", baseInvocations: 30, baseSuccessRate: 0.80 },
@@ -341,6 +358,7 @@ const SEED_EMPLOYEES = [
     identity: "高效、标准化、善于自动化流程的入库专家",
     description: "全类型资源自动化入库。已跑通GIF、场景、角色、视频、图片、音频等全类型资源自动入库，有演示视频可展示。",
     avatarDescription: "Male, late-20s, utility vest over t-shirt, organized efficient demeanor, short practical hair",
+    persona: null as null,
     skills: [
       { name: "全类型资源入库", level: 5, category: "核心能力", description: "支持GIF、场景、角色、视频、图片、音频等全类型资源自动入库", baseInvocations: 80, baseSuccessRate: 0.92 },
       { name: "入库流程自动化", level: 5, category: "核心能力", description: "全自动化入库流程，从解析到分类到存储一站式完成", baseInvocations: 70, baseSuccessRate: 0.90 },
@@ -358,6 +376,7 @@ const SEED_EMPLOYEES = [
     identity: "实时监控、善于预警、以数据为驱动的监控专家",
     description: "生产进展预警、生产线状态监控、异常提醒。已有生产管理看板（教育成品类+资源素材类）；看板2.0搭建中（生产车间可视化）。",
     avatarDescription: "Male, early-30s, dark technical jacket, alert watchful expression, short buzz cut",
+    persona: null as null,
     skills: [
       { name: "生产进度监控", level: 4, category: "核心能力", description: "实时监控各生产线进度，追踪任务完成情况", baseInvocations: 40, baseSuccessRate: 0.84 },
       { name: "异常预警触发", level: 3, category: "核心能力", description: "识别生产异常并自动触发预警提醒", baseInvocations: 25, baseSuccessRate: 0.80 },
@@ -376,6 +395,7 @@ const SEED_EMPLOYEES = [
     identity: "创意丰富、擅长叙事结构、善于把握受众情感的编剧",
     description: "生成结构化剧本大纲与场景描述。输入：主题关键词+目标受众+时长要求 → 输出：结构化剧本大纲。",
     avatarDescription: "Female, late-20s, cozy knit sweater, warm creative dreamy smile, loose wavy hair",
+    persona: null as null,
     skills: [
       { name: "剧本大纲生成", level: 5, category: "核心能力", description: "根据主题关键词与目标受众自动生成结构化剧本大纲", baseInvocations: 50, baseSuccessRate: 0.88 },
       { name: "场景描述编写", level: 5, category: "核心能力", description: "为每个场景编写详细的视觉描述与情节设计", baseInvocations: 45, baseSuccessRate: 0.86 },
@@ -393,6 +413,7 @@ const SEED_EMPLOYEES = [
     identity: "视觉化思维、善于创造有辨识度角色形象的设计师",
     description: "从剧本中解析角色，生成角色定妆照。配套风格库（油画/迪士尼/皮克斯/吉卜力等）。",
     avatarDescription: "Female, mid-20s, artistic scarf and denim jacket, imaginative bright expression, colorful hair accessory",
+    persona: null as null,
     skills: [
       { name: "角色解析提取", level: 5, category: "核心能力", description: "从剧本中自动解析角色信息，提取外观与性格特征", baseInvocations: 40, baseSuccessRate: 0.88 },
       { name: "定妆照生成", level: 5, category: "核心能力", description: "根据角色设定自动生成角色定妆照", baseInvocations: 35, baseSuccessRate: 0.86 },
@@ -410,6 +431,7 @@ const SEED_EMPLOYEES = [
     identity: "视觉敏感、技术精湛、善于多模态视觉创作的美术师",
     description: "图像生成、3D素材匹配与运镜、风格转绘。核心能力：AI素材匹配表演方案（V2.1）——智能机位调度与电影级运镜；视频风格转绘；生图+UE能力。",
     avatarDescription: "Male, early-30s, paint-splattered apron over black tee, artistic passionate gaze, medium textured hair",
+    persona: null as null,
     skills: [
       { name: "AI素材匹配表演", level: 5, category: "核心能力", description: "智能机位调度与电影级运镜，实现3D素材与表演方案匹配", baseInvocations: 50, baseSuccessRate: 0.88 },
       { name: "图像生成", level: 5, category: "核心能力", description: "基于文本描述自动生成高质量图像", baseInvocations: 60, baseSuccessRate: 0.86 },
@@ -427,6 +449,7 @@ const SEED_EMPLOYEES = [
     identity: "听觉敏感、擅长情绪氛围营造、技术成熟的音频专家",
     description: "自动生成BGM；文本转语音（TTS）。BGM根据画面情感自动匹配配乐。TTS多情感、个性化音色、克隆音色（经5轮迭代，最成熟的单点能力）。",
     avatarDescription: "Male, late-20s, professional headphones around neck, dark turtleneck, calm focused expression, neat medium hair",
+    persona: null as null,
     skills: [
       { name: "TTS语音合成", level: 5, category: "核心能力", description: "文本转语音，支持多情感、个性化音色、克隆音色（经5轮迭代）", baseInvocations: 100, baseSuccessRate: 0.94 },
       { name: "BGM自动匹配", level: 5, category: "核心能力", description: "根据画面情感自动匹配合适的背景音乐", baseInvocations: 60, baseSuccessRate: 0.88 },
@@ -444,6 +467,7 @@ const SEED_EMPLOYEES = [
     identity: "精确、善于排版设计、注重时间线同步的字幕专家",
     description: "自动生成、排版、渲染带动态效果的字幕。严格按剧本时间线顺序输出，支持动态效果渲染。",
     avatarDescription: "Female, mid-20s, modern minimalist blouse, precise detail-oriented look, clean short bob",
+    persona: null as null,
     skills: [
       { name: "字幕自动生成", level: 5, category: "核心能力", description: "根据剧本和语音自动生成精准字幕文本", baseInvocations: 60, baseSuccessRate: 0.90 },
       { name: "时间线同步", level: 5, category: "核心能力", description: "严格按剧本时间线顺序同步字幕显示", baseInvocations: 55, baseSuccessRate: 0.92 },
@@ -602,6 +626,7 @@ async function seed() {
       identity: emp.identity,
       description: emp.description,
       avatarDescription: emp.avatarDescription,
+      persona: emp.persona ? JSON.stringify(emp.persona) : null,
       createdAt: ts,
       updatedAt: ts,
     });
