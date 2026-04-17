@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { AiAvatar } from "@/components/shared/ai-avatar";
 import { EmployeeCreateDialog } from "@/components/settings/employee-create-dialog";
+import { EmployeeEditDialog } from "@/components/settings/employee-edit-dialog";
 import { Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { EmployeeListItem } from "@/lib/types";
@@ -51,6 +52,7 @@ export function EmployeeManager({ initialEmployees }: EmployeeManagerProps) {
   const [employees, setEmployees] = useState(initialEmployees);
   const [teamFilter, setTeamFilter] = useState<TeamFilter>("all");
   const [search, setSearch] = useState("");
+  const [editingEmployee, setEditingEmployee] = useState<EmployeeListItem | null>(null);
 
   // Poll for avatar completion for employees without avatars
   useEffect(() => {
@@ -109,6 +111,12 @@ export function EmployeeManager({ initialEmployees }: EmployeeManagerProps) {
         subTeam: (created.subTeam as string | null) ?? null,
       },
     ]);
+  };
+
+  const refreshEmployees = async () => {
+    const res = await fetch("/api/employees");
+    const data = await res.json();
+    if (Array.isArray(data)) setEmployees(data);
   };
 
   const filtered = employees.filter((e) => {
@@ -239,6 +247,15 @@ export function EmployeeManager({ initialEmployees }: EmployeeManagerProps) {
 
               {/* Actions */}
               <div className="flex gap-1 shrink-0">
+                {/* 编辑 */}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="text-xs h-7"
+                  onClick={() => setEditingEmployee(emp)}
+                >
+                  编辑
+                </Button>
                 {/* 上岗 */}
                 {(emp.status === "inactive" ||
                   emp.status === "developing" ||
@@ -298,6 +315,14 @@ export function EmployeeManager({ initialEmployees }: EmployeeManagerProps) {
           );
         })}
       </div>
+      {editingEmployee && (
+        <EmployeeEditDialog
+          employee={editingEmployee}
+          open={!!editingEmployee}
+          onOpenChange={(o) => { if (!o) setEditingEmployee(null); }}
+          onSaved={() => { setEditingEmployee(null); refreshEmployees(); }}
+        />
+      )}
     </div>
   );
 }
