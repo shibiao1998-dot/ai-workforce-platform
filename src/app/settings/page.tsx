@@ -52,10 +52,20 @@ async function getData() {
       humanBaseline: metricConfigs.humanBaseline,
       costPerHour: metricConfigs.costPerHour,
       description: metricConfigs.description,
+      team: metricConfigs.team,
     })
     .from(metricConfigs);
 
   return { employeeList, configRows };
+}
+
+// temporary until Task 16 creates the real component
+function DataManagementPlaceholder() {
+  return (
+    <div className="text-muted-foreground text-sm py-8 text-center">
+      数据指标管理（开发中）
+    </div>
+  );
 }
 
 export default async function SettingsPage() {
@@ -65,18 +75,25 @@ export default async function SettingsPage() {
     <div className="p-8">
       <div className="mb-8">
         <h1 className="text-3xl font-bold">系统设置</h1>
-        <p className="text-muted-foreground mt-1">管理 AI 员工与指标基准配置</p>
+        <p className="text-muted-foreground mt-1">管理 AI 员工、指标基准与业务数据</p>
       </div>
       <Tabs defaultValue="employees">
         <TabsList className="mb-6">
           <TabsTrigger value="employees">员工管理</TabsTrigger>
-          <TabsTrigger value="metrics">指标配置</TabsTrigger>
+          <TabsTrigger value="metrics">指标基准配置</TabsTrigger>
+          <TabsTrigger value="data">数据指标管理</TabsTrigger>
         </TabsList>
         <TabsContent value="employees">
           <EmployeeManager initialEmployees={employeeList} />
         </TabsContent>
         <TabsContent value="metrics">
-          <MetricConfigManager initialConfigs={configRows} />
+          <MetricConfigManager
+            initialConfigs={configRows}
+            employees={employeeList}
+          />
+        </TabsContent>
+        <TabsContent value="data">
+          <DataManagementPlaceholder />
         </TabsContent>
       </Tabs>
     </div>
