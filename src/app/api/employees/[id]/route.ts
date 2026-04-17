@@ -55,9 +55,11 @@ export async function PUT(
       title: body.title,
       team: body.team,
       status: body.status,
+      subTeam: body.subTeam,
       soul: body.soul,
       identity: body.identity,
       description: body.description,
+      avatarDescription: body.avatarDescription,
       updatedAt: now,
     })
     .where(eq(employees.id, id));

@@ -3,6 +3,7 @@ import { db } from "@/db";
 import { employees, metrics } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { randomUUID } from "crypto";
+import { generateAvatarDescription, generateSingleAvatar } from "@/lib/avatar-generator";
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
@@ -53,6 +54,9 @@ export async function POST(req: NextRequest) {
   const now = new Date();
   const id = randomUUID();
 
+  const avatarDescription =
+    body.avatarDescription ?? generateAvatarDescription(body.title, body.team);
+
   await db.insert(employees).values({
     id,
     name: body.name,
@@ -60,9 +64,11 @@ export async function POST(req: NextRequest) {
     title: body.title,
     team: body.team,
     status: body.status ?? "planned",
+    subTeam: body.subTeam ?? null,
     soul: body.soul ?? null,
     identity: body.identity ?? null,
     description: body.description ?? null,
+    avatarDescription,
     createdAt: now,
     updatedAt: now,
   });
@@ -70,6 +76,11 @@ export async function POST(req: NextRequest) {
   const created = await db.query.employees.findFirst({
     where: (e, { eq: eqFn }) => eqFn(e.id, id),
   });
+
+  // Fire-and-forget avatar generation
+  generateSingleAvatar(id, body.name, avatarDescription).catch((err) =>
+    console.error(`[avatar] generation failed for ${body.name}:`, err)
+  );
 
   return NextResponse.json(created, { status: 201 });
 }
