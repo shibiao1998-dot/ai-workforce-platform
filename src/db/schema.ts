@@ -6,11 +6,12 @@ export const employees = sqliteTable("employees", {
   avatar: text("avatar"),
   title: text("title").notNull(),
   team: text("team", { enum: ["management", "design", "production"] }).notNull(),
-  status: text("status", { enum: ["active", "developing", "planned"] }).notNull(),
+  status: text("status", { enum: ["active", "developing", "planned", "inactive"] }).notNull(),
   subTeam: text("sub_team"),
   soul: text("soul"),
   identity: text("identity"),
   description: text("description"),
+  avatarDescription: text("avatar_description"),
   createdAt: integer("created_at", { mode: "timestamp" }),
   updatedAt: integer("updated_at", { mode: "timestamp" }),
 });
@@ -101,6 +102,7 @@ export const versionLogs = sqliteTable("version_logs", {
 export const metricConfigs = sqliteTable("metric_configs", {
   id: text("id").primaryKey(),
   employeeId: text("employee_id").references(() => employees.id, { onDelete: "cascade" }),
+  team: text("team", { enum: ["management", "design", "production"] }),
   taskType: text("task_type").notNull(),
   humanBaseline: real("human_baseline").notNull(),
   costPerHour: real("cost_per_hour").notNull().default(46.875),
