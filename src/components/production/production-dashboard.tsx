@@ -27,7 +27,7 @@ export function ProductionDashboard({ timeRange }: { timeRange: string }) {
   const fetchData = async (date: string | null) => {
     const params = new URLSearchParams({ timeRange });
     if (date) params.set("date", date);
-    const res = await fetch(`/api/tasks/stats?${params}`);
+    const res = await fetch(`/api/production-stats?${params}`);
     const json = await res.json();
     setData(json);
   };

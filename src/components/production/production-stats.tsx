@@ -24,7 +24,7 @@ export function ProductionStats({ timeRange }: { timeRange: string }) {
   const [stats, setStats] = useState<StatsSummary | null>(null);
 
   useEffect(() => {
-    fetch(`/api/tasks/stats?timeRange=${timeRange}`)
+    fetch(`/api/production-stats?timeRange=${timeRange}`)
       .then(r => r.json())
       .then(d => setStats(d.summary))
       .catch(() => {});

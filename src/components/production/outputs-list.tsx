@@ -57,12 +57,12 @@ export function OutputsList({ outputs }: { outputs: Output[] }) {
                   预览
                 </Button>
                 {output.url && (
-                  <Button variant="ghost" size="sm" asChild>
-                    <a href={output.url} download>
+                  <a href={output.url} download>
+                    <Button variant="ghost" size="sm">
                       <Download className="h-3.5 w-3.5 mr-1" />
                       下载
-                    </a>
-                  </Button>
+                    </Button>
+                  </a>
                 )}
               </div>
             </div>
