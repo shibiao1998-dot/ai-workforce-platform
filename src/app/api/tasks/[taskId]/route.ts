@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
-import { tasks, employees, taskOutputs } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { tasks, employees, taskOutputs, taskSteps } from "@/db/schema";
+import { eq, asc } from "drizzle-orm";
 
 export async function GET(
   req: NextRequest,
@@ -24,6 +24,10 @@ export async function GET(
       employeeId: tasks.employeeId,
       employeeName: employees.name,
       metadata: tasks.metadata,
+      qualityScore: tasks.qualityScore,
+      retryCount: tasks.retryCount,
+      tokenUsage: tasks.tokenUsage,
+      reflection: tasks.reflection,
     })
     .from(tasks)
     .innerJoin(employees, eq(tasks.employeeId, employees.id))
@@ -37,5 +41,11 @@ export async function GET(
     .from(taskOutputs)
     .where(eq(taskOutputs.taskId, taskId));
 
-  return NextResponse.json({ ...taskRow, outputs });
+  const steps = await db
+    .select()
+    .from(taskSteps)
+    .where(eq(taskSteps.taskId, taskId))
+    .orderBy(asc(taskSteps.stepOrder));
+
+  return NextResponse.json({ ...taskRow, outputs, steps });
 }
