@@ -1,5 +1,5 @@
 export type TeamType = "management" | "design" | "production";
-export type EmployeeStatus = "active" | "developing" | "planned";
+export type EmployeeStatus = "active" | "developing" | "planned" | "inactive";
 export type PeriodType = "daily" | "weekly" | "monthly";
 export type TaskStatus = "running" | "completed" | "failed";
 export type OutputType = "document" | "resource" | "report" | "media" | "other";
@@ -28,6 +28,7 @@ export interface Employee {
   soul: string | null;
   identity: string | null;
   description: string | null;
+  avatarDescription: string | null;
   createdAt: Date | null;
   updatedAt: Date | null;
   skills?: Skill[];
@@ -111,6 +112,7 @@ export interface VersionLog {
 export interface MetricConfig {
   id: string;
   employeeId: string | null;
+  team: TeamType | null;
   taskType: string;
   humanBaseline: number;
   costPerHour: number;
@@ -131,4 +133,58 @@ export interface EmployeeListItem {
   accuracyRate: number | null;
   description: string | null;
   subTeam: string | null;
+}
+
+export interface PaginatedResponse<T> {
+  data: T[];
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+}
+
+export interface DataMetricRow {
+  id: string;
+  employeeId: string;
+  employeeName: string;
+  employeeAvatar: string | null;
+  team: TeamType;
+  period: string;
+  periodType: PeriodType;
+  taskCount: number;
+  adoptionRate: number | null;
+  accuracyRate: number | null;
+  humanTimeSaved: number | null;
+}
+
+export interface DataSkillMetricRow {
+  id: string;
+  employeeId: string;
+  employeeName: string;
+  employeeAvatar: string | null;
+  team: TeamType;
+  skillId: string;
+  skillName: string;
+  category: string | null;
+  period: string;
+  invocationCount: number;
+  successRate: number | null;
+  avgResponseTime: number | null;
+}
+
+export interface DataTaskRow {
+  id: string;
+  employeeId: string;
+  employeeName: string;
+  employeeAvatar: string | null;
+  team: TeamType;
+  name: string;
+  type: string;
+  status: TaskStatus;
+  qualityScore: number | null;
+  tokenUsage: number | null;
+  estimatedCost: number | null;
+  retryCount: number | null;
+  startTime: Date | null;
+  actualEndTime: Date | null;
 }
