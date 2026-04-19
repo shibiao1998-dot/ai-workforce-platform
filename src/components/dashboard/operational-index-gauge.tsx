@@ -25,8 +25,8 @@ export function OperationalIndexGauge({ summary }: Props) {
         progress: { show: false },
         pointer: {
           show: true,
-          length: "60%",
-          width: 4,
+          length: "45%",
+          width: 3,
           itemStyle: { color: "#1e293b" },
         },
         axisLine: {
@@ -48,12 +48,12 @@ export function OperationalIndexGauge({ summary }: Props) {
           fontSize: 40,
           fontWeight: "bold",
           color: "#1e293b",
-          offsetCenter: [0, "-15%"],
+          offsetCenter: [0, "-25%"],
           formatter: "{value}",
         },
         title: {
           show: true,
-          offsetCenter: [0, "15%"],
+          offsetCenter: [0, "5%"],
           fontSize: 13,
           color: "#64748b",
         },

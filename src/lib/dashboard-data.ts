@@ -1,7 +1,7 @@
 import { db } from "@/db"
 import { employees, metrics, tasks, metricConfigs, skills } from "@/db/schema"
 import { calculateTaskXp, calculateStreakXp, calculateStreak, calculateTotalXp, calculateLevel, calculateAchievements } from "@/lib/gamification"
-import { eq, sql, and, gte, lt, isNull, desc } from "drizzle-orm"
+import { eq, sql, and, isNull, desc } from "drizzle-orm"
 import type {
   DashboardSummary,
   TeamStatus,
@@ -247,15 +247,13 @@ export async function getTeamEfficiencyTrend(months: string[]): Promise<TeamEffi
 export async function getHeatmapData(startDate: string, endDate: string): Promise<HeatmapEntry[]> {
   const startEpoch = Math.floor(new Date(startDate + "T00:00:00Z").getTime() / 1000)
   const endEpoch = Math.floor(new Date(endDate + "T23:59:59Z").getTime() / 1000)
-  const startTs = new Date(startEpoch * 1000)
-  const endTs = new Date(endEpoch * 1000)
 
   const activityRows = await db
     .select({
       employeeId: tasks.employeeId,
       employeeName: employees.name,
       team: employees.team,
-      date: sql<string>`date(${tasks.actualEndTime} / 1000, 'unixepoch')`,
+      date: sql<string>`date(${tasks.actualEndTime}, 'unixepoch')`,
       count: sql<number>`count(*)`,
     })
     .from(tasks)
@@ -263,11 +261,10 @@ export async function getHeatmapData(startDate: string, endDate: string): Promis
     .where(
       and(
         eq(tasks.status, "completed"),
-        gte(tasks.actualEndTime, startTs),
-        lt(tasks.actualEndTime, endTs)
+        sql`${tasks.actualEndTime} >= ${startEpoch} AND ${tasks.actualEndTime} <= ${endEpoch}`
       )
     )
-    .groupBy(tasks.employeeId, sql`date(${tasks.actualEndTime} / 1000, 'unixepoch')`)
+    .groupBy(tasks.employeeId, sql`date(${tasks.actualEndTime}, 'unixepoch')`)
 
   return activityRows.map((r) => ({
     employeeId: r.employeeId,
