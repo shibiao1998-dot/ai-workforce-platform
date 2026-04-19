@@ -1,116 +1,66 @@
-import { db } from "@/db";
-import { employees, metrics, tasks } from "@/db/schema";
-import { eq, sql } from "drizzle-orm";
-import { DashboardShell } from "@/components/dashboard/dashboard-shell";
+import { DashboardShell } from "@/components/dashboard/dashboard-shell"
+import {
+  getDashboardSummary,
+  getTeamStatus,
+  getKpiData,
+  getTeamEfficiencyTrend,
+  getHeatmapData,
+  getRecentTasks,
+} from "@/lib/dashboard-data"
 
-async function getSummary() {
-  const currentMonth = `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, "0")}`;
-
-  const [employeeCounts, monthlyAgg, taskAgg] = await Promise.all([
-    db
-      .select({
-        total: sql<number>`count(*)`,
-        active: sql<number>`sum(case when ${employees.status} = 'active' then 1 else 0 end)`,
-      })
-      .from(employees)
-      .get(),
-    db
-      .select({
-        totalTasks: sql<number>`sum(${metrics.taskCount})`,
-        avgAdoption: sql<number>`avg(${metrics.adoptionRate})`,
-        avgAccuracy: sql<number>`avg(${metrics.accuracyRate})`,
-        totalHoursSaved: sql<number>`sum(${metrics.humanTimeSaved})`,
-      })
-      .from(metrics)
-      .where(eq(metrics.period, currentMonth))
-      .get(),
-    db
-      .select({ count: sql<number>`count(distinct ${tasks.type})` })
-      .from(tasks)
-      .get(),
-  ]);
-
-  const hoursSaved = monthlyAgg?.totalHoursSaved ?? 0;
-  const costPerHour = 46.875;
-
-  return {
-    totalEmployees: employeeCounts?.total ?? 0,
-    activeEmployees: employeeCounts?.active ?? 0,
-    activeRate: employeeCounts?.total ? (employeeCounts.active / employeeCounts.total) : 0,
-    monthlyTaskCount: monthlyAgg?.totalTasks ?? 0,
-    humanTimeSavedHours: Math.round(hoursSaved * 10) / 10,
-    humanTimeSavedCost: Math.round(hoursSaved * costPerHour),
-    avgAdoptionRate: monthlyAgg?.avgAdoption ?? 0,
-    avgAccuracyRate: monthlyAgg?.avgAccuracy ?? 0,
-    projectsCovered: taskAgg?.count ?? 0,
-  };
+function getCurrentMonth(): string {
+  const now = new Date()
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`
 }
 
-async function getTeamComparison() {
-  const currentMonth = `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, "0")}`;
-
-  const rows = await db
-    .select({
-      team: employees.team,
-      totalTasks: sql<number>`sum(${metrics.taskCount})`,
-      avgAdoption: sql<number>`avg(${metrics.adoptionRate})`,
-      avgAccuracy: sql<number>`avg(${metrics.accuracyRate})`,
-      totalHoursSaved: sql<number>`sum(${metrics.humanTimeSaved})`,
-      employeeCount: sql<number>`count(distinct ${employees.id})`,
-    })
-    .from(metrics)
-    .innerJoin(employees, eq(metrics.employeeId, employees.id))
-    .where(eq(metrics.period, currentMonth))
-    .groupBy(employees.team);
-
-  const TEAM_LABEL: Record<string, string> = {
-    management: "管理团队",
-    design: "设计师团队",
-    production: "生产团队",
-  };
-
-  return rows.map((r) => ({
-    team: r.team,
-    label: TEAM_LABEL[r.team] ?? r.team,
-    totalTasks: r.totalTasks ?? 0,
-    avgAdoptionRate: Math.round((r.avgAdoption ?? 0) * 100),
-    avgAccuracyRate: Math.round((r.avgAccuracy ?? 0) * 100),
-    totalHoursSaved: Math.round((r.totalHoursSaved ?? 0) * 10) / 10,
-    employeeCount: r.employeeCount ?? 0,
-  }));
+function getPrevMonth(current: string): string {
+  const [y, m] = current.split("-").map(Number)
+  if (m === 1) return `${y - 1}-12`
+  return `${y}-${String(m - 1).padStart(2, "0")}`
 }
 
-async function getHeatmap() {
-  const completedTasks = await db
-    .select({
-      employeeId: tasks.employeeId,
-      date: sql<string>`date(${tasks.actualEndTime}, 'unixepoch')`,
-      count: sql<number>`count(*)`,
-    })
-    .from(tasks)
-    .where(eq(tasks.status, "completed"))
-    .groupBy(tasks.employeeId, sql`date(${tasks.actualEndTime}, 'unixepoch')`);
+function getLastNMonths(n: number): string[] {
+  const months: string[] = []
+  const now = new Date()
+  for (let i = n - 1; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1)
+    months.push(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`)
+  }
+  return months
+}
 
-  const empRows = await db
-    .select({ id: employees.id, name: employees.name, team: employees.team })
-    .from(employees)
-    .orderBy(employees.team, employees.name);
-
-  return { employees: empRows, activity: completedTasks };
+function getDateRange(days: number): { startDate: string; endDate: string } {
+  const end = new Date()
+  const start = new Date(Date.now() - (days - 1) * 86400000)
+  const fmt = (d: Date) => d.toISOString().slice(0, 10)
+  return { startDate: fmt(start), endDate: fmt(end) }
 }
 
 export default async function DashboardPage() {
-  const [summary, teamComparison, heatmap] = await Promise.all([
-    getSummary(),
-    getTeamComparison(),
-    getHeatmap(),
-  ]);
+  const currentMonth = getCurrentMonth()
+  const prevMonth = getPrevMonth(currentMonth)
+  const last5Months = getLastNMonths(5)
+  const { startDate, endDate } = getDateRange(30)
+
+  const [summary, teamStatus, kpiItems, efficiencyTrend, heatmapData, recentTasks] =
+    await Promise.all([
+      getDashboardSummary(currentMonth),
+      getTeamStatus(),
+      getKpiData(currentMonth, prevMonth),
+      getTeamEfficiencyTrend(last5Months),
+      getHeatmapData(startDate, endDate),
+      getRecentTasks(8),
+    ])
 
   return (
     <DashboardShell
       summary={summary}
-      teamComparison={teamComparison}
-      heatmap={heatmap}
+      teamStatus={teamStatus}
+      kpiItems={kpiItems}
+      efficiencyTrend={efficiencyTrend}
+      heatmapData={heatmapData}
+      leaderboard={[]}
+      recentTasks={recentTasks}
     />
-  );
+  )
 }

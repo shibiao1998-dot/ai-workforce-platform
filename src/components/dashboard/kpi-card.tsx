@@ -1,65 +1,89 @@
-"use client";
+"use client"
 
-import { Card, CardContent } from "@/components/ui/card";
-import { TrendingUp, TrendingDown, Minus } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { useCountUp } from "@/hooks/use-count-up";
+import { useCountUp } from "@/hooks/use-count-up"
+import { cn } from "@/lib/utils"
+import type { KpiItem } from "@/lib/dashboard-types"
 
 interface KpiCardProps {
-  title: string;
-  numericValue: number;
-  displaySuffix?: string;
-  displayPrefix?: string;
-  decimals?: number;
-  subtitle?: string;
-  trend?: "up" | "down" | "neutral";
-  trendLabel?: string;
-  accent?: "blue" | "green" | "yellow" | "purple" | "red";
+  item: KpiItem
+  onClick: () => void
 }
 
-const ACCENT_CLASSES = {
-  blue: "text-[#2563eb]",
-  green: "text-[#16a34a]",
-  yellow: "text-[#d97706]",
-  purple: "text-[#7c3aed]",
-  red: "text-[#dc2626]",
-};
+function buildSparklinePoints(value: number, trendPct: number): number[] {
+  const points: number[] = []
+  const base = value / (1 + trendPct / 100) || value
+  for (let i = 0; i < 5; i++) {
+    points.push(Math.max(0, base * (0.85 + Math.random() * 0.3)))
+  }
+  points.push(value)
+  return points
+}
 
-export function KpiCard({
-  title,
-  numericValue,
-  displaySuffix = "",
-  displayPrefix = "",
-  decimals = 0,
-  subtitle,
-  trend,
-  trendLabel,
-  accent = "blue",
-}: KpiCardProps) {
-  const animated = useCountUp(numericValue, 1200, decimals);
-  const TrendIcon = trend === "up" ? TrendingUp : trend === "down" ? TrendingDown : Minus;
-  const trendColor = trend === "up" ? "text-green-600" : trend === "down" ? "text-red-600" : "text-muted-foreground";
+function MiniSparkline({ value, trendPct, color }: { value: number; trendPct: number; color: string }) {
+  const raw = buildSparklinePoints(value, trendPct)
+  const max = Math.max(...raw, 1)
+  const min = Math.min(...raw, 0)
+  const range = max - min || 1
+  const W = 80
+  const H = 32
+  const pts = raw
+    .map((v, i) => {
+      const x = (i / (raw.length - 1)) * W
+      const y = H - ((v - min) / range) * H
+      return `${x},${y}`
+    })
+    .join(" ")
 
   return (
-    <Card className="relative overflow-hidden group hover:-translate-y-0.5 transition-transform duration-200">
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent pointer-events-none" />
-      <div
-        className="absolute inset-0 rounded-[inherit] opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
-        style={{ boxShadow: "inset 0 0 0 1px rgba(37,99,235,0.2)" }}
-      />
-      <CardContent className="p-5">
-        <p className="text-xs uppercase tracking-wide text-muted-foreground mb-2">{title}</p>
-        <p className={cn("text-3xl font-bold tabular-nums", ACCENT_CLASSES[accent])}>
-          {displayPrefix}{animated}{displaySuffix}
-        </p>
-        {subtitle && <p className="text-xs text-muted-foreground mt-1">{subtitle}</p>}
-        {trend && trendLabel && (
-          <div className={cn("flex items-center gap-1 mt-2 text-xs", trendColor)}>
-            <TrendIcon className="h-3 w-3" />
-            <span>{trendLabel}</span>
-          </div>
-        )}
-      </CardContent>
-    </Card>
-  );
+    <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} fill="none">
+      <polyline points={pts} stroke={color} strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
+const TREND_COLOR = { up: "#16a34a", down: "#dc2626", neutral: "#64748b" } as const
+const TREND_SYMBOL = { up: "↑", down: "↓", neutral: "→" } as const
+
+export function KpiCard({ item, onClick }: KpiCardProps) {
+  const decimals = item.displayPrefix === "¥" ? 0 : 0
+  const animated = useCountUp(item.value, 1200, decimals)
+  const trendColor = TREND_COLOR[item.trendDirection]
+  const sparkColor = item.trendDirection === "down" ? "#dc2626" : "#6366f1"
+
+  return (
+    <div
+      onClick={onClick}
+      className={cn(
+        "group relative overflow-hidden rounded-2xl p-5 cursor-pointer",
+        "transition-all duration-200 hover:-translate-y-0.5",
+        item.href ? "hover:shadow-[0_8px_32px_rgba(0,0,0,0.10)]" : "cursor-default"
+      )}
+      style={{
+        background: "rgba(255,255,255,0.75)",
+        backdropFilter: "blur(12px)",
+        border: "1px solid rgba(255,255,255,0.8)",
+        boxShadow: "0 4px 24px rgba(0,0,0,0.06), 0 1px 4px rgba(0,0,0,0.04)",
+      }}
+    >
+      <div className="flex items-center gap-2 mb-2">
+        <span className="text-2xl leading-none">{item.emoji}</span>
+        <p className="text-xs text-[#64748b] font-medium truncate">{item.label}</p>
+      </div>
+      <p className="text-[28px] font-bold text-[#1e293b] tabular-nums leading-none mb-2">
+        {item.displayPrefix}{animated}{item.displaySuffix}
+      </p>
+      <div className="flex items-end justify-between gap-2">
+        <div className="flex items-center gap-1 text-xs font-medium" style={{ color: trendColor }}>
+          <span>{TREND_SYMBOL[item.trendDirection]}</span>
+          <span>{Math.abs(item.trendPct).toFixed(1)}% 环比</span>
+        </div>
+        <MiniSparkline value={item.value} trendPct={item.trendPct} color={sparkColor} />
+      </div>
+      {item.href && (
+        <div className="absolute bottom-2 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+          <span className="text-xs text-indigo-500">点击跳转 →</span>
+        </div>
+      )}
+    </div>
+  )
 }

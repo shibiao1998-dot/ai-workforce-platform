@@ -1,47 +1,113 @@
-"use client";
+"use client"
 
-import { KpiSection } from "./kpi-section";
-import { TeamComparisonChart } from "./team-comparison-chart";
-import { ActivityHeatmap } from "./activity-heatmap";
-import { TaskFeed } from "./task-feed";
+import { useState } from "react"
+import { useRouter } from "next/navigation"
+import { KpiSection } from "./kpi-section"
+import { TeamComparisonChart } from "./team-comparison-chart"
+import { ActivityHeatmap } from "./activity-heatmap"
+import { TaskFeed } from "./task-feed"
+import { OperationalIndexGauge } from "./operational-index-gauge"
+import { TeamStatusPanel } from "./team-status-panel"
+import { LeaderboardPanel } from "./leaderboard-panel"
+import { AchievementFeed } from "./achievement-feed"
+import type {
+  DashboardSummary,
+  TeamStatus,
+  KpiItem,
+  TeamEfficiencyPoint,
+  HeatmapEntry,
+  LeaderboardEntry,
+  RecentTaskEntry,
+} from "@/lib/dashboard-types"
 
 interface DashboardShellProps {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  summary: any;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  teamComparison: any[];
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  heatmap: any;
+  summary: DashboardSummary
+  teamStatus: TeamStatus[]
+  kpiItems: KpiItem[]
+  efficiencyTrend: TeamEfficiencyPoint[]
+  heatmapData: HeatmapEntry[]
+  leaderboard: LeaderboardEntry[]
+  recentTasks: RecentTaskEntry[]
 }
 
-export function DashboardShell({ summary, teamComparison, heatmap }: DashboardShellProps) {
+export function DashboardShell({
+  summary,
+  teamStatus,
+  kpiItems,
+  efficiencyTrend,
+  heatmapData,
+  leaderboard,
+  recentTasks,
+}: DashboardShellProps) {
+  const router = useRouter()
+  const [selectedTeam, setSelectedTeam] = useState<string | null>(null)
+
+  function handleTeamClick(team: string) {
+    setSelectedTeam((prev) => (prev === team ? null : team))
+  }
+
+  function handleEmployeeClick(employeeId: string) {
+    console.log("employee clicked:", employeeId)
+  }
+
+  function handleKpiNavigate(href: string | null) {
+    if (href) router.push(href)
+  }
+
   return (
-    <div className="p-8 space-y-8">
-      {/* Header */}
-      <div className="animate-fade-in-up">
-        <h1 className="text-3xl font-bold text-foreground">AI 驾驶舱</h1>
-        <p className="text-muted-foreground mt-1">AI团队全局视图 · 实时数据</p>
+    <div
+      className="min-h-screen p-6"
+      style={{ background: "linear-gradient(135deg, #f0f4f8, #e8eef5)" }}
+    >
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold text-[#1e293b]">AI 驾驶舱</h1>
+        <p className="text-[#64748b] mt-1 text-sm">AI团队运营全景 · 实时数据驱动</p>
       </div>
 
-      {/* KPI Cards */}
-      <div className="animate-fade-in-up animate-delay-100">
-        <KpiSection data={summary} />
+      <div className="grid grid-cols-5 gap-4 mb-4">
+        <div className="col-span-3">
+          <OperationalIndexGauge summary={summary} />
+        </div>
+        <div className="col-span-2">
+          <TeamStatusPanel teamStatus={teamStatus} />
+        </div>
       </div>
 
-      {/* Team comparison */}
-      <div className="animate-fade-in-up animate-delay-200">
-        <TeamComparisonChart data={teamComparison} />
+      <div className="mb-4">
+        <KpiSection kpiItems={kpiItems} onNavigate={handleKpiNavigate} />
       </div>
 
-      {/* Heatmap + Feed */}
-      <div className="animate-fade-in-up animate-delay-300 grid grid-cols-1 gap-6 xl:grid-cols-3">
-        <div className="xl:col-span-2">
-          <ActivityHeatmap data={heatmap} />
+      <div className="grid grid-cols-3 gap-4 mb-4">
+        <div className="col-span-2">
+          <TeamComparisonChart
+            data={efficiencyTrend}
+            selectedTeam={selectedTeam}
+            onTeamClick={handleTeamClick}
+          />
+        </div>
+        <div className="col-span-1">
+          <LeaderboardPanel
+            entries={leaderboard}
+            onEmployeeClick={handleEmployeeClick}
+          />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-3 gap-4">
+        <div>
+          <ActivityHeatmap
+            data={heatmapData}
+            filterTeam={selectedTeam}
+            onEmployeeClick={handleEmployeeClick}
+          />
         </div>
         <div>
-          <TaskFeed />
+          <AchievementFeed achievements={[]} />
+        </div>
+        <div>
+          <TaskFeed tasks={recentTasks} />
         </div>
       </div>
     </div>
-  );
+  )
 }

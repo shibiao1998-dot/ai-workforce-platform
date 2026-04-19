@@ -1,107 +1,79 @@
-"use client";
+"use client"
 
-import ReactECharts from "echarts-for-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import ReactECharts from "echarts-for-react"
+import type { TeamEfficiencyPoint } from "@/lib/dashboard-types"
 
-interface TeamData {
-  team: string;
-  label: string;
-  totalTasks: number;
-  avgAdoptionRate: number;
-  avgAccuracyRate: number;
-  totalHoursSaved: number;
-  employeeCount: number;
+interface Props {
+  data: TeamEfficiencyPoint[]
+  selectedTeam: string | null
+  onTeamClick: (team: string) => void
 }
 
-export function TeamComparisonChart({ data }: { data: TeamData[] }) {
-  const labels = data.map((d) => d.label);
+const TEAM_COLORS: Record<string, string> = {
+  management: "#8b5cf6",
+  design: "#3b82f6",
+  production: "#22c55e",
+}
 
-  const barOption = {
+const TEAM_LABELS: Record<string, string> = {
+  management: "管理团队",
+  design: "设计师团队",
+  production: "生产团队",
+}
+
+const TEAMS = ["management", "design", "production"] as const
+
+export function TeamComparisonChart({ data, selectedTeam, onTeamClick }: Props) {
+  const months = data.map((d) => d.month)
+
+  function getOpacity(team: string): number {
+    if (!selectedTeam) return 1
+    return selectedTeam === team ? 1 : 0.3
+  }
+
+  const series = TEAMS.map((team) => ({
+    name: TEAM_LABELS[team],
+    type: "bar" as const,
+    data: data.map((d) => d[team]),
+    itemStyle: { color: TEAM_COLORS[team], borderRadius: [4, 4, 0, 0], opacity: getOpacity(team) },
+    barMaxWidth: 32,
+    emphasis: { itemStyle: { opacity: 1 } },
+  }))
+
+  const option = {
     backgroundColor: "transparent",
     tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
-    legend: {
-      data: ["任务总量", "节省人力(h)"],
-      textStyle: { color: "#475569" },
-      top: 0,
-    },
-    grid: { left: "3%", right: "4%", bottom: "3%", containLabel: true },
-    xAxis: {
-      type: "category",
-      data: labels,
-      axisLabel: { color: "#64748b" },
-      axisLine: { lineStyle: { color: "#cbd5e1" } },
-    },
-    yAxis: {
-      type: "value",
-      axisLabel: { color: "#64748b" },
-      splitLine: { lineStyle: { color: "#e2e8f0" } },
-    },
-    series: [
-      {
-        name: "任务总量",
-        type: "bar",
-        data: data.map((d) => d.totalTasks),
-        itemStyle: { color: "#2563eb", borderRadius: [4, 4, 0, 0] },
-        barMaxWidth: 60,
-      },
-      {
-        name: "节省人力(h)",
-        type: "bar",
-        data: data.map((d) => d.totalHoursSaved),
-        itemStyle: { color: "#16a34a", borderRadius: [4, 4, 0, 0] },
-        barMaxWidth: 60,
-      },
-    ],
-  };
+    legend: { data: TEAMS.map((t) => TEAM_LABELS[t]), textStyle: { color: "#64748b", fontSize: 12 }, top: 0 },
+    grid: { left: "3%", right: "4%", bottom: "3%", top: 36, containLabel: true },
+    xAxis: { type: "category", data: months, axisLabel: { color: "#64748b", fontSize: 11 }, axisLine: { lineStyle: { color: "#e2e8f0" } }, axisTick: { show: false } },
+    yAxis: { type: "value", axisLabel: { color: "#64748b", fontSize: 11 }, splitLine: { lineStyle: { color: "#e2e8f0", type: "dashed" } } },
+    series,
+  }
 
-  const radarOption = {
-    backgroundColor: "transparent",
-    tooltip: {},
-    radar: {
-      indicator: [
-        { name: "任务量", max: Math.max(...data.map((d) => d.totalTasks)) * 1.2 },
-        { name: "采纳率", max: 100 },
-        { name: "准确率", max: 100 },
-        { name: "节省人力", max: Math.max(...data.map((d) => d.totalHoursSaved)) * 1.2 },
-      ],
-      axisLine: { lineStyle: { color: "#cbd5e1" } },
-      splitLine: { lineStyle: { color: "#e2e8f0" } },
-      name: { textStyle: { color: "#64748b" } },
-    },
-    series: [
-      {
-        type: "radar",
-        data: data.map((d) => ({
-          name: d.label,
-          value: [d.totalTasks, d.avgAdoptionRate, d.avgAccuracyRate, d.totalHoursSaved],
-        })),
-        symbol: "circle",
-        symbolSize: 6,
-        lineStyle: { width: 2 },
-        areaStyle: { opacity: 0.15 },
-      },
-    ],
-    color: ["#2563eb", "#16a34a", "#d97706"],
-  };
+  function handleChartClick(params: { seriesName?: string }) {
+    const teamEntry = Object.entries(TEAM_LABELS).find(([, label]) => label === params.seriesName)
+    if (teamEntry) onTeamClick(teamEntry[0])
+  }
 
   return (
-    <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-      <Card>
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-medium text-muted-foreground">三团队任务对比</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ReactECharts option={barOption} style={{ height: 280 }} />
-        </CardContent>
-      </Card>
-      <Card>
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-medium text-muted-foreground">能力雷达图</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ReactECharts option={radarOption} style={{ height: 280 }} />
-        </CardContent>
-      </Card>
+    <div
+      className="rounded-2xl p-5"
+      style={{
+        background: "rgba(255,255,255,0.75)",
+        backdropFilter: "blur(12px)",
+        border: "1px solid rgba(255,255,255,0.8)",
+        boxShadow: "0 4px 24px rgba(0,0,0,0.06), 0 1px 4px rgba(0,0,0,0.04)",
+      }}
+    >
+      <div className="flex items-center justify-between mb-3">
+        <h3 className="text-sm font-semibold text-[#1e293b]">团队效能对比</h3>
+        {selectedTeam && (
+          <button onClick={() => onTeamClick(selectedTeam)} className="text-xs text-indigo-500 hover:underline">
+            清除筛选
+          </button>
+        )}
+      </div>
+      <ReactECharts option={option} style={{ height: 280 }} onEvents={{ click: handleChartClick }} />
     </div>
-  );
+  )
 }
