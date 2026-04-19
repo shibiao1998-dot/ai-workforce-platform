@@ -15,47 +15,45 @@ export function OperationalIndexGauge({ summary }: Props) {
     series: [
       {
         type: "gauge",
-        startAngle: 180,
-        endAngle: 0,
+        startAngle: 225,
+        endAngle: -45,
         min: 0,
         max: 100,
-        radius: "90%",
-        center: ["50%", "70%"],
-        splitNumber: 5,
-        progress: { show: false },
-        pointer: {
+        radius: "85%",
+        center: ["50%", "55%"],
+        pointer: { show: false },
+        anchor: { show: false },
+        progress: {
           show: true,
-          length: "45%",
-          width: 3,
-          itemStyle: { color: "#1e293b" },
+          width: 20,
+          roundCap: true,
+          itemStyle: {
+            color: score >= 80 ? "#22c55e" : score >= 60 ? "#eab308" : "#ef4444",
+          },
         },
         axisLine: {
           lineStyle: {
-            width: 18,
-            color: [
-              [0.6, "#f97316"],
-              [0.8, "#eab308"],
-              [1.0, "#22c55e"],
-            ],
+            width: 20,
+            color: [[1, "#f1f5f9"]],
           },
         },
         axisTick: { show: false },
         splitLine: { show: false },
         axisLabel: { show: false },
-        anchor: { show: true, size: 12, itemStyle: { color: "#1e293b" } },
         detail: {
           valueAnimation: true,
-          fontSize: 40,
+          fontSize: 48,
           fontWeight: "bold",
           color: "#1e293b",
-          offsetCenter: [0, "-25%"],
+          offsetCenter: [0, "-5%"],
           formatter: "{value}",
         },
         title: {
           show: true,
-          offsetCenter: [0, "5%"],
-          fontSize: 13,
+          offsetCenter: [0, "25%"],
+          fontSize: 14,
           color: "#64748b",
+          fontWeight: 500,
         },
         data: [{ value: score, name: "综合运营指数" }],
       },
@@ -64,7 +62,7 @@ export function OperationalIndexGauge({ summary }: Props) {
 
   return (
     <div
-      className="relative rounded-2xl p-5 h-full flex flex-col"
+      className="rounded-2xl p-5 h-full flex flex-col"
       style={{
         background: "rgba(255,255,255,0.75)",
         backdropFilter: "blur(12px)",
@@ -72,17 +70,6 @@ export function OperationalIndexGauge({ summary }: Props) {
         boxShadow: "0 4px 24px rgba(0,0,0,0.06), 0 1px 4px rgba(0,0,0,0.04)",
       }}
     >
-      <div
-        className="absolute inset-0 rounded-2xl pointer-events-none"
-        style={{ animation: "gaugeBreath 2s ease-in-out infinite" }}
-      />
-      <style>{`
-        @keyframes gaugeBreath {
-          0%, 100% { box-shadow: 0 0 0 0 rgba(99,102,241,0.15); }
-          50% { box-shadow: 0 0 24px 4px rgba(99,102,241,0.25); }
-        }
-      `}</style>
-
       <ReactECharts option={option} style={{ height: 220, flex: "1 0 auto" }} />
 
       <div className="grid grid-cols-3 gap-3 mt-2 pt-3 border-t border-white/60">
