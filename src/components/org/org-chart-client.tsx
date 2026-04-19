@@ -24,12 +24,12 @@ import { EmployeeDetailModal } from "@/components/shared/employee-detail-modal"
 // ── Layout constants ──────────────────────────────────────────────────────────
 const TEAM_X: Record<string, number> = {
   management: 0,
-  design: 700,
-  production: 1400,
+  design: 900,
+  production: 1800,
 }
-const COL_WIDTH = 200
-const ROW_HEIGHT = 220
-const ROOT_X = (0 + 700 + 1400) / 2 // 700 — center of the three teams
+const COL_WIDTH = 220
+const ROW_HEIGHT = 240
+const ROOT_X = (0 + 900 + 1800) / 3 // 900 — center of the three teams
 
 const TEAM_COLOR: Record<string, string> = {
   management: "#7c3aed",
@@ -222,7 +222,7 @@ function buildOrgLayout(
       })
     } else {
       // ── No managers: layout all employees in a grid under team header ────
-      const MAX_COLS_DIRECT = 4
+      const MAX_COLS_DIRECT = 3
       const allWidth = (Math.min(members.length, MAX_COLS_DIRECT) - 1) * COL_WIDTH
       const allStartX = teamX - allWidth / 2
 

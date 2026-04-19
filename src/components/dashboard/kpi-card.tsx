@@ -11,9 +11,11 @@ interface KpiCardProps {
 
 function buildSparklinePoints(value: number, trendPct: number): number[] {
   const points: number[] = []
-  const base = value / (1 + trendPct / 100) || value
+  const base = trendPct !== 0 ? value / (1 + trendPct / 100) : value
   for (let i = 0; i < 5; i++) {
-    points.push(Math.max(0, base * (0.85 + Math.random() * 0.3)))
+    // Deterministic variation based on index instead of Math.random()
+    const variation = 0.85 + ((i * 7 + 3) % 10) / 33
+    points.push(Math.max(0, base * variation))
   }
   points.push(value)
   return points
