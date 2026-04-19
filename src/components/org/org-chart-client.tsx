@@ -17,18 +17,25 @@ import { EmployeeNode } from "./employee-node"
 import { OrgControls } from "./org-controls"
 import { OrgLegend } from "./org-legend"
 import type { EmployeeNodeData, NodeSize } from "./types"
-import { getNodeSize, NODE_WIDTH, NODE_HEIGHT } from "./types"
+import { getNodeSize, NODE_WIDTH } from "./types"
+import type { NodeTypes } from "@xyflow/react"
 import { EmployeeDetailModal } from "@/components/shared/employee-detail-modal"
 
 // ── Layout constants ──────────────────────────────────────────────────────────
 const TEAM_X: Record<string, number> = {
-  management: 300,
-  design: 850,
+  management: 0,
+  design: 700,
   production: 1400,
 }
-const COL_WIDTH = 170
-const ROW_HEIGHT = 200
-const MAX_COLS = 4
+const COL_WIDTH = 200
+const ROW_HEIGHT = 220
+const ROOT_X = (0 + 700 + 1400) / 2 // 700 — center of the three teams
+
+const TEAM_COLOR: Record<string, string> = {
+  management: "#7c3aed",
+  design: "#2563eb",
+  production: "#16a34a",
+}
 
 const TEAM_MINIMAP_COLOR: Record<string, string> = {
   management: "#7c3aed",
@@ -36,7 +43,7 @@ const TEAM_MINIMAP_COLOR: Record<string, string> = {
   production: "#16a34a",
 }
 
-const nodeTypes = { employee: EmployeeNode }
+const nodeTypes: NodeTypes = { employee: EmployeeNode }
 
 // ── Layout builder ────────────────────────────────────────────────────────────
 function buildOrgLayout(
@@ -60,51 +67,196 @@ function buildOrgLayout(
   const nodes: Node[] = []
   const edges: Edge[] = []
 
-  for (const [team, members] of Object.entries(byTeam)) {
-    const baseX = TEAM_X[team] ?? 300
+  // ── Root node ──────────────────────────────────────────────────────────────
+  nodes.push({
+    id: "root",
+    type: "default",
+    position: { x: ROOT_X - 90, y: 0 },
+    data: { label: "AI Workforce Platform" },
+    style: {
+      background: "#1e1b4b",
+      color: "#fff",
+      border: "none",
+      borderRadius: 8,
+      fontSize: 13,
+      fontWeight: 700,
+      padding: "6px 16px",
+      width: 180,
+      textAlign: "center",
+    },
+    selectable: false,
+    draggable: false,
+  })
 
-    // Team label node
+  for (const [team, members] of Object.entries(byTeam)) {
+    const teamX = TEAM_X[team] ?? 0
+    const teamColor = TEAM_COLOR[team] ?? "#888"
+    const teamLabel =
+      team === "management" ? "管理团队" : team === "design" ? "设计团队" : "生产团队"
+
+    // ── Team header node ────────────────────────────────────────────────────
     nodes.push({
       id: `team-${team}`,
       type: "default",
-      position: { x: baseX - 60, y: 0 },
-      data: { label: team === "management" ? "管理团队" : team === "design" ? "设计团队" : "生产团队" },
+      position: { x: teamX - 50, y: 200 },
+      data: { label: teamLabel },
       style: {
         background: "transparent",
-        border: "none",
+        border: `2px solid ${teamColor}`,
+        borderRadius: 6,
         fontSize: 13,
         fontWeight: 700,
-        color: team === "management" ? "#7c3aed" : team === "design" ? "#2563eb" : "#16a34a",
-        padding: 0,
+        color: teamColor,
+        padding: "4px 14px",
+        width: 100,
+        textAlign: "center",
       },
       selectable: false,
       draggable: false,
     })
 
-    // Employee nodes in grid
-    members.forEach((emp, idx) => {
-      const col = idx % MAX_COLS
-      const row = Math.floor(idx / MAX_COLS)
-      const size: NodeSize = getNodeSize(emp.title, emp.status)
-      const w = NODE_WIDTH[size]
-
-      const x = baseX + col * COL_WIDTH - w / 2
-      const y = 50 + row * ROW_HEIGHT
-
-      const isHighlighted = highlightId === emp.id
-
-      nodes.push({
-        id: emp.id,
-        type: "employee",
-        position: { x, y },
-        data: emp as unknown as Record<string, unknown>,
-        style: {
-          opacity: 1,
-          outline: isHighlighted ? "2px solid #f59e0b" : "none",
-          borderRadius: 10,
-        },
-      })
+    // Root → team header (dashed gray)
+    edges.push({
+      id: `root-${team}`,
+      source: "root",
+      target: `team-${team}`,
+      style: { stroke: "#9ca3af", strokeDasharray: "5,4", strokeWidth: 1.5 },
+      animated: false,
     })
+
+    // ── Split into managers and regular employees ──────────────────────────
+    const managers = members.filter(
+      (e) =>
+        e.title.includes("总监") ||
+        e.title.includes("负责人") ||
+        e.title.includes("经理") ||
+        e.title.includes("主管"),
+    )
+    const regular = members.filter((e) => !managers.includes(e))
+
+    if (managers.length > 0) {
+      // ── Lay out managers horizontally centered under team header ──────────
+      const managerSpacing = COL_WIDTH
+      const managersWidth = (managers.length - 1) * managerSpacing
+      const managersStartX = teamX - managersWidth / 2
+
+      managers.forEach((mgr, mIdx) => {
+        const size: NodeSize = getNodeSize(mgr.title, mgr.status)
+        const w = NODE_WIDTH[size]
+        const mx = managersStartX + mIdx * managerSpacing - w / 2
+        const isHighlighted = highlightId === mgr.id
+
+        nodes.push({
+          id: mgr.id,
+          type: "employee",
+          position: { x: mx, y: 450 },
+          data: mgr as unknown as Record<string, unknown>,
+          style: {
+            opacity: 1,
+            outline: isHighlighted ? "2px solid #f59e0b" : "none",
+            borderRadius: 10,
+          },
+        })
+
+        // Team header → manager (solid, thick)
+        edges.push({
+          id: `team-${team}-${mgr.id}`,
+          source: `team-${team}`,
+          target: mgr.id,
+          style: { stroke: teamColor, strokeWidth: 2 },
+          animated: false,
+        })
+      })
+
+      // ── Distribute regular employees among managers ────────────────────
+      // Assign round-robin so each manager gets roughly equal employees
+      const groups: EmployeeNodeData[][] = managers.map(() => [])
+      regular.forEach((emp, i) => {
+        groups[i % managers.length].push(emp)
+      })
+
+      groups.forEach((group, mIdx) => {
+        if (group.length === 0) return
+        const mgr = managers[mIdx]
+        const mgrSize: NodeSize = getNodeSize(mgr.title, mgr.status)
+        const mgrW = NODE_WIDTH[mgrSize]
+        // Manager center X (account for the -w/2 offset applied above)
+        const managersWidth2 = (managers.length - 1) * COL_WIDTH
+        const managersStartX2 = teamX - managersWidth2 / 2
+        const mgrCenterX = managersStartX2 + mIdx * COL_WIDTH - mgrW / 2 + mgrW / 2
+
+        const MAX_COLS_REG = 3
+        const groupWidth = (Math.min(group.length, MAX_COLS_REG) - 1) * COL_WIDTH
+        const groupStartX = mgrCenterX - groupWidth / 2
+
+        group.forEach((emp, eIdx) => {
+          const col = eIdx % MAX_COLS_REG
+          const row = Math.floor(eIdx / MAX_COLS_REG)
+          const size: NodeSize = getNodeSize(emp.title, emp.status)
+          const w = NODE_WIDTH[size]
+          const ex = groupStartX + col * COL_WIDTH - w / 2
+          const ey = 700 + row * ROW_HEIGHT
+          const isHighlighted = highlightId === emp.id
+
+          nodes.push({
+            id: emp.id,
+            type: "employee",
+            position: { x: ex, y: ey },
+            data: emp as unknown as Record<string, unknown>,
+            style: {
+              opacity: 1,
+              outline: isHighlighted ? "2px solid #f59e0b" : "none",
+              borderRadius: 10,
+            },
+          })
+
+          // Manager → employee (solid, thin)
+          edges.push({
+            id: `${mgr.id}-${emp.id}`,
+            source: mgr.id,
+            target: emp.id,
+            style: { stroke: teamColor, strokeWidth: 1.5 },
+            animated: false,
+          })
+        })
+      })
+    } else {
+      // ── No managers: layout all employees in a grid under team header ────
+      const MAX_COLS_DIRECT = 4
+      const allWidth = (Math.min(members.length, MAX_COLS_DIRECT) - 1) * COL_WIDTH
+      const allStartX = teamX - allWidth / 2
+
+      members.forEach((emp, idx) => {
+        const col = idx % MAX_COLS_DIRECT
+        const row = Math.floor(idx / MAX_COLS_DIRECT)
+        const size: NodeSize = getNodeSize(emp.title, emp.status)
+        const w = NODE_WIDTH[size]
+        const ex = allStartX + col * COL_WIDTH - w / 2
+        const ey = 450 + row * ROW_HEIGHT
+        const isHighlighted = highlightId === emp.id
+
+        nodes.push({
+          id: emp.id,
+          type: "employee",
+          position: { x: ex, y: ey },
+          data: emp as unknown as Record<string, unknown>,
+          style: {
+            opacity: 1,
+            outline: isHighlighted ? "2px solid #f59e0b" : "none",
+            borderRadius: 10,
+          },
+        })
+
+        // Team header → employee
+        edges.push({
+          id: `team-${team}-${emp.id}`,
+          source: `team-${team}`,
+          target: emp.id,
+          style: { stroke: teamColor, strokeWidth: 1.5 },
+          animated: false,
+        })
+      })
+    }
   }
 
   return { nodes, edges }
