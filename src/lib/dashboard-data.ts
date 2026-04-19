@@ -98,7 +98,7 @@ export async function getTeamStatus(): Promise<TeamStatus[]> {
       teamLabel: TEAM_LABEL[r.team] ?? r.team,
       activeCount: active,
       totalCount: total,
-      healthRate: total > 0 ? Math.round((active / total) * 100) : 0,
+      healthRate: total > 0 ? active / total : 0,
     }
   })
 }
