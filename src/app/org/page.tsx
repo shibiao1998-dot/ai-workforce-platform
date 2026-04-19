@@ -1,35 +1,102 @@
-import { db } from "@/db";
-import { employees } from "@/db/schema";
-import { OrgChart } from "@/components/org/org-chart";
+import { db } from "@/db"
+import { employees, tasks } from "@/db/schema"
+import { OrgChartClient } from "@/components/org/org-chart-client"
+import type { EmployeeNodeData } from "@/components/org/types"
+import type { EmployeePersona } from "@/lib/types"
+import { calculateTaskXp, calculateLevel, calculateStreak } from "@/lib/gamification"
 
-async function getEmployees() {
-  const rows = await db
+async function getEnrichedEmployees(): Promise<EmployeeNodeData[]> {
+  const employeeRows = await db
     .select({
       id: employees.id,
       name: employees.name,
       title: employees.title,
       team: employees.team,
       status: employees.status,
+      avatar: employees.avatar,
+      persona: employees.persona,
     })
-    .from(employees);
+    .from(employees)
 
-  return rows;
+  const taskRows = await db
+    .select({
+      employeeId: tasks.employeeId,
+      qualityScore: tasks.qualityScore,
+      actualEndTime: tasks.actualEndTime,
+      status: tasks.status,
+    })
+    .from(tasks)
+
+  const now = new Date()
+  const currentYear = now.getFullYear()
+  const currentMonth = now.getMonth() + 1
+
+  return employeeRows.map((emp) => {
+    const empTasks = taskRows.filter((t) => t.employeeId === emp.id && t.status === "completed")
+
+    let mbti: string | null = null
+    let personality: string[] = []
+    if (emp.persona) {
+      try {
+        const parsed = JSON.parse(emp.persona) as EmployeePersona
+        mbti = parsed.mbti ?? null
+        personality = (parsed.personality ?? []).slice(0, 2)
+      } catch {
+        /* ignore */
+      }
+    }
+
+    const xp = calculateTaskXp(empTasks)
+    const levelInfo = calculateLevel(xp)
+
+    const activeDates = empTasks
+      .filter((t) => t.actualEndTime != null)
+      .map((t) => (t.actualEndTime as Date).toISOString().slice(0, 10))
+    const streak = calculateStreak([...new Set(activeDates)])
+
+    const monthlyTaskCount = empTasks.filter((t) => {
+      if (!t.actualEndTime) return false
+      const d = t.actualEndTime as Date
+      return d.getFullYear() === currentYear && d.getMonth() + 1 === currentMonth
+    }).length
+
+    return {
+      id: emp.id,
+      name: emp.name,
+      title: emp.title,
+      team: emp.team as EmployeeNodeData["team"],
+      status: emp.status as EmployeeNodeData["status"],
+      avatar: emp.avatar,
+      mbti,
+      personality,
+      xp,
+      level: levelInfo.level,
+      levelEmoji: levelInfo.emoji,
+      levelColor: levelInfo.color,
+      levelProgress: levelInfo.progress,
+      streak,
+      monthlyTaskCount,
+    }
+  })
 }
 
-export default async function OrgPage() {
-  const employeeList = await getEmployees();
+interface OrgPageProps {
+  searchParams: Promise<{ team?: string; highlight?: string }>
+}
+
+export default async function OrgPage({ searchParams }: OrgPageProps) {
+  const [enrichedEmployees, params] = await Promise.all([
+    getEnrichedEmployees(),
+    searchParams,
+  ])
 
   return (
     <div className="flex flex-col h-screen">
-      <div className="px-8 py-4 border-b border-border">
-        <h1 className="text-2xl font-bold">AI团队组织架构</h1>
-        <p className="text-sm text-muted-foreground">
-          点击员工节点跳转详情 · 支持拖拽和缩放
-        </p>
-      </div>
-      <div className="flex-1">
-        <OrgChart employees={employeeList} />
-      </div>
+      <OrgChartClient
+        employees={enrichedEmployees}
+        initialTeamFilter={params.team ?? "all"}
+        highlightId={params.highlight ?? null}
+      />
     </div>
-  );
+  )
 }
