@@ -18,6 +18,7 @@ import { OrgControls } from "./org-controls"
 import { OrgLegend } from "./org-legend"
 import type { EmployeeNodeData, NodeSize } from "./types"
 import { getNodeSize, NODE_WIDTH, NODE_HEIGHT } from "./types"
+import { EmployeeDetailModal } from "@/components/shared/employee-detail-modal"
 
 // ── Layout constants ──────────────────────────────────────────────────────────
 const TEAM_X: Record<string, number> = {
@@ -120,6 +121,7 @@ function OrgChartInner({ employees, initialTeamFilter, highlightId }: OrgChartIn
   const { fitView, zoomIn, zoomOut, getViewport } = useReactFlow()
   const [teamFilter, setTeamFilter] = useState(initialTeamFilter)
   const [zoom, setZoom] = useState(1)
+  const [selectedEmployeeId, setSelectedEmployeeId] = useState<string | null>(null)
   const fitViewCalled = useRef(false)
 
   const { nodes: baseNodes, edges: baseEdges } = useMemo(
@@ -183,7 +185,7 @@ function OrgChartInner({ employees, initialTeamFilter, highlightId }: OrgChartIn
 
   const handleNodeClick = useCallback((_: React.MouseEvent, node: Node) => {
     if (!node.id.startsWith("team-")) {
-      console.log("Employee node clicked:", node.id, node.data)
+      setSelectedEmployeeId(node.id)
     }
   }, [])
 
@@ -225,6 +227,12 @@ function OrgChartInner({ employees, initialTeamFilter, highlightId }: OrgChartIn
       </ReactFlow>
 
       <OrgLegend />
+
+      <EmployeeDetailModal
+        employeeId={selectedEmployeeId}
+        open={selectedEmployeeId !== null}
+        onOpenChange={(open) => { if (!open) setSelectedEmployeeId(null) }}
+      />
     </div>
   )
 }

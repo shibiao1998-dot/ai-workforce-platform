@@ -1,4 +1,4 @@
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, ClipboardList } from "lucide-react";
 
 import { AiAvatar } from "@/components/shared/ai-avatar";
 import { Badge } from "@/components/ui/badge";
@@ -124,9 +124,20 @@ export function EmployeeCard({ employee, onClick }: EmployeeCardProps) {
           </div>
 
           {/* View detail button */}
-          <div className="flex items-center justify-center gap-1.5 mt-1 py-2 rounded-lg bg-muted/60 text-xs font-medium text-muted-foreground group-hover/card:bg-primary/10 group-hover/card:text-primary transition-colors">
-            <span>查看详情</span>
-            <ArrowRight className="size-3.5 transition-transform group-hover/card:translate-x-0.5" />
+          <div className="flex gap-2 mt-1">
+            <div className="flex flex-1 items-center justify-center gap-1.5 py-2 rounded-lg bg-muted/60 text-xs font-medium text-muted-foreground group-hover/card:bg-primary/10 group-hover/card:text-primary transition-colors">
+              <span>查看详情</span>
+              <ArrowRight className="size-3.5 transition-transform group-hover/card:translate-x-0.5" />
+            </div>
+            <a
+              href={`/production?employee=${employee.id}`}
+              onClick={(e) => e.stopPropagation()}
+              className="flex items-center justify-center gap-1 px-3 py-2 rounded-lg bg-muted/60 text-xs font-medium text-muted-foreground hover:bg-green-50 hover:text-green-700 transition-colors"
+              title="查看任务"
+            >
+              <ClipboardList className="size-3.5" />
+              <span>任务</span>
+            </a>
           </div>
         </div>
       </div>

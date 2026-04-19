@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import { EmployeeDetailModal } from "@/components/shared/employee-detail-modal"
 import { KpiSection } from "./kpi-section"
 import { TeamComparisonChart } from "./team-comparison-chart"
 import { ActivityHeatmap } from "./activity-heatmap"
@@ -44,13 +45,14 @@ export function DashboardShell({
 }: DashboardShellProps) {
   const router = useRouter()
   const [selectedTeam, setSelectedTeam] = useState<string | null>(null)
+  const [selectedEmployeeId, setSelectedEmployeeId] = useState<string | null>(null)
 
   function handleTeamClick(team: string) {
     setSelectedTeam((prev) => (prev === team ? null : team))
   }
 
   function handleEmployeeClick(employeeId: string) {
-    console.log("employee clicked:", employeeId)
+    setSelectedEmployeeId(employeeId)
   }
 
   function handleKpiNavigate(href: string | null) {
@@ -121,6 +123,12 @@ export function DashboardShell({
           <TaskFeed tasks={recentTasks} />
         </div>
       </div>
+
+      <EmployeeDetailModal
+        employeeId={selectedEmployeeId}
+        open={selectedEmployeeId !== null}
+        onOpenChange={(open) => { if (!open) setSelectedEmployeeId(null) }}
+      />
     </div>
   )
 }

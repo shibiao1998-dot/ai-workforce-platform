@@ -13,6 +13,7 @@ async function getHistory() {
       startTime: tasks.startTime,
       actualEndTime: tasks.actualEndTime,
       team: tasks.team,
+      employeeId: tasks.employeeId,
       employeeName: employees.name,
       qualityScore: tasks.qualityScore,
     })
@@ -28,12 +29,27 @@ async function getHistory() {
   }));
 }
 
-export default async function ProductionPage() {
+export default async function ProductionPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  const { employee: employeeParam, task: taskParam, sort: sortParam } = await searchParams;
+  const employeeId = typeof employeeParam === "string" ? employeeParam : undefined;
+  const highlightTaskId = typeof taskParam === "string" ? taskParam : undefined;
+  const sort = typeof sortParam === "string" ? sortParam : undefined;
+
   const historyTasks = await getHistory();
 
   return (
     <div className="p-8">
-      <ProductionClient initialTasks={historyTasks} />
+      <ProductionClient
+        initialTasks={historyTasks}
+        initialEmployeeId={employeeId}
+        initialHighlightTaskId={highlightTaskId}
+        initialSort={sort}
+      />
     </div>
   );
 }
+

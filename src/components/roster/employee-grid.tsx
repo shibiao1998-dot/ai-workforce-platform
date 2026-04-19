@@ -7,7 +7,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import type { EmployeeListItem, TeamType } from "@/lib/types";
 import { EmployeeCard } from "./employee-card";
-import { EmployeeDetailModal } from "./employee-detail-modal";
+import { EmployeeDetailModal } from "@/components/shared/employee-detail-modal";
 
 type TabValue = "all" | TeamType;
 

@@ -18,9 +18,11 @@ interface ProductionTabsProps {
     qualityScore: number | null;
   }>;
   timeRange: string;
+  highlightTaskId?: string;
+  initialSort?: string;
 }
 
-export function ProductionTabs({ initialTasks, timeRange }: ProductionTabsProps) {
+export function ProductionTabs({ initialTasks, timeRange, highlightTaskId, initialSort }: ProductionTabsProps) {
   return (
     <Tabs defaultValue="realtime">
       <TabsList variant="line">
