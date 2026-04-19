@@ -6,6 +6,9 @@ import {
   getTeamEfficiencyTrend,
   getHeatmapData,
   getRecentTasks,
+  getGamificationData,
+  computeLeaderboard,
+  computeRecentAchievements,
 } from "@/lib/dashboard-data"
 
 function getCurrentMonth(): string {
@@ -42,7 +45,7 @@ export default async function DashboardPage() {
   const last5Months = getLastNMonths(5)
   const { startDate, endDate } = getDateRange(30)
 
-  const [summary, teamStatus, kpiItems, efficiencyTrend, heatmapData, recentTasks] =
+  const [summary, teamStatus, kpiItems, efficiencyTrend, heatmapData, recentTasks, gamificationRaw] =
     await Promise.all([
       getDashboardSummary(currentMonth),
       getTeamStatus(),
@@ -50,7 +53,11 @@ export default async function DashboardPage() {
       getTeamEfficiencyTrend(last5Months),
       getHeatmapData(startDate, endDate),
       getRecentTasks(8),
+      getGamificationData(),
     ])
+
+  const leaderboard = computeLeaderboard(gamificationRaw, "month")
+  const recentAchievements = computeRecentAchievements(gamificationRaw, 5)
 
   return (
     <DashboardShell
@@ -59,8 +66,9 @@ export default async function DashboardPage() {
       kpiItems={kpiItems}
       efficiencyTrend={efficiencyTrend}
       heatmapData={heatmapData}
-      leaderboard={[]}
+      leaderboard={leaderboard}
       recentTasks={recentTasks}
+      recentAchievements={recentAchievements}
     />
   )
 }

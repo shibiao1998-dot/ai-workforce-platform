@@ -19,6 +19,7 @@ import type {
   LeaderboardEntry,
   RecentTaskEntry,
 } from "@/lib/dashboard-types"
+import type { AchievementFeedEntry } from "@/lib/dashboard-data"
 
 interface DashboardShellProps {
   summary: DashboardSummary
@@ -28,6 +29,7 @@ interface DashboardShellProps {
   heatmapData: HeatmapEntry[]
   leaderboard: LeaderboardEntry[]
   recentTasks: RecentTaskEntry[]
+  recentAchievements: AchievementFeedEntry[]
 }
 
 export function DashboardShell({
@@ -38,6 +40,7 @@ export function DashboardShell({
   heatmapData,
   leaderboard,
   recentTasks,
+  recentAchievements,
 }: DashboardShellProps) {
   const router = useRouter()
   const [selectedTeam, setSelectedTeam] = useState<string | null>(null)
@@ -102,7 +105,17 @@ export function DashboardShell({
           />
         </div>
         <div>
-          <AchievementFeed achievements={[]} />
+          <AchievementFeed
+            achievements={recentAchievements.map((a, i) => ({
+              id: `${a.employeeId}-${a.achievementKey}-${i}`,
+              employeeId: a.employeeId,
+              employeeName: a.employeeName,
+              team: a.team,
+              achievementEmoji: a.achievementEmoji,
+              achievementName: a.achievementName,
+              earnedAt: a.earnedAt,
+            }))}
+          />
         </div>
         <div>
           <TaskFeed tasks={recentTasks} />
