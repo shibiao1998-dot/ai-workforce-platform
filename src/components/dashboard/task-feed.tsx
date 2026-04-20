@@ -1,11 +1,11 @@
 "use client"
 
-import { useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
 import type { RecentTaskEntry } from "@/lib/dashboard-types"
 
 interface Props {
   tasks: RecentTaskEntry[]
+  onTaskClick: (taskId: string) => void
 }
 
 const TEAM_COLOR: Record<string, string> = {
@@ -20,8 +20,7 @@ const STATUS_CONFIG = {
   failed: { label: "失败", className: "bg-red-50 text-red-700 border border-red-200" },
 } as const
 
-export function TaskFeed({ tasks }: Props) {
-  const router = useRouter()
+export function TaskFeed({ tasks, onTaskClick }: Props) {
 
   if (tasks.length === 0) {
     return (
@@ -61,7 +60,7 @@ export function TaskFeed({ tasks }: Props) {
         {tasks.map((task) => (
           <div
             key={task.id}
-            onClick={() => router.push(`/production?task=${task.id}`)}
+            onClick={() => onTaskClick(task.id)}
             className="flex flex-col gap-1 rounded-xl p-3 cursor-pointer transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
             style={{ background: "rgba(255,255,255,0.6)", border: "1px solid rgba(255,255,255,0.9)" }}
           >

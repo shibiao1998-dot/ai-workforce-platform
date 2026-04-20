@@ -404,7 +404,7 @@ export function computeLeaderboard(raw: GamificationRawData, _period: "week" | "
   })
 
   entries.sort((a, b) => b.xp - a.xp)
-  return entries.slice(0, 5)
+  return entries
 }
 
 export function computeRecentAchievements(raw: GamificationRawData, limit: number): AchievementFeedEntry[] {

@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { EmployeeDetailModal } from "@/components/shared/employee-detail-modal"
+import { TaskDetailDialog } from "@/components/production/task-detail-dialog"
 import { KpiSection } from "./kpi-section"
 import { TeamComparisonChart } from "./team-comparison-chart"
 import { ActivityHeatmap } from "./activity-heatmap"
@@ -10,6 +11,7 @@ import { TaskFeed } from "./task-feed"
 import { OperationalIndexGauge } from "./operational-index-gauge"
 import { TeamStatusPanel } from "./team-status-panel"
 import { LeaderboardPanel } from "./leaderboard-panel"
+import { TeamDrawer } from "./team-drawer"
 import { AchievementFeed } from "./achievement-feed"
 import type {
   DashboardSummary,
@@ -46,6 +48,8 @@ export function DashboardShell({
   const router = useRouter()
   const [selectedTeam, setSelectedTeam] = useState<string | null>(null)
   const [selectedEmployeeId, setSelectedEmployeeId] = useState<string | null>(null)
+  const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null)
+  const [drawerTeam, setDrawerTeam] = useState<string | null>(null)
 
   function handleTeamClick(team: string) {
     setSelectedTeam((prev) => (prev === team ? null : team))
@@ -74,7 +78,7 @@ export function DashboardShell({
           <OperationalIndexGauge summary={summary} />
         </div>
         <div className="col-span-2">
-          <TeamStatusPanel teamStatus={teamStatus} />
+          <TeamStatusPanel teamStatus={teamStatus} onTeamClick={setDrawerTeam} />
         </div>
       </div>
 
@@ -120,7 +124,7 @@ export function DashboardShell({
           />
         </div>
         <div>
-          <TaskFeed tasks={recentTasks} />
+          <TaskFeed tasks={recentTasks} onTaskClick={setSelectedTaskId} />
         </div>
       </div>
 
@@ -128,6 +132,20 @@ export function DashboardShell({
         employeeId={selectedEmployeeId}
         open={selectedEmployeeId !== null}
         onOpenChange={(open) => { if (!open) setSelectedEmployeeId(null) }}
+      />
+      <TaskDetailDialog
+        taskId={selectedTaskId}
+        open={selectedTaskId !== null}
+        onOpenChange={(open) => { if (!open) setSelectedTaskId(null) }}
+      />
+      <TeamDrawer
+        team={drawerTeam}
+        open={drawerTeam !== null}
+        onOpenChange={(open) => { if (!open) setDrawerTeam(null) }}
+        members={leaderboard.filter((e) => e.team === drawerTeam)}
+        healthRate={teamStatus.find((t) => t.team === drawerTeam)?.healthRate ?? 0}
+        activeCount={teamStatus.find((t) => t.team === drawerTeam)?.activeCount ?? 0}
+        totalCount={teamStatus.find((t) => t.team === drawerTeam)?.totalCount ?? 0}
       />
     </div>
   )

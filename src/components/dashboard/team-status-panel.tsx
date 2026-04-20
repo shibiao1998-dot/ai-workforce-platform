@@ -1,10 +1,10 @@
 "use client"
 
-import { useRouter } from "next/navigation"
 import type { TeamStatus } from "@/lib/dashboard-types"
 
 interface Props {
   teamStatus: TeamStatus[]
+  onTeamClick: (team: string) => void
 }
 
 const TEAM_COLORS: Record<string, { border: string; bar: string; bg: string }> = {
@@ -13,8 +13,7 @@ const TEAM_COLORS: Record<string, { border: string; bar: string; bg: string }> =
   production: { border: "#22c55e", bar: "#22c55e", bg: "rgba(34,197,94,0.08)" },
 }
 
-export function TeamStatusPanel({ teamStatus }: Props) {
-  const router = useRouter()
+export function TeamStatusPanel({ teamStatus, onTeamClick }: Props) {
 
   return (
     <div
@@ -34,7 +33,7 @@ export function TeamStatusPanel({ teamStatus }: Props) {
         return (
           <div
             key={ts.team}
-            onClick={() => router.push(`/org?team=${ts.team}`)}
+            onClick={() => onTeamClick(ts.team)}
             className="flex-1 rounded-xl p-4 cursor-pointer transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
             style={{ borderLeft: `4px solid ${colors.border}`, background: colors.bg }}
           >

@@ -164,7 +164,7 @@ export function AiAvatar({ employeeId, team, avatar, name, size = "md", fill, cl
             width: "100%",
             height: "100%",
             objectFit: "cover",
-            objectPosition: "top",
+            objectPosition: "center 25%",
             display: "block",
           }}
         />
