@@ -30,7 +30,10 @@ The `generate:avatars` script requires `GEMINI_GATEWAY_URL` and `GEMINI_API_KEY`
 
 **Data flow pattern:** Pages are async server components that query SQLite directly via Drizzle ORM, then pass data as props to `"use client"` interactive components. API routes under `src/app/api/` handle mutations and client-side data fetching.
 
-**Database:** SQLite (`local.db` at project root) via `better-sqlite3` + Drizzle ORM. WAL mode and foreign keys enabled. Schema in `src/db/schema.ts` with 9 tables: `employees`, `skills`, `skill_metrics`, `metrics`, `tasks`, `task_steps`, `task_outputs`, `version_logs`, `metric_configs`. Connection from `src/db/index.ts`. All PKs are `text("id")` using `randomUUID()`. All FKs use `onDelete: "cascade"`. No Drizzle `relations()` — only column-level `.references()`.
+**Database:** SQLite (`local.db` at project root) via `better-sqlite3` + Drizzle ORM. WAL mode and foreign keys enabled. Schema in `src/db/schema.ts` with 11 tables: `employees`, `skills`, `skill_metrics`, `metrics`, `tasks`, `task_steps`, `task_outputs`, `version_logs`, `metric_configs`, `help_categories`, `help_articles`. Connection from `src/db/index.ts`. All PKs are `text("id")` using `randomUUID()`. All FKs use `onDelete: "cascade"`. No Drizzle `relations()` — only column-level `.references()`.
+
+- `help_categories`: id, name, icon, sortOrder, createdAt, updatedAt
+- `help_articles`: id, categoryId → help_categories.id cascade, title, summary, content, sortOrder, createdAt, updatedAt
 
 **Layout:** Root layout (`src/app/layout.tsx`) uses a `flex h-screen` split: narrow icon-only `Sidebar` on the left + scrollable `<main>` on the right.
 
@@ -40,19 +43,43 @@ The `generate:avatars` script requires `GEMINI_GATEWAY_URL` and `GEMINI_API_KEY`
 - `/roster` — Employee grid with filtering; click opens detail modal (Dialog). `/roster/[id]` also exists for direct URL access.
 - `/production` — Production kanban with stat cards, tabbed layout (realtime/dashboard/history). Task cards show mini SOP stepper; clicking opens a detail Dialog modal with quality metrics, vertical step timeline with COT, outputs list, and execution reflection. `/production/[taskId]` exists for direct URL access.
 - `/org` — Organization chart (React Flow / `@xyflow/react`)
-- `/settings` — Employee and metric config management, data management center
+- `/settings` — Employee and metric config management, help doc management (`help-doc-manager.tsx`), and data management center (`src/components/settings/data-management/`) with metrics/skill-metrics/tasks tabs and Excel export via `xlsx` library.
 
 **API routes:** Grouped under `src/app/api/`:
 - `/api/dashboard/{summary,heatmap,recent-tasks,team-comparison}` — dashboard data endpoints
+- `/api/employees` — employee list
 - `/api/employees/[id]/{avatar,avatar-status,skills,version-logs}` — employee CRUD and sub-resources
+- `/api/tasks` — task list
 - `/api/tasks/[taskId]` — task detail with SOP steps
 - `/api/production-stats` — aggregated production dashboard data (supports `timeRange` and `date` query params)
 - `/api/metric-configs/{[id],resolve}` — metric configuration management
 - `/api/data/{metrics,skill-metrics,tasks,export}` — data management CRUD with `[id]` sub-routes
+- `/api/help/categories/{[id]}` — help category CRUD
+- `/api/help/articles/{[id]}` — help article CRUD
 
 **API route caveat:** Static API route segments (e.g. `/api/production-stats`) must NOT be placed as siblings of dynamic segments (e.g. `/api/tasks/[taskId]`) — the dynamic segment catches the static name. Use a separate top-level path instead.
 
 **Path alias:** `@/*` maps to `./src/*`.
+
+## Help System
+
+The help center is a slide-out panel accessible from the sidebar. Components live in `src/components/help/`:
+
+- `help-panel-context.tsx` — React context (`HelpPanelProvider`) for open/close state. Wrap the layout with this provider; consume via `useHelpPanel()`.
+- `help-panel.tsx` — Slide-out panel, default half-screen width, draggable resize handle. Renders article list or article detail. Sidebar uses `z-50` to stay above the panel.
+- `tiptap-editor.tsx` — Rich text editor using Tiptap with extensions: starter-kit, table (with cell/header/row), highlight, underline, placeholder.
+- `help-article-content.css` — Styles for rendered article HTML.
+
+Article content is stored as HTML (produced by Tiptap) and sanitized with DOMPurify before rendering. Help content is managed from `/settings` via `help-doc-manager.tsx`. Seed script: `src/db/seed-help-docs.ts`.
+
+## Deployment
+
+The project ships as a Docker image via a multi-stage build (deps → builder → runner). Key details:
+
+- `next.config.ts` uses `output: "standalone"` for the standalone build artifact.
+- The SQLite database is copied into `/app/data/local.db` inside the container.
+- `src/db/index.ts` checks `process.env.DATABASE_PATH` to override the default db location; set this env var in production to point at the mounted data volume.
+- **Before building the Docker image**, checkpoint the WAL file: `sqlite3 local.db "PRAGMA wal_checkpoint(TRUNCATE);"`. WAL data is not in the main `.db` file and will be lost if not checkpointed first.
 
 ## Key Conventions
 
@@ -81,6 +108,8 @@ shadcn/ui built on `@base-ui/react` (not Radix). Dialog, AlertDialog, Tabs, etc.
 **Charts:** ECharts via `echarts-for-react` for data visualization (heatmaps, trend charts, comparisons, gauges, pie charts). Pattern: `<ReactECharts option={...} style={{ height: N }} />` wrapped in Card components.
 
 **Org chart:** React Flow (`@xyflow/react`) with custom `EmployeeNode` component, controls, and legend.
+
+**Rich text:** Tiptap editor (`src/components/help/tiptap-editor.tsx`) used for help article authoring. Extensions: `@tiptap/starter-kit`, `@tiptap/extension-table` (+ cell/header/row), `@tiptap/extension-highlight`, `@tiptap/extension-underline`, `@tiptap/extension-placeholder`.
 
 ## Next.js 16 Warning
 
