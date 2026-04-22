@@ -1,20 +1,14 @@
-import { eq } from "drizzle-orm";
-
 import { db } from "@/db";
-import { metrics } from "@/db/schema";
 import { EmployeeGrid } from "@/components/roster/employee-grid";
+import { getEmployeeMetrics } from "@/lib/metric-engine";
 
 export default async function RosterPage() {
   const rows = await db.query.employees.findMany({
     orderBy: (e, { asc }) => [asc(e.team), asc(e.name)],
   });
 
-  const currentMonth = `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, "0")}`;
-  const metricRows = await db
-    .select()
-    .from(metrics)
-    .where(eq(metrics.period, currentMonth));
-  const metricMap = new Map(metricRows.map((m) => [m.employeeId, m]));
+  const empMetrics = await getEmployeeMetrics();
+  const metricMap = new Map(empMetrics.map((m) => [m.employeeId, m]));
 
   const employeeList = rows.map((emp) => {
     const m = metricMap.get(emp.id);
@@ -26,8 +20,8 @@ export default async function RosterPage() {
       team: emp.team,
       status: emp.status,
       monthlyTaskCount: m?.taskCount ?? 0,
-      adoptionRate: m?.adoptionRate ?? null,
-      accuracyRate: m?.accuracyRate ?? null,
+      adoptionRate: m ? m.adoptionRate / 100 : null,
+      accuracyRate: m ? m.accuracyRate / 100 : null,
       description: emp.description,
       subTeam: emp.subTeam,
     };

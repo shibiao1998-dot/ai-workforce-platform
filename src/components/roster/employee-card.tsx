@@ -1,4 +1,5 @@
 import { ArrowRight, ClipboardList } from "lucide-react";
+import { MetricTooltip } from "@/components/shared/metric-tooltip";
 
 import { AiAvatar } from "@/components/shared/ai-avatar";
 import { Badge } from "@/components/ui/badge";
@@ -103,7 +104,9 @@ export function EmployeeCard({ employee, onClick }: EmployeeCardProps) {
               <span className="text-sm font-semibold text-foreground">
                 {employee.monthlyTaskCount}
               </span>
-              <span className="text-[11px] text-muted-foreground mt-0.5">本月任务</span>
+              <span className="text-[11px] text-muted-foreground mt-0.5">
+                <MetricTooltip metricKey="taskCount">本月任务</MetricTooltip>
+              </span>
             </div>
             <div className="flex flex-col items-center border-x border-border/60">
               <span className="text-sm font-semibold text-foreground">
@@ -111,7 +114,9 @@ export function EmployeeCard({ employee, onClick }: EmployeeCardProps) {
                   ? `${(employee.adoptionRate * 100).toFixed(0)}%`
                   : "—"}
               </span>
-              <span className="text-[11px] text-muted-foreground mt-0.5">采纳率</span>
+              <span className="text-[11px] text-muted-foreground mt-0.5">
+                <MetricTooltip metricKey="adoptionRate">采纳率</MetricTooltip>
+              </span>
             </div>
             <div className="flex flex-col items-center">
               <span className="text-sm font-semibold text-foreground">
@@ -119,7 +124,9 @@ export function EmployeeCard({ employee, onClick }: EmployeeCardProps) {
                   ? `${(employee.accuracyRate * 100).toFixed(0)}%`
                   : "—"}
               </span>
-              <span className="text-[11px] text-muted-foreground mt-0.5">准确率</span>
+              <span className="text-[11px] text-muted-foreground mt-0.5">
+                <MetricTooltip metricKey="accuracyRate">准确率</MetricTooltip>
+              </span>
             </div>
           </div>
 
