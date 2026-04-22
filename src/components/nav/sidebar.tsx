@@ -34,7 +34,7 @@ export function Sidebar() {
 
   return (
     <TooltipProvider delay={0}>
-      <aside className="flex h-screen w-16 flex-col items-center border-r border-border bg-card py-4 gap-2">
+      <aside className="relative z-50 flex h-screen w-16 flex-col items-center border-r border-border bg-card py-4 gap-2">
         {/* Logo */}
         <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 mb-4">
           <Zap className="h-5 w-5 text-primary" />
