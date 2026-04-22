@@ -3,8 +3,10 @@ import type { TeamType } from "./types"
 export interface DashboardSummary {
   operationalIndex: number
   monthlyTaskCount: number
-  successRate: number
-  savedCost: number
+  completionRate: number
+  adoptionRate: number
+  accuracyRate: number
+  costSaved: number
   costPerHour: number
 }
 
