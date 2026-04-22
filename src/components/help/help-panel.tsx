@@ -254,6 +254,5 @@ export function HelpPanel() {
 // Separate component to isolate HTML rendering; DOMPurify sanitizes before injection
 function ArticleHtmlContent({ html }: { html: string }) {
   const sanitized = DOMPurify.sanitize(html);
-  // eslint-disable-next-line react/no-danger
   return <div className="help-article-content" dangerouslySetInnerHTML={{ __html: sanitized }} />;
 }

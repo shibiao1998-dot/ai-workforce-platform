@@ -73,11 +73,13 @@ export function HelpDocManager() {
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchCategories();
   }, [fetchCategories]);
 
   useEffect(() => {
     if (selectedCategoryId) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       fetchArticles(selectedCategoryId);
     }
   }, [selectedCategoryId, fetchArticles]);
