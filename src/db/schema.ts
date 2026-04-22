@@ -110,3 +110,25 @@ export const metricConfigs = sqliteTable("metric_configs", {
   description: text("description"),
   updatedAt: integer("updated_at", { mode: "timestamp" }),
 });
+
+export const helpCategories = sqliteTable("help_categories", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),
+  icon: text("icon"),
+  sortOrder: integer("sort_order").notNull().default(0),
+  createdAt: integer("created_at", { mode: "timestamp" }),
+  updatedAt: integer("updated_at", { mode: "timestamp" }),
+});
+
+export const helpArticles = sqliteTable("help_articles", {
+  id: text("id").primaryKey(),
+  categoryId: text("category_id")
+    .notNull()
+    .references(() => helpCategories.id, { onDelete: "cascade" }),
+  title: text("title").notNull(),
+  summary: text("summary"),
+  content: text("content").notNull(),
+  sortOrder: integer("sort_order").notNull().default(0),
+  createdAt: integer("created_at", { mode: "timestamp" }),
+  updatedAt: integer("updated_at", { mode: "timestamp" }),
+});
