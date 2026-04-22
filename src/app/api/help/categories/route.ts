@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
-import { helpCategories, helpArticles } from "@/db/schema";
+import { helpCategories } from "@/db/schema";
 import { eq, sql } from "drizzle-orm";
 import { randomUUID } from "crypto";
 
