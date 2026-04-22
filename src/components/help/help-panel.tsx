@@ -31,6 +31,44 @@ interface ArticleDetail extends ArticleListItem {
 export function HelpPanel() {
   const { isOpen, close } = useHelpPanel();
 
+  const [panelWidth, setPanelWidth] = useState<number | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+
+  // Calculate default width on mount (SSR-safe)
+  useEffect(() => {
+    if (panelWidth === null) {
+      setPanelWidth(Math.max(360, (window.innerWidth - 64) / 2));
+    }
+  }, [panelWidth]);
+
+  const handleResizeMouseDown = useCallback(
+    (e: React.MouseEvent) => {
+      e.preventDefault();
+      setIsDragging(true);
+      const startX = e.clientX;
+      const startWidth = panelWidth ?? Math.max(360, (window.innerWidth - 64) / 2);
+
+      const handleMouseMove = (moveEvent: MouseEvent) => {
+        const delta = moveEvent.clientX - startX;
+        const newWidth = Math.min(
+          Math.max(360, startWidth + delta),
+          (window.innerWidth - 64) * 0.8
+        );
+        setPanelWidth(newWidth);
+      };
+
+      const handleMouseUp = () => {
+        setIsDragging(false);
+        document.removeEventListener("mousemove", handleMouseMove);
+        document.removeEventListener("mouseup", handleMouseUp);
+      };
+
+      document.addEventListener("mousemove", handleMouseMove);
+      document.addEventListener("mouseup", handleMouseUp);
+    },
+    [panelWidth]
+  );
+
   const [categories, setCategories] = useState<Category[]>([]);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [articles, setArticles] = useState<ArticleListItem[]>([]);
@@ -106,7 +144,6 @@ export function HelpPanel() {
       {isOpen && (
         <div
           className="fixed inset-0 bg-black/20 z-30"
-          style={{ left: "calc(4rem + 420px)" }}
           onClick={close}
         />
       )}
@@ -120,9 +157,11 @@ export function HelpPanel() {
       >
         <div
           className={cn(
-            "w-[420px] h-full bg-background border-r border-border shadow-xl flex flex-col transition-transform duration-300",
-            isOpen ? "translate-x-0" : "-translate-x-full"
+            "relative h-full bg-background border-r border-border shadow-xl flex flex-col transition-transform duration-300",
+            isOpen ? "translate-x-0" : "-translate-x-full",
+            isDragging && "select-none"
           )}
+          style={{ width: panelWidth ?? "50vw" }}
         >
           {selectedArticle === null ? (
             <>
@@ -245,6 +284,17 @@ export function HelpPanel() {
               </div>
             </>
           )}
+
+          {/* Resize handle */}
+          <div
+            onMouseDown={handleResizeMouseDown}
+            className={cn(
+              "absolute top-0 right-0 w-1 h-full cursor-col-resize group z-10",
+              isDragging ? "bg-primary/30" : "hover:bg-primary/20"
+            )}
+          >
+            <div className="absolute top-1/2 -translate-y-1/2 right-0 w-1 h-8 rounded-full bg-border group-hover:bg-primary/40 transition-colors" />
+          </div>
         </div>
       </div>
     </>
