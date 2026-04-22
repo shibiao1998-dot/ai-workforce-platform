@@ -2,6 +2,7 @@
 
 import ReactECharts from "echarts-for-react"
 import type { DashboardSummary } from "@/lib/dashboard-types"
+import { MetricTooltip } from "@/components/shared/metric-tooltip"
 
 interface Props {
   summary: DashboardSummary
@@ -74,16 +75,16 @@ export function OperationalIndexGauge({ summary }: Props) {
 
       <div className="grid grid-cols-3 gap-3 mt-2 pt-3 border-t border-white/60">
         <div className="text-center">
-          <p className="text-xs text-[#64748b]">本月任务</p>
+          <p className="text-xs text-[#64748b]"><MetricTooltip metricKey="taskCount">本月任务</MetricTooltip></p>
           <p className="text-lg font-bold text-[#1e293b] tabular-nums">{summary.monthlyTaskCount}</p>
         </div>
         <div className="text-center">
-          <p className="text-xs text-[#64748b]">成功率</p>
-          <p className="text-lg font-bold text-[#1e293b] tabular-nums">{summary.successRate}%</p>
+          <p className="text-xs text-[#64748b]"><MetricTooltip metricKey="completionRate">完成率</MetricTooltip></p>
+          <p className="text-lg font-bold text-[#1e293b] tabular-nums">{summary.completionRate.toFixed(1)}%</p>
         </div>
         <div className="text-center">
-          <p className="text-xs text-[#64748b]">节省成本</p>
-          <p className="text-lg font-bold text-[#1e293b] tabular-nums">¥{summary.savedCost.toLocaleString()}</p>
+          <p className="text-xs text-[#64748b]"><MetricTooltip metricKey="costSaved">节省成本</MetricTooltip></p>
+          <p className="text-lg font-bold text-[#1e293b] tabular-nums">¥{summary.costSaved.toLocaleString()}</p>
         </div>
       </div>
     </div>
