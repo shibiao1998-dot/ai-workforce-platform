@@ -4,6 +4,7 @@ import "./globals.css";
 import { Sidebar } from "@/components/nav/sidebar";
 import { HelpPanelProvider } from "@/components/help/help-panel-context";
 import { HelpPanel } from "@/components/help/help-panel";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,6 +32,7 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body>
+        <TooltipProvider delay={300}>
         <HelpPanelProvider>
           <div className="flex h-screen overflow-hidden">
             <Sidebar />
@@ -38,6 +40,7 @@ export default function RootLayout({
           </div>
           <HelpPanel />
         </HelpPanelProvider>
+        </TooltipProvider>
       </body>
     </html>
   );
