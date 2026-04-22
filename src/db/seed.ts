@@ -1079,6 +1079,10 @@ async function seed() {
     { id: randomUUID(), employeeId: null, team: "production", taskType: "质量检查", humanBaseline: 0.5, costPerHour: 46.875, description: "生产团队质量检查基准", updatedAt: now },
   ]);
   console.log(`Seeded ${DEFAULT_TASK_TYPES.length} metric configs.`);
+
+  // Seed help docs
+  const { seedHelpDocs } = await import("./seed-help-docs");
+  await seedHelpDocs();
 }
 
 seed().catch(console.error);
