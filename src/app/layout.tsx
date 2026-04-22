@@ -34,9 +34,9 @@ export default function RootLayout({
         <HelpPanelProvider>
           <div className="flex h-screen overflow-hidden">
             <Sidebar />
-            <HelpPanel />
             <main className="flex-1 overflow-y-auto">{children}</main>
           </div>
+          <HelpPanel />
         </HelpPanelProvider>
       </body>
     </html>
