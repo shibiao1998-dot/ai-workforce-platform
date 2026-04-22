@@ -13,7 +13,7 @@ export async function GET() {
       sortOrder: helpCategories.sortOrder,
       createdAt: helpCategories.createdAt,
       updatedAt: helpCategories.updatedAt,
-      articleCount: sql<number>`(SELECT COUNT(*) FROM help_articles WHERE help_articles.category_id = ${helpCategories.id})`,
+      articleCount: sql<number>`(SELECT COUNT(*) FROM help_articles WHERE help_articles.category_id = help_categories.id)`.mapWith(Number),
     })
     .from(helpCategories)
     .orderBy(helpCategories.sortOrder);
