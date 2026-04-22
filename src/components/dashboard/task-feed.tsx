@@ -2,7 +2,7 @@
 
 import { cn } from "@/lib/utils"
 import type { RecentTaskEntry } from "@/lib/dashboard-types"
-import { TOKEN_COST_RATE } from "@/lib/metric-engine"
+import { TOKEN_COST_RATE } from "@/lib/metric-defs"
 import { MetricTooltip } from "@/components/shared/metric-tooltip"
 
 interface Props {

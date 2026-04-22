@@ -1,6 +1,6 @@
 "use client"
 
-import { METRIC_DEFS } from "@/lib/metric-engine"
+import { METRIC_DEFS } from "@/lib/metric-defs"
 import {
   Tooltip,
   TooltipTrigger,
