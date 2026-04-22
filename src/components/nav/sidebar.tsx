@@ -10,7 +10,9 @@ import {
   GitBranch,
   Settings,
   Zap,
+  HelpCircle,
 } from "lucide-react";
+import { useHelpPanel } from "@/components/help/help-panel-context";
 import {
   Tooltip,
   TooltipContent,
@@ -28,6 +30,7 @@ const NAV_ITEMS = [
 
 export function Sidebar() {
   const pathname = usePathname();
+  const { toggle } = useHelpPanel();
 
   return (
     <TooltipProvider delay={0}>
@@ -65,6 +68,23 @@ export function Sidebar() {
             );
           })}
         </nav>
+
+        {/* Help button */}
+        <Tooltip>
+          <TooltipTrigger
+            render={
+              <button
+                onClick={toggle}
+                className="flex h-10 w-10 items-center justify-center rounded-lg text-muted-foreground hover:bg-accent hover:text-foreground transition-colors mb-2"
+              >
+                <HelpCircle className="h-5 w-5" />
+              </button>
+            }
+          />
+          <TooltipContent side="right">
+            <p>帮助中心</p>
+          </TooltipContent>
+        </Tooltip>
       </aside>
     </TooltipProvider>
   );
