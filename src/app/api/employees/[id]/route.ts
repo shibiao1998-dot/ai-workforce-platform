@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
-import { employees, skills, metrics, versionLogs, skillMetrics } from "@/db/schema";
+import { employees, skills, versionLogs, skillMetrics } from "@/db/schema";
+import { getMetrics, getMonthlyTrend } from "@/lib/metric-engine";
 import { eq } from "drizzle-orm";
 
 export async function GET(
@@ -15,9 +16,18 @@ export async function GET(
 
   if (!emp) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
-  const [empSkills, empMetrics, empVersionLogs, empSkillMetrics] = await Promise.all([
+  const now = new Date();
+  const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+  const months: string[] = [];
+  for (let i = 5; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    months.push(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`);
+  }
+
+  const [empSkills, currentMetrics, monthlyTrend, empVersionLogs, empSkillMetrics] = await Promise.all([
     db.select().from(skills).where(eq(skills.employeeId, id)),
-    db.select().from(metrics).where(eq(metrics.employeeId, id)),
+    getMetrics({ period: currentMonth, employeeId: id }),
+    getMonthlyTrend(id, months),
     db.select().from(versionLogs).where(eq(versionLogs.employeeId, id)),
     db.select().from(skillMetrics).where(eq(skillMetrics.employeeId, id)),
   ]);
@@ -34,7 +44,13 @@ export async function GET(
       ...s,
       skillMetrics: skillMetricsMap.get(s.id) ?? [],
     })),
-    metrics: empMetrics,
+    currentMetrics: {
+      taskCount: currentMetrics.taskCount,
+      adoptionRate: currentMetrics.adoptionRate,
+      accuracyRate: currentMetrics.accuracyRate,
+      hoursSaved: currentMetrics.hoursSaved,
+    },
+    monthlyTrend,
     versionLogs: empVersionLogs,
   });
 }

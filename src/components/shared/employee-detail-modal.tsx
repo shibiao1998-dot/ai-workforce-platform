@@ -179,7 +179,10 @@ export function EmployeeDetailModal({ employeeId, open, onOpenChange }: Employee
                 </TabsContent>
 
                 <TabsContent value="metrics">
-                  <MetricsTab metrics={employee.metrics ?? []} />
+                  <MetricsTab
+                    current={employee.currentMetrics ?? null}
+                    trend={employee.monthlyTrend ?? []}
+                  />
                 </TabsContent>
 
                 <TabsContent value="version">

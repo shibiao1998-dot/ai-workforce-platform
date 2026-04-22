@@ -1,39 +1,33 @@
 "use client";
 
 import ReactECharts from "echarts-for-react";
-import { Metric } from "@/lib/types";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { MetricTooltip } from "@/components/shared/metric-tooltip";
+
+interface TrendPoint {
+  period: string;
+  taskCount: number;
+  adoptionRate: number;
+  accuracyRate: number;
+  hoursSaved: number;
+}
 
 interface MetricsTabProps {
-  metrics: Metric[];
+  current: {
+    taskCount: number;
+    adoptionRate: number;
+    accuracyRate: number;
+    hoursSaved: number;
+  } | null;
+  trend: TrendPoint[];
 }
 
-function formatRate(rate: number | null): string {
-  if (rate === null) return "—";
-  return `${(rate * 100).toFixed(1)}%`;
-}
-
-function formatHours(hours: number | null): string {
-  if (hours === null) return "—";
-  return `${hours.toFixed(1)} h`;
-}
-
-export function MetricsTab({ metrics }: MetricsTabProps) {
-  const monthly = metrics
-    .filter((m) => m.periodType === "monthly")
-    .sort((a, b) => a.period.localeCompare(b.period));
-
-  const latest = monthly[monthly.length - 1] ?? null;
-
-  const periods = monthly.map((m) => m.period);
-  const taskCounts = monthly.map((m) => m.taskCount);
-  const hoursSaved = monthly.map((m) => m.humanTimeSaved ?? 0);
-  const adoptionRates = monthly.map((m) =>
-    m.adoptionRate != null ? +(m.adoptionRate * 100).toFixed(1) : 0
-  );
-  const accuracyRates = monthly.map((m) =>
-    m.accuracyRate != null ? +(m.accuracyRate * 100).toFixed(1) : 0
-  );
+export function MetricsTab({ current, trend }: MetricsTabProps) {
+  const periods = trend.map((m) => m.period);
+  const taskCounts = trend.map((m) => m.taskCount);
+  const hoursSaved = trend.map((m) => m.hoursSaved);
+  const adoptionRates = trend.map((m) => m.adoptionRate);
+  const accuracyRates = trend.map((m) => m.accuracyRate);
 
   const trendOption = {
     backgroundColor: "transparent",
@@ -125,42 +119,50 @@ export function MetricsTab({ metrics }: MetricsTabProps) {
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <Card>
           <CardHeader>
-            <CardDescription>任务数</CardDescription>
+            <CardDescription>
+              <MetricTooltip metricKey="taskCount">任务数</MetricTooltip>
+            </CardDescription>
             <CardTitle className="text-2xl tabular-nums">
-              {latest ? latest.taskCount : "—"}
+              {current?.taskCount ?? "—"}
             </CardTitle>
           </CardHeader>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardDescription>采用率</CardDescription>
+            <CardDescription>
+              <MetricTooltip metricKey="adoptionRate">采纳率</MetricTooltip>
+            </CardDescription>
             <CardTitle className="text-2xl tabular-nums">
-              {latest ? formatRate(latest.adoptionRate) : "—"}
+              {current ? current.adoptionRate.toFixed(1) + "%" : "—"}
             </CardTitle>
           </CardHeader>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardDescription>准确率</CardDescription>
+            <CardDescription>
+              <MetricTooltip metricKey="accuracyRate">准确率</MetricTooltip>
+            </CardDescription>
             <CardTitle className="text-2xl tabular-nums">
-              {latest ? formatRate(latest.accuracyRate) : "—"}
+              {current ? current.accuracyRate.toFixed(1) + "%" : "—"}
             </CardTitle>
           </CardHeader>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardDescription>节省工时</CardDescription>
+            <CardDescription>
+              <MetricTooltip metricKey="hoursSaved">节省工时</MetricTooltip>
+            </CardDescription>
             <CardTitle className="text-2xl tabular-nums">
-              {latest ? formatHours(latest.humanTimeSaved) : "—"}
+              {current ? current.hoursSaved.toFixed(1) + " h" : "—"}
             </CardTitle>
           </CardHeader>
         </Card>
       </div>
 
-      {monthly.length > 0 ? (
+      {trend.length > 0 ? (
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">

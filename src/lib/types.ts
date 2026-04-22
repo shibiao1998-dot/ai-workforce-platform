@@ -49,6 +49,19 @@ export interface Employee {
   skills?: Skill[];
   metrics?: Metric[];
   versionLogs?: VersionLog[];
+  currentMetrics?: {
+    taskCount: number
+    adoptionRate: number
+    accuracyRate: number
+    hoursSaved: number
+  }
+  monthlyTrend?: {
+    period: string
+    taskCount: number
+    adoptionRate: number
+    accuracyRate: number
+    hoursSaved: number
+  }[]
 }
 
 export interface Skill {

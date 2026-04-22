@@ -138,7 +138,10 @@ export function EmployeeDetail({ employee: initialEmployee }: EmployeeDetailProp
         </TabsContent>
 
         <TabsContent value="metrics">
-          <MetricsTab metrics={employee.metrics ?? []} />
+          <MetricsTab
+              current={employee.currentMetrics ?? null}
+              trend={employee.monthlyTrend ?? []}
+            />
         </TabsContent>
 
         <TabsContent value="version">
