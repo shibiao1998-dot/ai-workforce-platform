@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
 import { tasks, employees } from "@/db/schema";
 import { eq, and, gte, lte } from "drizzle-orm";
+import { getMetrics } from "@/lib/metric-engine";
 
 function getDateRange(timeRange: string) {
   const now = new Date();
@@ -39,12 +40,7 @@ export async function GET(req: NextRequest) {
     .innerJoin(employees, eq(tasks.employeeId, employees.id))
     .where(and(gte(tasks.startTime, start), lte(tasks.startTime, end)));
 
-  const totalTasks = allTasks.length;
-  const completedTasks = allTasks.filter(t => t.status === "completed").length;
-  const runningTasks = allTasks.filter(t => t.status === "running").length;
-  const completionRate = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
-  const qualityScores = allTasks.filter(t => t.qualityScore != null).map(t => t.qualityScore!);
-  const avgQualityScore = qualityScores.length > 0 ? Math.round(qualityScores.reduce((a, b) => a + b, 0) / qualityScores.length) : 0;
+  const engineMetrics = await getMetrics({ timeRange: timeRange as "today" | "7d" | "30d" });
 
   const dailyMap = new Map<string, { management: number; design: number; production: number }>();
   for (const t of allTasks) {
@@ -83,10 +79,16 @@ export async function GET(req: NextRequest) {
   const dateQualityScores = filteredByDate.filter(t => t.qualityScore != null).map(t => t.qualityScore!);
   const dateAvgQuality = dateQualityScores.length > 0
     ? Math.round(dateQualityScores.reduce((a, b) => a + b, 0) / dateQualityScores.length)
-    : avgQualityScore;
+    : engineMetrics.qualityScore;
 
   return NextResponse.json({
-    summary: { totalTasks, completedTasks, completionRate, runningTasks, avgQualityScore },
+    summary: {
+      totalTasks: engineMetrics.taskCount,
+      completedTasks: engineMetrics.completedCount,
+      completionRate: engineMetrics.completionRate,
+      runningTasks: engineMetrics.runningCount,
+      avgQualityScore: engineMetrics.qualityScore,
+    },
     dailyTrend,
     typeDistribution,
     employeeRanking,

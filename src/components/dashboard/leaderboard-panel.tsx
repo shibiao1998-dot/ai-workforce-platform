@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { cn } from "@/lib/utils"
 import type { LeaderboardEntry } from "@/lib/dashboard-types"
+import { MetricTooltip } from "@/components/shared/metric-tooltip"
 
 interface Props {
   entries: LeaderboardEntry[]
@@ -82,11 +83,15 @@ export function LeaderboardPanel({ entries, onEmployeeClick }: Props) {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-1.5">
                     <span className="text-sm font-medium text-[#1e293b] truncate">{entry.employeeName}</span>
-                    <span className="text-xs rounded px-1 py-0.5 flex-shrink-0 font-medium" style={{ background: entry.levelColor + "20", color: entry.levelColor }}>
-                      {entry.levelEmoji} Lv.{entry.level}
-                    </span>
+                    <MetricTooltip metricKey="level">
+                      <span className="text-xs rounded px-1 py-0.5 flex-shrink-0 font-medium" style={{ background: entry.levelColor + "20", color: entry.levelColor }}>
+                        {entry.levelEmoji} Lv.{entry.level}
+                      </span>
+                    </MetricTooltip>
                   </div>
-                  <p className="text-xs text-[#64748b]">{entry.xp.toLocaleString()} XP</p>
+                  <MetricTooltip metricKey="xp">
+                    <p className="text-xs text-[#64748b]">{entry.xp.toLocaleString()} XP</p>
+                  </MetricTooltip>
                 </div>
                 <RankChangeIcon change={entry.rankChange} />
               </div>

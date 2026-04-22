@@ -2,6 +2,7 @@
 
 import ReactECharts from "echarts-for-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { MetricTooltip } from "@/components/shared/metric-tooltip";
 
 export function QualityGauge({ score }: { score: number }) {
   const option = {
@@ -41,7 +42,9 @@ export function QualityGauge({ score }: { score: number }) {
   return (
     <Card>
       <CardHeader className="pb-2">
-        <CardTitle className="text-sm font-medium text-muted-foreground">平均质量评分</CardTitle>
+        <CardTitle className="text-sm font-medium text-muted-foreground">
+          <MetricTooltip metricKey="qualityScore">平均质量评分</MetricTooltip>
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <ReactECharts option={option} style={{ height: 180 }} />

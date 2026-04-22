@@ -3,6 +3,7 @@
 import { useCountUp } from "@/hooks/use-count-up"
 import { cn } from "@/lib/utils"
 import type { KpiItem } from "@/lib/dashboard-types"
+import { MetricTooltip } from "@/components/shared/metric-tooltip"
 
 interface KpiCardProps {
   item: KpiItem
@@ -69,7 +70,9 @@ export function KpiCard({ item, onClick }: KpiCardProps) {
     >
       <div className="flex items-center gap-2 mb-2">
         <span className="text-2xl leading-none">{item.emoji}</span>
-        <p className="text-xs text-[#64748b] font-medium truncate">{item.label}</p>
+        <MetricTooltip metricKey={item.key}>
+          <p className="text-xs text-[#64748b] font-medium truncate">{item.label}</p>
+        </MetricTooltip>
       </div>
       <p className="text-[28px] font-bold text-[#1e293b] tabular-nums leading-none mb-2">
         {item.displayPrefix}{animated}{item.displaySuffix}

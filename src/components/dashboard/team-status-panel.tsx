@@ -1,6 +1,7 @@
 "use client"
 
 import type { TeamStatus } from "@/lib/dashboard-types"
+import { MetricTooltip } from "@/components/shared/metric-tooltip"
 
 interface Props {
   teamStatus: TeamStatus[]
@@ -47,7 +48,9 @@ export function TeamStatusPanel({ teamStatus, onTeamClick }: Props) {
                 style={{ width: `${healthPct}%`, background: colors.bar }}
               />
             </div>
-            <p className="text-xs text-[#64748b] mt-1">健康度 {healthPct}%</p>
+            <MetricTooltip metricKey="teamHealth">
+              <p className="text-xs text-[#64748b] mt-1">健康度 {healthPct}%</p>
+            </MetricTooltip>
           </div>
         )
       })}

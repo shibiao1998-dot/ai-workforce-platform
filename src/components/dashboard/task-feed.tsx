@@ -2,6 +2,8 @@
 
 import { cn } from "@/lib/utils"
 import type { RecentTaskEntry } from "@/lib/dashboard-types"
+import { TOKEN_COST_RATE } from "@/lib/metric-engine"
+import { MetricTooltip } from "@/components/shared/metric-tooltip"
 
 interface Props {
   tasks: RecentTaskEntry[]
@@ -75,7 +77,9 @@ export function TaskFeed({ tasks, onTaskClick }: Props) {
                 <span className="text-xs text-[#64748b]">⭐ {task.qualityScore}</span>
               )}
               {task.tokenUsage !== null && (
-                <span className="text-xs text-[#64748b]">≈ ¥{(task.tokenUsage * 0.00005).toFixed(2)}</span>
+                <MetricTooltip metricKey="tokenCost">
+                  <span className="text-xs text-[#64748b]">≈ ¥{(task.tokenUsage * TOKEN_COST_RATE).toFixed(2)}</span>
+                </MetricTooltip>
               )}
             </div>
             <p className="text-sm text-[#1e293b] truncate">{task.name}</p>
