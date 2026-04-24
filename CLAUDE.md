@@ -19,12 +19,12 @@ npm run db:push          # Push schema changes to SQLite
 npm run db:generate      # Generate Drizzle migrations
 npm run db:migrate       # Run Drizzle migrations
 npm run db:seed          # Seed database (tsx src/db/seed.ts)
-npm run generate:avatars # Generate AI employee portraits via Gemini API
+npm run generate:avatars # Generate AI employee portraits via gpt-image-2 API
 ```
 
 No test framework is configured. No Prettier is configured.
 
-The `generate:avatars` script requires `GEMINI_GATEWAY_URL` and `GEMINI_API_KEY` in `.env.local`. It calls Gemini 3.1 Flash Image Preview via an OpenAI-compatible gateway (`https://ai-gateway.aiae.ndhy.com/v1/chat/completions`) to produce landscape (1376x768) 2D portrait PNGs in `public/avatars/`. Prompts are assembled from persona data using `buildPrompt()` with team accent colors (purple/blue/green). The script is resumable — it skips employees whose avatar file already exists. The runtime library `src/lib/avatar-generator.ts` shares the same STYLE_PREFIX for single-avatar regeneration.
+The `generate:avatars` script requires `IMAGE_API_GATEWAY_URL` and `IMAGE_API_KEY` in `.env.local`. It calls gpt-image-2 via an OpenAI-compatible gateway (`https://ai-gateway.aiae.ndhy.com/v1/images/generations`) to produce landscape (2560x1440) photorealistic portrait PNGs in `public/avatars/`. Prompts are assembled from persona data using `buildPrompt()` with team accent colors (purple/blue/green). The script regenerates all avatars on each run (no skip logic). The runtime library `src/lib/avatar-generator.ts` shares the same STYLE_PREFIX for single-avatar regeneration.
 
 ## Architecture
 
@@ -86,7 +86,7 @@ The project ships as a Docker image via a multi-stage build (deps → builder �
 - All user-facing text must be in Chinese.
 - Pages (`page.tsx`) are server components — do not add `"use client"` to them. Interactive parts go in separate client components.
 - Loading states use `loading.tsx` skeleton files (see `/dashboard/loading.tsx`, `/roster/loading.tsx`).
-- Employee avatars are AI-generated landscape portrait images (1376x768) stored in `public/avatars/{name}.png`. The `AiAvatar` component (`src/components/shared/ai-avatar.tsx`) has two modes: fixed-size (with `size` prop) and `fill` mode (fills container with `object-cover`). Falls back to a procedurally generated SVG robot (deterministic from employee ID, colored by team) when `avatar` is null.
+- Employee avatars are AI-generated landscape portrait images (2560x1440) stored in `public/avatars/{name}.png`. The `AiAvatar` component (`src/components/shared/ai-avatar.tsx`) has two modes: fixed-size (with `size` prop) and `fill` mode (fills container with `object-cover`). Falls back to a procedurally generated SVG robot (deterministic from employee ID, colored by team) when `avatar` is null.
 - The `employees.persona` column stores a JSON string matching the `EmployeePersona` interface (`src/lib/types.ts`): age, gender, personality[], catchphrase, backstory, workStyle, interests[], fashionStyle, mbti, visualTraits, sceneDescription. All 24 employees have persona data. Parse with `JSON.parse(employee.persona) as EmployeePersona`.
 - Employee cards use a portrait-centric layout: large `h-80` avatar area with team-colored gradient background, gradient overlay blending into white, status badge overlay, name (`text-lg font-bold`), title, description, metrics row, and a "查看详情" button. Clicking opens a centered Dialog modal (`employee-detail-modal.tsx`), not page navigation.
 - Team identity is conveyed via left border color (purple=management, blue=design, green=production) and gradient backgrounds.
