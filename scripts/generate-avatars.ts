@@ -154,11 +154,12 @@ const EMPLOYEES: Employee[] = [
 // Helpers
 // ---------------------------------------------------------------------------
 const STYLE_PREFIX =
-  "Create a stylish 2D digital illustration portrait of a young Chinese professional in LANDSCAPE orientation (16:9, 1376x768). " +
-  "Trendy modern illustration style with bold confident lines, vibrant colors, and dynamic lighting. " +
-  "The character should look young (early-to-late 20s), energetic, fashionable, and highly competent — like a top talent at a cutting-edge tech startup. " +
-  "Frame from chest up, centered with breathing room. Include a detailed background scene specific to their work environment. " +
-  "The overall mood should be cool, professional, and aspirational.";
+  "Professional commercial portrait photograph of a young Chinese professional. " +
+  "Shot on Canon EOS R5 with 85mm f/1.4 lens. Shallow depth of field, natural lighting with soft fill light. " +
+  "Photorealistic, high-end corporate magazine editorial style. " +
+  "Frame from chest up, centered with breathing room. Real fabric textures, real accessories, real hair. " +
+  "LANDSCAPE orientation (16:9, 2560x1440). No illustration, no anime, no CGI, no AI-generated artifacts. " +
+  "The person must look like a real Chinese individual with natural skin texture, natural facial features, and natural expression.";
 
 function buildPrompt(emp: Employee): string {
   const { persona, team } = emp;
@@ -185,18 +186,18 @@ interface GenerateResult {
 }
 
 async function generateAvatar(emp: Employee, outputDir: string): Promise<GenerateResult> {
-  const gatewayUrl = process.env.GEMINI_GATEWAY_URL;
-  const apiKey = process.env.GEMINI_API_KEY;
+  const gatewayUrl = process.env.IMAGE_API_GATEWAY_URL;
+  const apiKey = process.env.IMAGE_API_KEY;
 
   if (!gatewayUrl || !apiKey) {
-    return { ok: false, error: "Missing GEMINI_GATEWAY_URL or GEMINI_API_KEY" };
+    return { ok: false, error: "Missing IMAGE_API_GATEWAY_URL or IMAGE_API_KEY" };
   }
 
   const prompt = buildPrompt(emp);
-  const endpoint = `${gatewayUrl}/v1/chat/completions`;
+  const endpoint = `${gatewayUrl}/v1/images/generations`;
 
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 90_000);
+  const timeoutId = setTimeout(() => controller.abort(), 300_000);
 
   try {
     const response = await fetch(endpoint, {
@@ -206,9 +207,11 @@ async function generateAvatar(emp: Employee, outputDir: string): Promise<Generat
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "gemini-3.1-flash-image-preview",
-        messages: [{ role: "user", content: prompt }],
-        modalities: ["text", "image"],
+        model: "gpt-image-2",
+        prompt,
+        n: 1,
+        size: "2560x1440",
+        quality: "high",
       }),
       signal: controller.signal,
     });
@@ -237,7 +240,7 @@ async function generateAvatar(emp: Employee, outputDir: string): Promise<Generat
   } catch (err: unknown) {
     clearTimeout(timeoutId);
     if (err instanceof Error && err.name === "AbortError") {
-      return { ok: false, error: "Request timed out after 90s" };
+      return { ok: false, error: "Request timed out after 300s" };
     }
     return { ok: false, error: err instanceof Error ? err.message : String(err) };
   }
@@ -252,7 +255,6 @@ async function main(): Promise<void> {
 
   const total = EMPLOYEES.length;
   let succeeded = 0;
-  let skipped = 0;
   let failed = 0;
   const failures: string[] = [];
 
@@ -261,13 +263,6 @@ async function main(): Promise<void> {
 
   for (let i = 0; i < EMPLOYEES.length; i++) {
     const emp = EMPLOYEES[i];
-    const outPath = join(outputDir, `${emp.name}.png`);
-
-    if (existsSync(outPath)) {
-      console.log(`[${i + 1}/${total}] SKIP  ${emp.name} (already exists)`);
-      skipped++;
-      continue;
-    }
 
     console.log(`[${i + 1}/${total}] GEN   ${emp.name} …`);
     const result = await generateAvatar(emp, outputDir);
@@ -283,13 +278,13 @@ async function main(): Promise<void> {
 
     // Delay between requests (skip after the last employee)
     if (i < EMPLOYEES.length - 1) {
-      await sleep(3_000);
+      await sleep(5_000);
     }
   }
 
   console.log();
   console.log("─".repeat(50));
-  console.log(`Summary: ${succeeded} succeeded, ${skipped} skipped, ${failed} failed`);
+  console.log(`Summary: ${succeeded} succeeded, ${failed} failed`);
 
   if (failures.length > 0) {
     console.log("\nFailures:");
