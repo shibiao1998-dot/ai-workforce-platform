@@ -72,59 +72,72 @@ export async function generateSingleAvatar(
   const prompt = `${STYLE_PREFIX} ${description}.`;
   const endpoint = `${gatewayUrl}/v1/images/generations`;
 
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 600_000);
+  let lastResult: { ok: boolean; error?: string } = { ok: false, error: "Unknown error" };
 
-  try {
-    const response = await fetch(endpoint, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "gpt-image-2",
-        prompt,
-        n: 1,
-        size: "2560x1440",
-        quality: "high",
-      }),
-      signal: controller.signal,
-    });
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 600_000);
 
-    clearTimeout(timeoutId);
+    try {
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "gpt-image-2",
+          prompt,
+          n: 1,
+          size: "2560x1440",
+          quality: "high",
+        }),
+        signal: controller.signal,
+        keepalive: false,
+      });
 
-    const json = (await response.json()) as {
-      data?: Array<{ b64_json?: string }>;
-      error?: { message: string };
-    };
+      clearTimeout(timeoutId);
 
-    if (json.error) {
-      return { ok: false, error: json.error.message };
+      const json = (await response.json()) as {
+        data?: Array<{ b64_json?: string }>;
+        error?: { message: string };
+      };
+
+      if (json.error) {
+        lastResult = { ok: false, error: json.error.message };
+      } else {
+        const b64 = json.data?.[0]?.b64_json;
+        if (!b64) {
+          lastResult = { ok: false, error: "No image data in response" };
+        } else {
+          const imgBuffer = Buffer.from(b64, "base64");
+          const outputDir = join(process.cwd(), "public", "avatars");
+          const outPath = join(outputDir, `${name}.png`);
+          writeFileSync(outPath, imgBuffer);
+
+          const avatarPath = `/avatars/${name}.png`;
+          await db
+            .update(employees)
+            .set({ avatar: avatarPath, updatedAt: new Date() })
+            .where(eq(employees.id, employeeId));
+
+          return { ok: true };
+        }
+      }
+    } catch (err: unknown) {
+      clearTimeout(timeoutId);
+      if (err instanceof Error && err.name === "AbortError") {
+        lastResult = { ok: false, error: "Request timed out after 600s" };
+      } else {
+        lastResult = { ok: false, error: err instanceof Error ? err.message : String(err) };
+      }
     }
 
-    const b64 = json.data?.[0]?.b64_json;
-    if (!b64) {
-      return { ok: false, error: "No image data in response" };
+    if (attempt < 3) {
+      console.log(`  Retry ${attempt}/3 for ${name}...`);
+      await new Promise((resolve) => setTimeout(resolve, 10_000));
     }
-
-    const imgBuffer = Buffer.from(b64, "base64");
-    const outputDir = join(process.cwd(), "public", "avatars");
-    const outPath = join(outputDir, `${name}.png`);
-    writeFileSync(outPath, imgBuffer);
-
-    const avatarPath = `/avatars/${name}.png`;
-    await db
-      .update(employees)
-      .set({ avatar: avatarPath, updatedAt: new Date() })
-      .where(eq(employees.id, employeeId));
-
-    return { ok: true };
-  } catch (err: unknown) {
-    clearTimeout(timeoutId);
-    if (err instanceof Error && err.name === "AbortError") {
-      return { ok: false, error: "Request timed out after 600s" };
-    }
-    return { ok: false, error: err instanceof Error ? err.message : String(err) };
   }
+
+  return lastResult;
 }
