@@ -93,7 +93,6 @@ export async function generateSingleAvatar(
           quality: "high",
         }),
         signal: controller.signal,
-        keepalive: false,
       });
 
       clearTimeout(timeoutId);

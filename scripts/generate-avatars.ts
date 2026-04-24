@@ -217,7 +217,6 @@ async function generateAvatar(emp: Employee, outputDir: string): Promise<Generat
           quality: "high",
         }),
         signal: controller.signal,
-        keepalive: false,
       });
 
       clearTimeout(timeoutId);
