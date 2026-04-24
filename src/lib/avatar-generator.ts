@@ -73,7 +73,7 @@ export async function generateSingleAvatar(
   const endpoint = `${gatewayUrl}/v1/images/generations`;
 
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 300_000);
+  const timeoutId = setTimeout(() => controller.abort(), 600_000);
 
   try {
     const response = await fetch(endpoint, {
@@ -123,7 +123,7 @@ export async function generateSingleAvatar(
   } catch (err: unknown) {
     clearTimeout(timeoutId);
     if (err instanceof Error && err.name === "AbortError") {
-      return { ok: false, error: "Request timed out after 300s" };
+      return { ok: false, error: "Request timed out after 600s" };
     }
     return { ok: false, error: err instanceof Error ? err.message : String(err) };
   }
