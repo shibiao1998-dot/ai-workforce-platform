@@ -31,11 +31,12 @@ export function loadEnvLocal(): void {
 // Style prefix (shared with batch script)
 // ---------------------------------------------------------------------------
 const STYLE_PREFIX =
-  "Create a stylish 2D digital illustration portrait of a young Chinese professional in LANDSCAPE orientation (16:9, 1376x768). " +
-  "Trendy modern illustration style with bold confident lines, vibrant colors, and dynamic lighting. " +
-  "The character should look young (early-to-late 20s), energetic, fashionable, and highly competent — like a top talent at a cutting-edge tech startup. " +
-  "Frame from chest up, centered with breathing room. Include a detailed background scene specific to their work environment. " +
-  "The overall mood should be cool, professional, and aspirational.";
+  "Professional commercial portrait photograph of a young Chinese professional. " +
+  "Shot on Canon EOS R5 with 85mm f/1.4 lens. Shallow depth of field, natural lighting with soft fill light. " +
+  "Photorealistic, high-end corporate magazine editorial style. " +
+  "Frame from chest up, centered with breathing room. Real fabric textures, real accessories, real hair. " +
+  "LANDSCAPE orientation (16:9, 2560x1440). No illustration, no anime, no CGI, no AI-generated artifacts. " +
+  "The person must look like a real Chinese individual with natural skin texture, natural facial features, and natural expression.";
 
 const TEAM_ACCENT: Record<string, string> = {
   management: "purple and violet",
@@ -48,11 +49,11 @@ const TEAM_ACCENT: Record<string, string> = {
 // ---------------------------------------------------------------------------
 export function generateAvatarDescription(title: string, team: string): string {
   const accent = TEAM_ACCENT[team] || "neutral";
-  return `Young professional in a ${title} role, age mid-20s, trendy streetwear style, confident energetic expression, modern tech workspace background with ${accent} ambient lighting`;
+  return `Young Chinese professional in a ${title} role, age mid-20s, smart business casual attire, confident and approachable expression, modern office environment with ${accent} ambient lighting`;
 }
 
 // ---------------------------------------------------------------------------
-// Generate a single avatar via Gemini API and persist to DB
+// Generate a single avatar via gpt-image-2 API and persist to DB
 // ---------------------------------------------------------------------------
 export async function generateSingleAvatar(
   employeeId: string,
@@ -61,18 +62,18 @@ export async function generateSingleAvatar(
 ): Promise<{ ok: boolean; error?: string }> {
   loadEnvLocal();
 
-  const gatewayUrl = process.env.GEMINI_GATEWAY_URL;
-  const apiKey = process.env.GEMINI_API_KEY;
+  const gatewayUrl = process.env.IMAGE_API_GATEWAY_URL;
+  const apiKey = process.env.IMAGE_API_KEY;
 
   if (!gatewayUrl || !apiKey) {
-    return { ok: false, error: "Missing GEMINI_GATEWAY_URL or GEMINI_API_KEY" };
+    return { ok: false, error: "Missing IMAGE_API_GATEWAY_URL or IMAGE_API_KEY" };
   }
 
   const prompt = `${STYLE_PREFIX} ${description}.`;
-  const endpoint = `${gatewayUrl}/v1/chat/completions`;
+  const endpoint = `${gatewayUrl}/v1/images/generations`;
 
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 90_000);
+  const timeoutId = setTimeout(() => controller.abort(), 300_000);
 
   try {
     const response = await fetch(endpoint, {
@@ -82,9 +83,11 @@ export async function generateSingleAvatar(
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "gemini-3.1-flash-image-preview",
-        messages: [{ role: "user", content: prompt }],
-        modalities: ["text", "image"],
+        model: "gpt-image-2",
+        prompt,
+        n: 1,
+        size: "2560x1440",
+        quality: "high",
       }),
       signal: controller.signal,
     });
@@ -120,7 +123,7 @@ export async function generateSingleAvatar(
   } catch (err: unknown) {
     clearTimeout(timeoutId);
     if (err instanceof Error && err.name === "AbortError") {
-      return { ok: false, error: "Request timed out after 90s" };
+      return { ok: false, error: "Request timed out after 300s" };
     }
     return { ok: false, error: err instanceof Error ? err.message : String(err) };
   }
