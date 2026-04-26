@@ -68,7 +68,11 @@ function parseArgs(argv: string[]): CliArgs {
     if (a === "--dry-run") args.dryRun = true;
     else if (a.startsWith("--id=")) args.id = a.slice(5);
     else if (a.startsWith("--family=")) args.family = a.slice(9);
-    else if (a.startsWith("--batch=")) args.batch = a.slice(8);
+    else if (a.startsWith("--batch=")) {
+      const v = a.slice(8);
+      if (v !== "1") throw new Error(`--batch only accepts "1" (tier=top filter), got: "${v}"`);
+      args.batch = v;
+    }
   }
   return args;
 }
@@ -184,7 +188,7 @@ async function generateOne(
         });
       });
       req.on("error", (e) => resolvePromise({ ok: false, error: e.message }));
-      req.on("timeout", () => { req.destroy(); resolvePromise({ ok: false, error: "Timeout 600s" }); });
+      req.on("timeout", () => { req.destroy(); resolvePromise({ ok: false, error: "Request timed out after 600s" }); });
       req.write(body);
       req.end();
     });
@@ -205,7 +209,13 @@ async function main(): Promise<void> {
   const args = parseArgs(process.argv.slice(2));
 
   const catalogPath = resolve(process.cwd(), "scripts/nd-catalog.json");
-  const catalog: Catalog = JSON.parse(readFileSync(catalogPath, "utf-8"));
+  let catalog: Catalog;
+  try {
+    catalog = JSON.parse(readFileSync(catalogPath, "utf-8"));
+  } catch (e) {
+    console.error(`Failed to load catalog at ${catalogPath}:`, e instanceof Error ? e.message : e);
+    process.exit(1);
+  }
 
   const entries = selectEntries(catalog, args);
   if (entries.length === 0) {
@@ -221,21 +231,26 @@ async function main(): Promise<void> {
   let succeeded = 0, failed = 0;
   const failures: string[] = [];
 
+  // Build flat list of (id, entry, size) tuples so we can skip the final sleep
+  const jobs: Array<{ id: string; entry: CatalogEntry; size: Size }> = [];
   for (const [id, entry] of entries) {
+    for (const size of entry.sizes) jobs.push({ id, entry, size });
+  }
+
+  for (let i = 0; i < jobs.length; i++) {
+    const { id, entry, size } = jobs[i];
     const prompt = buildPrompt(entry);
-    for (const size of entry.sizes) {
-      console.log(`GEN  ${id} [${size.label} ${size.width}x${size.height}] tier=${entry.tier}`);
-      const r = await generateOne(id, entry, prompt, size, outDir, args.dryRun);
-      if (r.ok) {
-        console.log(`OK   ${id}-${size.label} (${r.sizeKB} KB)`);
-        succeeded++;
-      } else {
-        console.error(`FAIL ${id}-${size.label}: ${r.error}`);
-        failed++;
-        failures.push(`${id}-${size.label}: ${r.error}`);
-      }
-      if (!args.dryRun) await sleep(3_000);
+    console.log(`GEN  ${id} [${size.label} ${size.width}x${size.height}] tier=${entry.tier}`);
+    const r = await generateOne(id, entry, prompt, size, outDir, args.dryRun);
+    if (r.ok) {
+      console.log(`OK   ${id}-${size.label} (${r.sizeKB} KB)`);
+      succeeded++;
+    } else {
+      console.error(`FAIL ${id}-${size.label}: ${r.error}`);
+      failed++;
+      failures.push(`${id}-${size.label}: ${r.error}`);
     }
+    if (!args.dryRun && i < jobs.length - 1) await sleep(3_000);
   }
 
   console.log("\n" + "─".repeat(50));
