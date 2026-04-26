@@ -1,0 +1,1 @@
+tileable subtle background texture, faint hexagonal tech grid with extremely low contrast, nearly white cool-tinted surface, meant to be applied as a full-page background at low opacity, seamless, no focal element

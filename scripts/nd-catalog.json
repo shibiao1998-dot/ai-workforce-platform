@@ -1,0 +1,49 @@
+{
+  "$schema": "./nd-catalog.schema.json",
+  "version": "0.1.0",
+  "assets": {
+    "smoke-test": {
+      "family": "ornament",
+      "subject": "smoke test fragment",
+      "promptVars": {
+        "MOTIF": "a single hexagonal energy node emitting a soft glow, surrounded by 3-4 smaller orbiting polygons"
+      },
+      "sizes": [
+        { "label": "default", "width": 1024, "height": 1024 }
+      ],
+      "tier": "normal",
+      "fallback": { "type": "gradient", "from": "#1E6EFF", "to": "#14C7C1" }
+    },
+    "hero-dashboard": {
+      "family": "hero",
+      "subject": "dashboard welcome (placeholder for phase 1)",
+      "promptVars": {
+        "TOPIC": "AI workforce command center",
+        "HERO-SUBJECT": "ethereal holographic dashboard suspended in clean factory space with soft morning light"
+      },
+      "sizes": [
+        { "label": "desktop", "width": 1920, "height": 600 },
+        { "label": "tablet",  "width": 1024, "height": 380 },
+        { "label": "mobile",  "width": 640,  "height": 360 }
+      ],
+      "tier": "top",
+      "fallback": { "type": "gradient", "from": "#0B1A3A", "to": "#142651" }
+    },
+    "scene-ai-game-designer": {
+      "family": "scene",
+      "subject": "AI Game Designer workstation (placeholder for phase 1)",
+      "promptVars": {
+        "NAME": "AI Game Designer",
+        "ROLE": "game mechanic designer",
+        "MOOD": "focused creative flow",
+        "GESTURE": "hands lightly gesturing toward a floating 3D game world",
+        "TEAM-COLOR": "sapphire blue"
+      },
+      "sizes": [
+        { "label": "card", "width": 800, "height": 1000 }
+      ],
+      "tier": "top",
+      "fallback": { "type": "svg", "path": "scene-generic.svg" }
+    }
+  }
+}

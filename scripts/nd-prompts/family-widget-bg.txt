@@ -1,0 +1,1 @@
+ultra-subtle background texture for a UI card interior, <PATTERN> pattern at very low contrast, almost white with a faint cool blue tint, meant to sit behind chart and text without distracting, absolutely no focal object
