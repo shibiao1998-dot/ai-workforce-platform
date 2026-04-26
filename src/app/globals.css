@@ -66,19 +66,19 @@
   --color-nd-accent:       hsl(38 95% 58%);
   --color-nd-violet:       hsl(268 75% 62%);
   --color-nd-emerald:      hsl(156 72% 44%);
-  --color-nd-sapphire:     hsl(218 95% 52%);
+  --color-nd-sapphire:     hsl(218 95% 52%); /* 设计团队色(= primary,语义独立) */
 
   /* Layer 3 — 高光层(仅展示区) */
   --color-nd-void:         hsl(225 50% 8%);
-  --color-nd-void-glow:    hsl(218 95% 52%);
+  --color-nd-void-glow:    hsl(218 95% 52%); /* Layer 3 高光(= primary,展示区用) */
   --color-nd-void-edge:    hsl(172 85% 50%);
   --color-nd-gold-line:    hsl(42 65% 58%);
 
   /* 语义色 */
-  --color-nd-success:      hsl(156 72% 44%);
-  --color-nd-warning:      hsl(38 95% 58%);
+  --color-nd-success:      hsl(156 72% 44%); /* 语义成功(= emerald,可独立演化) */
+  --color-nd-warning:      hsl(38 95% 58%); /* 语义警告(= accent,可独立演化) */
   --color-nd-danger:       hsl(358 75% 55%);
-  --color-nd-info:         hsl(172 85% 42%);
+  --color-nd-info:         hsl(172 85% 42%); /* 语义信息(= secondary,可独立演化) */
 
   /* 字体 */
   --font-nd-sans:    "HarmonyOS Sans SC", "PingFang SC", "Noto Sans CJK SC", "Inter", system-ui, sans-serif;
@@ -96,7 +96,7 @@
   /* 阴影(冷蓝光影) */
   --shadow-nd-xs:   0 1px 2px hsl(218 80% 30% / 0.06);
   --shadow-nd-sm:   0 2px 8px hsl(218 80% 30% / 0.08);
-  --shadow-nd-md:   0 8px 24px hsl(218 80% 30% / 0.10);
+  --shadow-nd-md:   0 8px 24px hsl(218 80% 30% / 0.1);
   --shadow-nd-lg:   0 16px 48px hsl(218 80% 30% / 0.14);
   --shadow-nd-glow: 0 0 24px hsl(218 95% 52% / 0.35);
 
