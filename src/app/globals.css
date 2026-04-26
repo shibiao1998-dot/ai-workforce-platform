@@ -46,6 +46,70 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+
+  /* ──────────────────────────────────────────────────────────
+   * NetDragon UI Tokens
+   * Namespace: --nd-*  (不污染 shadcn 原有变量)
+   * ────────────────────────────────────────────────────────── */
+
+  /* Layer 1 — 基底层(日常操作) */
+  --color-nd-ink:          hsl(215 35% 15%);
+  --color-nd-ink-soft:     hsl(215 20% 40%);
+  --color-nd-surface:      hsl(0 0% 100%);
+  --color-nd-canvas:       hsl(215 30% 97%);
+  --color-nd-line:         hsl(215 20% 90%);
+
+  /* Layer 2 — 品牌层 */
+  --color-nd-primary:      hsl(218 95% 52%);
+  --color-nd-primary-deep: hsl(225 75% 35%);
+  --color-nd-secondary:    hsl(172 85% 42%);
+  --color-nd-accent:       hsl(38 95% 58%);
+  --color-nd-violet:       hsl(268 75% 62%);
+  --color-nd-emerald:      hsl(156 72% 44%);
+  --color-nd-sapphire:     hsl(218 95% 52%);
+
+  /* Layer 3 — 高光层(仅展示区) */
+  --color-nd-void:         hsl(225 50% 8%);
+  --color-nd-void-glow:    hsl(218 95% 52%);
+  --color-nd-void-edge:    hsl(172 85% 50%);
+  --color-nd-gold-line:    hsl(42 65% 58%);
+
+  /* 语义色 */
+  --color-nd-success:      hsl(156 72% 44%);
+  --color-nd-warning:      hsl(38 95% 58%);
+  --color-nd-danger:       hsl(358 75% 55%);
+  --color-nd-info:         hsl(172 85% 42%);
+
+  /* 字体 */
+  --font-nd-sans:    "HarmonyOS Sans SC", "PingFang SC", "Noto Sans CJK SC", "Inter", system-ui, sans-serif;
+  --font-nd-display: "Orbitron", "HarmonyOS Sans SC", sans-serif;
+  --font-nd-serif:   "Source Han Serif SC", "Noto Serif CJK", serif;
+  --font-nd-mono:    "JetBrains Mono", monospace;
+
+  /* 圆角 */
+  --radius-nd-sm:   6px;
+  --radius-nd-md:   10px;
+  --radius-nd-lg:   16px;
+  --radius-nd-xl:   24px;
+  --radius-nd-full: 9999px;
+
+  /* 阴影(冷蓝光影) */
+  --shadow-nd-xs:   0 1px 2px hsl(218 80% 30% / 0.06);
+  --shadow-nd-sm:   0 2px 8px hsl(218 80% 30% / 0.08);
+  --shadow-nd-md:   0 8px 24px hsl(218 80% 30% / 0.10);
+  --shadow-nd-lg:   0 16px 48px hsl(218 80% 30% / 0.14);
+  --shadow-nd-glow: 0 0 24px hsl(218 95% 52% / 0.35);
+
+  /* 动效 */
+  --ease-nd-out:    cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-nd-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --duration-nd-fast: 150ms;
+  --duration-nd-base: 250ms;
+  --duration-nd-slow: 450ms;
+
+  /* 玻璃质感 */
+  --color-nd-glass-bg:     hsl(0 0% 100% / 0.72);
+  --color-nd-glass-border: hsl(218 50% 70% / 0.35);
 }
 
 :root {
@@ -119,5 +183,34 @@
     @apply font-sans;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────
+ * NetDragon · 能量流动动效
+ * 任何元素加上 .nd-flow 即可让一道光沿水平方向循环流动
+ * ────────────────────────────────────────────────────────── */
+@keyframes nd-flow {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
+}
+
+.nd-flow {
+  background-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    hsl(218 95% 52% / 0.6) 45%,
+    hsl(172 85% 50% / 0.8) 50%,
+    hsl(218 95% 52% / 0.6) 55%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: nd-flow 2.5s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nd-flow {
+    animation: none;
+    background-image: linear-gradient(90deg, hsl(218 95% 52% / 0.4), hsl(172 85% 50% / 0.4));
   }
 }
