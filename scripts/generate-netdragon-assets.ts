@@ -223,6 +223,20 @@ async function main(): Promise<void> {
     process.exit(1);
   }
 
+  const badSizes: string[] = [];
+  for (const [id, entry] of entries) {
+    for (const s of entry.sizes) {
+      if (s.width % 16 !== 0 || s.height % 16 !== 0) {
+        badSizes.push(`  ${id} [${s.label}] ${s.width}x${s.height}`);
+      }
+    }
+  }
+  if (badSizes.length > 0) {
+    console.error("gpt-image-2 requires width and height divisible by 16. Offenders:");
+    for (const line of badSizes) console.error(line);
+    process.exit(1);
+  }
+
   const outDir = resolve(process.cwd(), "public/netdragon");
   mkdirSync(outDir, { recursive: true });
 

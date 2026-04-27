@@ -22,9 +22,9 @@
         "HERO-SUBJECT": "ethereal holographic dashboard suspended in clean factory space with soft morning light"
       },
       "sizes": [
-        { "label": "desktop", "width": 1920, "height": 600 },
-        { "label": "tablet",  "width": 1024, "height": 380 },
-        { "label": "mobile",  "width": 640,  "height": 360 }
+        { "label": "desktop", "width": 1920, "height": 608 },
+        { "label": "tablet",  "width": 1024, "height": 384 },
+        { "label": "mobile",  "width": 640,  "height": 352 }
       ],
       "tier": "top",
       "fallback": { "type": "gradient", "from": "#0B1A3A", "to": "#142651" }
@@ -40,7 +40,7 @@
         "TEAM-COLOR": "sapphire blue"
       },
       "sizes": [
-        { "label": "card", "width": 800, "height": 1000 }
+        { "label": "card", "width": 800, "height": 1008 }
       ],
       "tier": "top",
       "fallback": { "type": "svg", "path": "scene-generic.svg" }
@@ -56,7 +56,7 @@
         "GESTURE": "one hand sketching in the air, one hand resting on a holo-palette",
         "TEAM-COLOR": "sapphire blue"
       },
-      "sizes": [{ "label": "card", "width": 800, "height": 1000 }],
+      "sizes": [{ "label": "card", "width": 800, "height": 1008 }],
       "tier": "top",
       "fallback": { "type": "svg", "path": "scene-generic.svg" }
     },
@@ -70,7 +70,7 @@
         "GESTURE": "leaning slightly forward reading floating story cards",
         "TEAM-COLOR": "emerald green"
       },
-      "sizes": [{ "label": "card", "width": 800, "height": 1000 }],
+      "sizes": [{ "label": "card", "width": 800, "height": 1008 }],
       "tier": "top",
       "fallback": { "type": "svg", "path": "scene-generic.svg" }
     },
@@ -84,7 +84,7 @@
         "GESTURE": "arranging colored tags on a floating kanban",
         "TEAM-COLOR": "sapphire blue"
       },
-      "sizes": [{ "label": "card", "width": 800, "height": 1000 }],
+      "sizes": [{ "label": "card", "width": 800, "height": 1008 }],
       "tier": "top",
       "fallback": { "type": "svg", "path": "scene-generic.svg" }
     },
@@ -98,7 +98,7 @@
         "GESTURE": "conducting a floating 3D character turnaround",
         "TEAM-COLOR": "emerald green"
       },
-      "sizes": [{ "label": "card", "width": 800, "height": 1000 }],
+      "sizes": [{ "label": "card", "width": 800, "height": 1008 }],
       "tier": "top",
       "fallback": { "type": "svg", "path": "scene-generic.svg" }
     },
@@ -112,7 +112,7 @@
         "GESTURE": "framing a shot with both hands in front of a floating 3D set",
         "TEAM-COLOR": "emerald green"
       },
-      "sizes": [{ "label": "card", "width": 800, "height": 1000 }],
+      "sizes": [{ "label": "card", "width": 800, "height": 1008 }],
       "tier": "top",
       "fallback": { "type": "svg", "path": "scene-generic.svg" }
     },
