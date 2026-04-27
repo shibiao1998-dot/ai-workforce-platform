@@ -1,4 +1,4 @@
-import { sqliteTable, text, integer, real } from "drizzle-orm/sqlite-core";
+import { sqliteTable, text, integer, real, uniqueIndex } from "drizzle-orm/sqlite-core";
 
 export const employees = sqliteTable("employees", {
   id: text("id").primaryKey(),
@@ -131,4 +131,57 @@ export const helpArticles = sqliteTable("help_articles", {
   sortOrder: integer("sort_order").notNull().default(0),
   createdAt: integer("created_at", { mode: "timestamp" }),
   updatedAt: integer("updated_at", { mode: "timestamp" }),
+});
+
+export const roles = sqliteTable("roles", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull().unique(),
+  displayName: text("display_name").notNull(),
+  description: text("description"),
+  isSystem: integer("is_system", { mode: "boolean" }).notNull().default(false),
+  createdAt: integer("created_at", { mode: "timestamp" }),
+  updatedAt: integer("updated_at", { mode: "timestamp" }),
+});
+
+export const rolePermissions = sqliteTable(
+  "role_permissions",
+  {
+    id: text("id").primaryKey(),
+    roleId: text("role_id")
+      .notNull()
+      .references(() => roles.id, { onDelete: "cascade" }),
+    module: text("module", {
+      enum: ["employees", "production", "org", "dashboard", "help", "settings"],
+    }).notNull(),
+    action: text("action", { enum: ["read", "write", "delete"] }).notNull(),
+  },
+  (t) => ({
+    unq: uniqueIndex("role_perm_unq").on(t.roleId, t.module, t.action),
+  })
+);
+
+export const userRoles = sqliteTable("user_roles", {
+  id: text("id").primaryKey(),
+  ucUserId: text("uc_user_id").notNull().unique(),
+  nickname: text("nickname").notNull(),
+  avatar: text("avatar"),
+  roleId: text("role_id")
+    .notNull()
+    .references(() => roles.id, { onDelete: "restrict" }),
+  lastLoginAt: integer("last_login_at", { mode: "timestamp" }),
+  createdAt: integer("created_at", { mode: "timestamp" }),
+  updatedAt: integer("updated_at", { mode: "timestamp" }),
+});
+
+export const auditLogs = sqliteTable("audit_logs", {
+  id: text("id").primaryKey(),
+  operatorUcId: text("operator_uc_id").notNull(),
+  operatorNickname: text("operator_nickname").notNull(),
+  action: text("action").notNull(),
+  targetType: text("target_type"),
+  targetId: text("target_id"),
+  details: text("details"),
+  ip: text("ip"),
+  userAgent: text("user_agent"),
+  createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
 });
