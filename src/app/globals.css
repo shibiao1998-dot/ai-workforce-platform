@@ -110,6 +110,7 @@
   /* 玻璃质感 */
   --color-nd-glass-bg:     hsl(0 0% 100% / 0.72);
   --color-nd-glass-border: hsl(218 50% 70% / 0.35);
+  --nd-glass-blur:         16px;
 }
 
 :root {
