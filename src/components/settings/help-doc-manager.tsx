@@ -45,7 +45,11 @@ interface EditForm {
   content: string;
 }
 
-export function HelpDocManager() {
+interface HelpDocManagerProps {
+  canDelete: boolean;
+}
+
+export function HelpDocManager({ canDelete }: HelpDocManagerProps) {
   const [categories, setCategories] = useState<Category[]>([]);
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
   const [articles, setArticles] = useState<ArticleSummary[]>([]);
@@ -200,6 +204,7 @@ export function HelpDocManager() {
               <FileText className="w-4 h-4 flex-shrink-0" />
               <span className="flex-1 text-sm truncate">{cat.name}</span>
               <span className="text-xs text-muted-foreground">{cat.articleCount}</span>
+              {canDelete && (
               <AlertDialog>
                 <AlertDialogTrigger
                   render={
@@ -226,6 +231,7 @@ export function HelpDocManager() {
                   </AlertDialogFooter>
                 </AlertDialogContent>
               </AlertDialog>
+              )}
             </div>
           ))}
         </div>
@@ -345,6 +351,7 @@ export function HelpDocManager() {
                         >
                           编辑
                         </Button>
+                        {canDelete && (
                         <AlertDialog>
                           <AlertDialogTrigger
                             render={
@@ -368,6 +375,7 @@ export function HelpDocManager() {
                             </AlertDialogFooter>
                           </AlertDialogContent>
                         </AlertDialog>
+                        )}
                       </div>
                     </div>
                   ))}

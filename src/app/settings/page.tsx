@@ -70,6 +70,7 @@ export default async function SettingsPage() {
   const { employeeList, configRows } = await getData();
   const me = await getCurrentUserWithPermissions();
   const canManagePermissions = me?.permissions.settings.includes("write") ?? false;
+  const canDeleteHelp = me?.permissions.help.includes("delete") ?? false;
 
   return (
     <div className="p-8">
@@ -98,7 +99,7 @@ export default async function SettingsPage() {
           <DataManagementCenter />
         </TabsContent>
         <TabsContent value="help">
-          <HelpDocManager />
+          <HelpDocManager canDelete={canDeleteHelp} />
         </TabsContent>
         {canManagePermissions && (
           <TabsContent value="permissions">
