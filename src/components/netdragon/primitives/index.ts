@@ -1,4 +1,5 @@
 export { NdAsset } from "./nd-asset";
+export { NdAssetSvg } from "./nd-asset-svg";
 export {
   getNdAsset,
   getNdAssetPath,
