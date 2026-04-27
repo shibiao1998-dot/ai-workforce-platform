@@ -94,7 +94,7 @@ export function can(perms: UserPermissions, module: Module, action: Action): boo
  * 未登录 → 抛 401;登录但无权限 → 抛 403。
  * 返回当前 SessionUser 便于后续埋点使用。
  * 因为 Next.js route handler 不能 throw Response,此函数返回元组 [user, errResponse]:
- *   const [user, err] = await requirePermission(request, "employees", "delete");
+ *   const [, err] = await requirePermission("employees", "delete", request);
  *   if (err) return err;
  */
 export async function requirePermission(
