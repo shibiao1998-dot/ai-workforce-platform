@@ -11,6 +11,7 @@
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
     "db:seed": "tsx src/db/seed.ts",
+    "db:seed:permissions": "tsx scripts/seed-permissions.ts",
     "generate:avatars": "tsx scripts/generate-avatars.ts",
     "nd:generate": "tsx scripts/generate-netdragon-assets.ts",
     "nd:postprocess": "tsx scripts/nd-post-process.ts",
