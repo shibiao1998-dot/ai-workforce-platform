@@ -3,6 +3,7 @@ import * as XLSX from "xlsx";
 import { db } from "@/db";
 import { metrics, skillMetrics, tasks, employees, skills } from "@/db/schema";
 import { eq, and, like, desc } from "drizzle-orm";
+import { requirePermission } from "@/lib/authz";
 
 const TEAM_LABELS: Record<string, string> = {
   management: "管理团队",
@@ -165,6 +166,8 @@ function buildCsv(headers: string[], dataRows: string[][]): string {
 }
 
 export async function GET(req: NextRequest) {
+  const [, err] = await requirePermission("settings", "read", req);
+  if (err) return err;
   const { searchParams } = new URL(req.url);
   const type = searchParams.get("type") ?? "metrics";
   const format = searchParams.get("format") ?? "csv";

@@ -3,8 +3,11 @@ import { db } from "@/db";
 import { metricConfigs } from "@/db/schema";
 import { eq, and, isNull, isNotNull } from "drizzle-orm";
 import { randomUUID } from "crypto";
+import { requirePermission } from "@/lib/authz";
 
 export async function GET(req: NextRequest) {
+  const [, err] = await requirePermission("settings", "read", req);
+  if (err) return err;
   const { searchParams } = req.nextUrl;
   const level = searchParams.get("level");
   const team = searchParams.get("team");
@@ -36,6 +39,8 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+  const [, err] = await requirePermission("settings", "write", req);
+  if (err) return err;
   const body = await req.json();
   const id = randomUUID();
   await db.insert(metricConfigs).values({

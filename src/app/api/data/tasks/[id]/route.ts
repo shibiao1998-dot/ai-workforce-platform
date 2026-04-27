@@ -2,11 +2,14 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
 import { tasks } from "@/db/schema";
 import { eq } from "drizzle-orm";
+import { requirePermission } from "@/lib/authz";
 
 export async function PUT(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const [, err] = await requirePermission("settings", "write", req);
+  if (err) return err;
   const { id } = await params;
   const body = await req.json();
   const { qualityScore, retryCount, tokenUsage, status } = body;

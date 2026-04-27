@@ -2,8 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
 import { tasks, employees } from "@/db/schema";
 import { eq, and, like, desc, gte, lte, sql } from "drizzle-orm";
+import { requirePermission } from "@/lib/authz";
 
 export async function GET(req: NextRequest) {
+  const [, err] = await requirePermission("settings", "read", req);
+  if (err) return err;
   const { searchParams } = new URL(req.url);
   const page = Math.max(1, parseInt(searchParams.get("page") ?? "1"));
   const pageSize = Math.max(1, parseInt(searchParams.get("pageSize") ?? "20"));
@@ -76,6 +79,8 @@ export async function GET(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
+  const [, err] = await requirePermission("settings", "delete", req);
+  if (err) return err;
   const body = await req.json();
   const { ids } = body as { ids: string[] };
 
