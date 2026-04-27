@@ -3,8 +3,11 @@ import { db } from "@/db";
 import { helpArticles } from "@/db/schema";
 import { eq, like, or, and } from "drizzle-orm";
 import { randomUUID } from "crypto";
+import { requirePermission } from "@/lib/authz";
 
 export async function GET(req: NextRequest) {
+  const [, err] = await requirePermission("help", "read", req);
+  if (err) return err;
   const { searchParams } = req.nextUrl;
   const categoryId = searchParams.get("categoryId");
   const search = searchParams.get("search");
@@ -42,6 +45,8 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+  const [, err] = await requirePermission("help", "write", req);
+  if (err) return err;
   const body = await req.json();
   const now = new Date();
   const article = {

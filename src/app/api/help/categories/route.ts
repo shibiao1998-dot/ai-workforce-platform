@@ -3,8 +3,11 @@ import { db } from "@/db";
 import { helpCategories } from "@/db/schema";
 import { eq, sql } from "drizzle-orm";
 import { randomUUID } from "crypto";
+import { requirePermission } from "@/lib/authz";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const [, err] = await requirePermission("help", "read", req);
+  if (err) return err;
   const rows = await db
     .select({
       id: helpCategories.id,
@@ -21,6 +24,8 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
+  const [, err] = await requirePermission("help", "write", req);
+  if (err) return err;
   const body = await req.json();
   const id = randomUUID();
   await db.insert(helpCategories).values({
