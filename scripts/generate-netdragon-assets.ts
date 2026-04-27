@@ -227,12 +227,16 @@ async function main(): Promise<void> {
   for (const [id, entry] of entries) {
     for (const s of entry.sizes) {
       if (s.width % 16 !== 0 || s.height % 16 !== 0) {
-        badSizes.push(`  ${id} [${s.label}] ${s.width}x${s.height}`);
+        badSizes.push(`  ${id} [${s.label}] ${s.width}x${s.height}  (not divisible by 16)`);
+      }
+      const ratio = Math.max(s.width / s.height, s.height / s.width);
+      if (ratio > 3) {
+        badSizes.push(`  ${id} [${s.label}] ${s.width}x${s.height}  (aspect ratio ${ratio.toFixed(3)}:1 exceeds 3:1)`);
       }
     }
   }
   if (badSizes.length > 0) {
-    console.error("gpt-image-2 requires width and height divisible by 16. Offenders:");
+    console.error("gpt-image-2 requires width/height divisible by 16 AND aspect ratio ≤ 3:1. Offenders:");
     for (const line of badSizes) console.error(line);
     process.exit(1);
   }

@@ -22,7 +22,7 @@
         "HERO-SUBJECT": "ethereal holographic dashboard suspended in clean factory space with soft morning light"
       },
       "sizes": [
-        { "label": "desktop", "width": 1920, "height": 608 },
+        { "label": "desktop", "width": 1920, "height": 640 },
         { "label": "tablet",  "width": 1024, "height": 384 },
         { "label": "mobile",  "width": 640,  "height": 352 }
       ],
@@ -194,7 +194,7 @@
       "promptVars": {
         "MOTIF": "a single horizontal beam of flowing blue-cyan energy with soft particles drifting along it, 4:1 aspect, meant to be placed as a divider between page sections, hints of Enterprise-starship warp-nacelle on the right end"
       },
-      "sizes": [{ "label": "default", "width": 1600, "height": 400 }],
+      "sizes": [{ "label": "default", "width": 1200, "height": 400 }],
       "tier": "top",
       "fallback": { "type": "gradient", "from": "#1E6EFF", "to": "#14C7C1" }
     }
