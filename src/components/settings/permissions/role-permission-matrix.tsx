@@ -22,11 +22,11 @@ export type PermissionSet = Array<{ module: Module; action: Action }>;
 
 export function RolePermissionMatrix({
   value,
-  onChange,
+  onChangeAction,
   disabled,
 }: {
   value: PermissionSet;
-  onChange: (v: PermissionSet) => void;
+  onChangeAction: (v: PermissionSet) => void;
   disabled?: boolean;
 }) {
   const has = (m: Module, a: Action) =>
@@ -36,9 +36,9 @@ export function RolePermissionMatrix({
     if (disabled) return;
     const exists = has(m, a);
     if (exists) {
-      onChange(value.filter((p) => !(p.module === m && p.action === a)));
+      onChangeAction(value.filter((p) => !(p.module === m && p.action === a)));
     } else {
-      onChange([...value, { module: m, action: a }]);
+      onChangeAction([...value, { module: m, action: a }]);
     }
   };
 
