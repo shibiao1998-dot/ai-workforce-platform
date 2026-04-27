@@ -70,9 +70,26 @@ function UserPopover({ user, onLogout }: { user: { nickname: string; avatar: str
   );
 }
 
-export function Sidebar({ user }: { user?: { nickname: string; avatar: string } | null }) {
+export function Sidebar({ user: initialUser }: { user?: { nickname: string; avatar: string } | null }) {
   const pathname = usePathname();
   const { toggle } = useHelpPanel();
+  const [user, setUser] = useState<{ nickname: string; avatar: string } | null>(initialUser ?? null);
+
+  // 客户端获取用户信息，解决 layout 缓存导致 user 为 null 的问题
+  useEffect(() => {
+    if (user) return;
+    fetch("/api/auth/me")
+      .then((r) => {
+        if (!r.ok) return null;
+        return r.json();
+      })
+      .then((data) => {
+        if (data?.nickname) {
+          setUser({ nickname: data.nickname, avatar: data.avatar || "" });
+        }
+      })
+      .catch(() => {});
+  }, [user]);
 
   const handleLogout = async () => {
     await fetch("/api/auth/logout", { method: "POST" });
