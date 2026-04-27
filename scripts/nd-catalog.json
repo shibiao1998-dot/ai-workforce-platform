@@ -1,6 +1,6 @@
 {
   "$schema": "./nd-catalog.schema.json",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "assets": {
     "smoke-test": {
       "family": "ornament",
@@ -44,6 +44,159 @@
       ],
       "tier": "top",
       "fallback": { "type": "svg", "path": "scene-generic.svg" }
+    },
+
+    "scene-ai-role-designer": {
+      "family": "scene",
+      "subject": "AI Role Designer workstation",
+      "promptVars": {
+        "NAME": "AI Role Designer",
+        "ROLE": "character and IP visual designer",
+        "MOOD": "inspired and observant",
+        "GESTURE": "one hand sketching in the air, one hand resting on a holo-palette",
+        "TEAM-COLOR": "sapphire blue"
+      },
+      "sizes": [{ "label": "card", "width": 800, "height": 1000 }],
+      "tier": "top",
+      "fallback": { "type": "svg", "path": "scene-generic.svg" }
+    },
+    "scene-ai-screenwriter": {
+      "family": "scene",
+      "subject": "AI Screenwriter workstation",
+      "promptVars": {
+        "NAME": "AI Screenwriter",
+        "ROLE": "narrative and story designer",
+        "MOOD": "thoughtful and immersed",
+        "GESTURE": "leaning slightly forward reading floating story cards",
+        "TEAM-COLOR": "emerald green"
+      },
+      "sizes": [{ "label": "card", "width": 800, "height": 1000 }],
+      "tier": "top",
+      "fallback": { "type": "svg", "path": "scene-generic.svg" }
+    },
+    "scene-ai-product-manager": {
+      "family": "scene",
+      "subject": "AI Product Manager workstation",
+      "promptVars": {
+        "NAME": "AI Product Manager",
+        "ROLE": "structured feature orchestration",
+        "MOOD": "composed and focused",
+        "GESTURE": "arranging colored tags on a floating kanban",
+        "TEAM-COLOR": "sapphire blue"
+      },
+      "sizes": [{ "label": "card", "width": 800, "height": 1000 }],
+      "tier": "top",
+      "fallback": { "type": "svg", "path": "scene-generic.svg" }
+    },
+    "scene-ai-character-designer": {
+      "family": "scene",
+      "subject": "AI Character Designer workstation",
+      "promptVars": {
+        "NAME": "AI Character Designer",
+        "ROLE": "original character concept artist",
+        "MOOD": "playful and creative",
+        "GESTURE": "conducting a floating 3D character turnaround",
+        "TEAM-COLOR": "emerald green"
+      },
+      "sizes": [{ "label": "card", "width": 800, "height": 1000 }],
+      "tier": "top",
+      "fallback": { "type": "svg", "path": "scene-generic.svg" }
+    },
+    "scene-ai-movie-artist": {
+      "family": "scene",
+      "subject": "AI Movie Artist workstation",
+      "promptVars": {
+        "NAME": "AI Movie Artist",
+        "ROLE": "cinematic scene and camera director",
+        "MOOD": "precise and cinematic",
+        "GESTURE": "framing a shot with both hands in front of a floating 3D set",
+        "TEAM-COLOR": "emerald green"
+      },
+      "sizes": [{ "label": "card", "width": 800, "height": 1000 }],
+      "tier": "top",
+      "fallback": { "type": "svg", "path": "scene-generic.svg" }
+    },
+
+    "badge-weekly-top": {
+      "family": "badge",
+      "subject": "Weekly Top Performer medal",
+      "promptVars": {
+        "ICON-CONCEPT": "a five-pointed star fused with a coiled cyber-dragon, floating above a tiny Enterprise-starship saucer silhouette"
+      },
+      "sizes": [{ "label": "default", "width": 512, "height": 512 }],
+      "tier": "top",
+      "fallback": { "type": "svg", "path": "badge-generic.svg" }
+    },
+    "badge-efficiency-gold": {
+      "family": "badge",
+      "subject": "Efficiency gold medal",
+      "promptVars": {
+        "ICON-CONCEPT": "a stylized lightning bolt passing through a hexagonal gem, with a subtle dragon-scale texture on the rim"
+      },
+      "sizes": [{ "label": "default", "width": 512, "height": 512 }],
+      "tier": "top",
+      "fallback": { "type": "svg", "path": "badge-generic.svg" }
+    },
+    "badge-quality-gold": {
+      "family": "badge",
+      "subject": "Quality gold medal",
+      "promptVars": {
+        "ICON-CONCEPT": "a shield with a checkmark in its center, flanked by two dragon whiskers made of light ribbons"
+      },
+      "sizes": [{ "label": "default", "width": 512, "height": 512 }],
+      "tier": "top",
+      "fallback": { "type": "svg", "path": "badge-generic.svg" }
+    },
+    "badge-innovation-gold": {
+      "family": "badge",
+      "subject": "Innovation gold medal",
+      "promptVars": {
+        "ICON-CONCEPT": "a glowing idea-spark emerging from a dragon's mouth, composed of hexagonal data fragments"
+      },
+      "sizes": [{ "label": "default", "width": 512, "height": 512 }],
+      "tier": "top",
+      "fallback": { "type": "svg", "path": "badge-generic.svg" }
+    },
+    "badge-collab-gold": {
+      "family": "badge",
+      "subject": "Collaboration gold medal",
+      "promptVars": {
+        "ICON-CONCEPT": "three interlocking hexagonal nodes connected by flowing blue-cyan energy ribbons forming a triangle"
+      },
+      "sizes": [{ "label": "default", "width": 512, "height": 512 }],
+      "tier": "top",
+      "fallback": { "type": "svg", "path": "badge-generic.svg" }
+    },
+    "badge-reliability-gold": {
+      "family": "badge",
+      "subject": "Reliability gold medal",
+      "promptVars": {
+        "ICON-CONCEPT": "a fortified octagonal core with an infinity loop made of dragon-energy encircling it"
+      },
+      "sizes": [{ "label": "default", "width": 512, "height": 512 }],
+      "tier": "top",
+      "fallback": { "type": "svg", "path": "badge-generic.svg" }
+    },
+
+    "ornament-hexflow": {
+      "family": "ornament",
+      "subject": "hex-flow decorative band for top-right corners",
+      "promptVars": {
+        "MOTIF": "a flowing cascade of interconnected hexagons forming a half-arch in the top-right area, with a tiny cyber-dragon tail curling through it, positioned against transparent background for overlay use"
+      },
+      "sizes": [{ "label": "default", "width": 1024, "height": 512 }],
+      "tier": "top",
+      "fallback": { "type": "gradient", "from": "#1E6EFF", "to": "#14C7C1" }
+    },
+    "ornament-lightstream": {
+      "family": "ornament",
+      "subject": "horizontal light stream for section dividers",
+      "promptVars": {
+        "MOTIF": "a single horizontal beam of flowing blue-cyan energy with soft particles drifting along it, 4:1 aspect, meant to be placed as a divider between page sections, hints of Enterprise-starship warp-nacelle on the right end"
+      },
+      "sizes": [{ "label": "default", "width": 1600, "height": 400 }],
+      "tier": "top",
+      "fallback": { "type": "gradient", "from": "#1E6EFF", "to": "#14C7C1" }
     }
   }
 }
