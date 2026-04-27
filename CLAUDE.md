@@ -1,116 +1,124 @@
-# CLAUDE.md
-
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+# 项目级指令
 
 @AGENTS.md
 
-## Project Overview
+## 项目概述
 
-AI Workforce Platform (`ai-workforce-platform`) — an internal management dashboard for a team of 24 AI employees across management, design, and production lines. The UI language is Chinese. Built with Next.js 16 App Router, React 19, TypeScript, Tailwind CSS v4, and shadcn/ui.
+AI Workforce Platform 是一个中文内部管理面板，用于展示由 24 名 AI 员工组成的管理、设计和生产团队。项目使用 Next.js 16 App Router、React 19、TypeScript、Tailwind CSS v4 和 shadcn/ui。
 
-## Commands
+## 常用命令
 
 ```bash
-npm run dev              # Start dev server
-npm run build            # Production build
-npm run start            # Start production server
-npm run lint             # ESLint (flat config, v9)
-npm run db:push          # Push schema changes to SQLite
-npm run db:generate      # Generate Drizzle migrations
-npm run db:migrate       # Run Drizzle migrations
-npm run db:seed          # Seed database (tsx src/db/seed.ts)
-npm run generate:avatars # Generate AI employee portraits via gpt-image-2 API
+npm run dev
+npm run build
+npm run start
+npm run lint
+npm run db:push
+npm run db:generate
+npm run db:migrate
+npm run db:seed
+npm run generate:avatars
 ```
 
-No test framework is configured. No Prettier is configured.
+项目当前没有测试框架，也没有 Prettier。
 
-The `generate:avatars` script requires `IMAGE_API_GATEWAY_URL` and `IMAGE_API_KEY` in `.env.local`. It calls gpt-image-2 via an OpenAI-compatible gateway (`https://ai-gateway.aiae.ndhy.com/v1/images/generations`) to produce landscape (2560x1440) photorealistic portrait PNGs in `public/avatars/`. Prompts are assembled from persona data using `buildPrompt()` with team accent colors (purple/blue/green). The script regenerates all avatars on each run (no skip logic). The runtime library `src/lib/avatar-generator.ts` shares the same STYLE_PREFIX for single-avatar regeneration.
+`generate:avatars` 需要 `.env.local` 中配置 `IMAGE_API_GATEWAY_URL` 和 `IMAGE_API_KEY`，会通过兼容 OpenAI 的网关调用 `gpt-image-2`，生成 `public/avatars/` 下的横版写实人物头像。脚本每次运行都会重新生成全部头像。
 
-## Architecture
+## 架构
 
-**Data flow pattern:** Pages are async server components that query SQLite directly via Drizzle ORM, then pass data as props to `"use client"` interactive components. API routes under `src/app/api/` handle mutations and client-side data fetching.
+### 数据流
 
-**Database:** SQLite (`local.db` at project root) via `better-sqlite3` + Drizzle ORM. WAL mode and foreign keys enabled. Schema in `src/db/schema.ts` with 11 tables: `employees`, `skills`, `skill_metrics`, `metrics`, `tasks`, `task_steps`, `task_outputs`, `version_logs`, `metric_configs`, `help_categories`, `help_articles`. Connection from `src/db/index.ts`. All PKs are `text("id")` using `randomUUID()`. All FKs use `onDelete: "cascade"`. No Drizzle `relations()` — only column-level `.references()`.
+页面本身是异步服务端组件，通过 Drizzle ORM 直接读取 SQLite，再把数据以 props 形式传给客户端交互组件。位于 `src/app/api/` 下的 API 路由负责处理修改类请求和客户端数据获取。
 
-- `help_categories`: id, name, icon, sortOrder, createdAt, updatedAt
-- `help_articles`: id, categoryId → help_categories.id cascade, title, summary, content, sortOrder, createdAt, updatedAt
+### 数据库
 
-**Layout:** Root layout (`src/app/layout.tsx`) uses a `flex h-screen` split: narrow icon-only `Sidebar` on the left + scrollable `<main>` on the right.
+- 使用 SQLite `local.db`，通过 `better-sqlite3` 与 Drizzle ORM 访问。
+- 已启用 WAL 模式和外键约束。
+- Schema 位于 `src/db/schema.ts`。
+- 所有主键均为 `text("id")` 并使用 `randomUUID()` 生成。
+- 所有外键均采用 `onDelete: "cascade"`。
+- 当前没有使用 Drizzle `relations()`，仅使用列级 `.references()`。
 
-**Routes:**
-- `/` → redirects to `/roster`
-- `/dashboard` — KPI dashboard with heatmap, team comparison, recent tasks, leaderboard, operational index gauge
-- `/roster` — Employee grid with filtering; click opens detail modal (Dialog). `/roster/[id]` also exists for direct URL access.
-- `/production` — Production kanban with stat cards, tabbed layout (realtime/dashboard/history). Task cards show mini SOP stepper; clicking opens a detail Dialog modal with quality metrics, vertical step timeline with COT, outputs list, and execution reflection. `/production/[taskId]` exists for direct URL access.
-- `/org` — Organization chart (React Flow / `@xyflow/react`)
-- `/settings` — Employee and metric config management, help doc management (`help-doc-manager.tsx`), and data management center (`src/components/settings/data-management/`) with metrics/skill-metrics/tasks tabs and Excel export via `xlsx` library.
+### 路由
 
-**API routes:** Grouped under `src/app/api/`:
-- `/api/dashboard/{summary,heatmap,recent-tasks,team-comparison}` — dashboard data endpoints
-- `/api/employees` — employee list
-- `/api/employees/[id]/{avatar,avatar-status,skills,version-logs}` — employee CRUD and sub-resources
-- `/api/tasks` — task list
-- `/api/tasks/[taskId]` — task detail with SOP steps
-- `/api/production-stats` — aggregated production dashboard data (supports `timeRange` and `date` query params)
-- `/api/metric-configs/{[id],resolve}` — metric configuration management
-- `/api/data/{metrics,skill-metrics,tasks,export}` — data management CRUD with `[id]` sub-routes
-- `/api/help/categories/{[id]}` — help category CRUD
-- `/api/help/articles/{[id]}` — help article CRUD
+- `/` 会重定向到 `/roster`。
+- `/dashboard` 是 KPI 仪表盘。
+- `/roster` 是员工列表和详情弹窗。
+- `/production` 是生产看板与任务详情。
+- `/org` 是组织结构图。
+- `/settings` 是员工、指标、帮助文档和数据管理中心。
 
-**API route caveat:** Static API route segments (e.g. `/api/production-stats`) must NOT be placed as siblings of dynamic segments (e.g. `/api/tasks/[taskId]`) — the dynamic segment catches the static name. Use a separate top-level path instead.
+### API 结构
 
-**Path alias:** `@/*` maps to `./src/*`.
+API 路由集中在 `src/app/api/`，包括仪表盘、员工、任务、生产统计、指标配置、数据管理和帮助系统等接口。
 
-## Help System
+静态 API 路径与动态路径不能作为同级冲突存在，例如 `/api/production-stats` 不能放在会被动态段吞掉的位置。
 
-The help center is a slide-out panel accessible from the sidebar. Components live in `src/components/help/`:
+### 帮助系统
 
-- `help-panel-context.tsx` — React context (`HelpPanelProvider`) for open/close state. Wrap the layout with this provider; consume via `useHelpPanel()`.
-- `help-panel.tsx` — Slide-out panel, default half-screen width, draggable resize handle. Renders article list or article detail. Sidebar uses `z-50` to stay above the panel.
-- `tiptap-editor.tsx` — Rich text editor using Tiptap with extensions: starter-kit, table (with cell/header/row), highlight, underline, placeholder.
-- `help-article-content.css` — Styles for rendered article HTML.
+帮助中心是一个从侧边栏打开的滑出面板，主要组件位于 `src/components/help/`：
 
-Article content is stored as HTML (produced by Tiptap) and sanitized with DOMPurify before rendering. Help content is managed from `/settings` via `help-doc-manager.tsx`. Seed script: `src/db/seed-help-docs.ts`.
+- `help-panel-context.tsx` 提供打开与关闭状态。
+- `help-panel.tsx` 负责面板渲染与拖拽调整宽度。
+- `tiptap-editor.tsx` 提供富文本编辑能力。
+- `help-article-content.css` 提供文章渲染样式。
 
-## Deployment
+文章内容以 HTML 形式存储，展示前会通过 DOMPurify 清洗。帮助内容在 `/settings` 中管理。
 
-The project ships as a Docker image via a multi-stage build (deps → builder → runner). Key details:
+## 部署
 
-- `next.config.ts` uses `output: "standalone"` for the standalone build artifact.
-- The SQLite database is copied into `/app/data/local.db` inside the container.
-- `src/db/index.ts` checks `process.env.DATABASE_PATH` to override the default db location; set this env var in production to point at the mounted data volume.
-- **Before building the Docker image**, checkpoint the WAL file: `sqlite3 local.db "PRAGMA wal_checkpoint(TRUNCATE);"`. WAL data is not in the main `.db` file and will be lost if not checkpointed first.
+项目通过多阶段 Docker 构建生成镜像。
 
-## Key Conventions
+- `next.config.ts` 使用 `output: "standalone"`。
+- SQLite 数据库会复制到容器内 `/app/data/local.db`。
+- `src/db/index.ts` 支持通过 `DATABASE_PATH` 覆盖数据库路径。
+- 在构建 Docker 镜像前，应先执行 `sqlite3 local.db "PRAGMA wal_checkpoint(TRUNCATE);"`，避免 WAL 数据未落回主库文件。
 
-- All user-facing text must be in Chinese.
-- Pages (`page.tsx`) are server components — do not add `"use client"` to them. Interactive parts go in separate client components.
-- Loading states use `loading.tsx` skeleton files (see `/dashboard/loading.tsx`, `/roster/loading.tsx`).
-- Employee avatars are AI-generated landscape portrait images (2560x1440) stored in `public/avatars/{name}.png`. The `AiAvatar` component (`src/components/shared/ai-avatar.tsx`) has two modes: fixed-size (with `size` prop) and `fill` mode (fills container with `object-cover`). Falls back to a procedurally generated SVG robot (deterministic from employee ID, colored by team) when `avatar` is null.
-- The `employees.persona` column stores a JSON string matching the `EmployeePersona` interface (`src/lib/types.ts`): age, gender, personality[], catchphrase, backstory, workStyle, interests[], fashionStyle, mbti, visualTraits, sceneDescription. All 24 employees have persona data. Parse with `JSON.parse(employee.persona) as EmployeePersona`.
-- Employee cards use a portrait-centric layout: large `h-80` avatar area with team-colored gradient background, gradient overlay blending into white, status badge overlay, name (`text-lg font-bold`), title, description, metrics row, and a "查看详情" button. Clicking opens a centered Dialog modal (`employee-detail-modal.tsx`), not page navigation.
-- Team identity is conveyed via left border color (purple=management, blue=design, green=production) and gradient backgrounds.
-- The `skill_metrics` table tracks per-skill monthly metrics (invocation count, success rate, avg response time). Displayed in the skills tab of employee detail.
-- The `employees` table has a `subTeam` column used by the production team to distinguish "生产管理层" from "内容生产层".
-- The `metrics` table tracks monthly periods as `YYYY-MM` strings.
-- The `task_steps` table stores SOP execution steps per task (stepOrder, status enum: pending/running/completed/failed/skipped, optional COT thought text). Running tasks should have exactly one "running" step with completed before and pending after.
-- The `tasks.reflection` field stores JSON `{ problems, lessons, improvements }` — not plain text. Both running and completed tasks can have reflections.
-- The `tasks.qualityScore` (0-100), `retryCount`, and `tokenUsage` fields are populated for completed tasks. Token usage is displayed as estimated RMB cost in the UI.
-- The production page uses a client wrapper (`time-range-selector.tsx` → `ProductionClient`) that owns the time range state and passes it to `ProductionStats` and `ProductionTabs`. Running task cards fetch their own SOP steps via `/api/tasks/[id]` for the mini stepper display.
-- The `/api/production-stats` endpoint provides aggregated dashboard data (summary, daily trend by team, type distribution, employee ranking). It supports `timeRange` and `date` query params for chart linking.
+## 关键约定
 
-## UI Components
+- 所有用户可见文本必须使用中文。
+- 页面文件 `page.tsx` 保持为服务端组件，交互逻辑拆到单独客户端组件中。
+- 加载态使用 `loading.tsx` 骨架文件。
+- 员工头像位于 `public/avatars/{name}.png`，缺失时由 `AiAvatar` 组件回退到程序生成的 SVG 机器人头像。
+- `employees.persona` 字段存储 JSON 字符串，结构对应 `EmployeePersona`。
+- 员工卡片采用大头像主导的展示布局，点击后通过 `Dialog` 打开详情，而不是跳转页面。
+- 团队身份通过边框与渐变颜色表达，管理、设计、生产团队颜色不同。
+- `skill_metrics` 表存储技能级月度指标。
+- `employees.subTeam` 用于区分生产管理层与内容生产层。
+- `metrics` 表中的月份使用 `YYYY-MM` 字符串。
+- `task_steps` 表用于记录任务 SOP 步骤，运行中任务应保持恰好一个 `running` 状态步骤。
+- `tasks.reflection` 存储 JSON 结构，而不是普通文本。
+- `tasks.qualityScore`、`retryCount`、`tokenUsage` 主要用于已完成任务，界面中会把 token 使用量换算为估算人民币成本。
 
-shadcn/ui built on `@base-ui/react` (not Radix). Dialog, AlertDialog, Tabs, etc. all use Base UI primitives. When adding new shadcn components, they will use `@base-ui/react` — do not import from `@radix-ui`. The Button component does **not** have an `asChild` prop — wrap `<a>` around `<Button>` instead.
+### 权限管控 (RBAC)
 
-**Styling:** Tailwind CSS v4 with `@theme inline` and `@custom-variant` syntax (no `tailwind.config.js`). CSS variables for theming defined in `src/app/globals.css`. Base font: 14px with line-height 1.57 (Chinese SaaS optimized). Class composition via `cn()` from `src/lib/utils.ts` (clsx + tailwind-merge). Light theme only — dark mode variant is declared but no dark color values exist yet. CSS imports: `tailwindcss`, `tw-animate-css`, `shadcn/tailwind.css`.
+- 模块 × 动作:6 个模块(employees/production/org/dashboard/help/settings)× 3 个动作(read/write/delete)= 18 个原子权限
+- 内置角色:super-admin / viewer / default 不可在 UI 编辑或删除;自定义角色在 `/settings/permissions` 管理
+- 首任 super-admin:通过 `.env.local` 的 `SUPER_ADMIN_UC_IDS` 白名单赋予(逗号分隔的 UC userId)
+- API route 第一行必须:`const [, err] = await requirePermission("<module>", "<action>", request); if (err) return err;`
+- 页面 Server Component 第一行必须:`await requirePageReadAccess("<module>");`
+- Client Component 按钮用 `{permissions.xxx.includes("delete") && <Button/>}` 隐藏,**不用 disabled**
+- 新增页面上线 checklist:
+  1. `src/proxy.ts` 的 `PATH_TO_MODULE` 加正则
+  2. 页面 Server Component 顶部 `requirePageReadAccess`
+  3. 对应 API 路由 handler 首行 `requirePermission`
+  4. Sidebar 的 `NAV_ITEMS` 加 `module` 字段
+- 权限变更审计:通过 `src/lib/audit.ts` 的 `logAudit()` 写入 `audit_logs` 表;业务数据 CRUD 不在当前审计范围
+- 设计文档:`docs/superpowers/specs/2026-04-27-permission-management-design.md`
+- 实施计划:`docs/superpowers/plans/2026-04-27-permission-management.md`
 
-**Charts:** ECharts via `echarts-for-react` for data visualization (heatmaps, trend charts, comparisons, gauges, pie charts). Pattern: `<ReactECharts option={...} style={{ height: N }} />` wrapped in Card components.
+### Next.js 16 Client Component prop 约定
 
-**Org chart:** React Flow (`@xyflow/react`) with custom `EmployeeNode` component, controls, and legend.
+Next 16 对 `"use client"` 组件导出的 function props 强制命名规则(错误码 71007):必须以 `Action` 结尾或名为 `action`。例如:
+- 自己声明的回调:`onCloseAction`、`onCreatedAction`、`onChangeAction`
+- 库组件透传的 prop 不受此约束:Dialog 的 `onOpenChange`、Select 的 `onValueChange`、Checkbox 的 `onCheckedChange` 照常使用
 
-**Rich text:** Tiptap editor (`src/components/help/tiptap-editor.tsx`) used for help article authoring. Extensions: `@tiptap/starter-kit`, `@tiptap/extension-table` (+ cell/header/row), `@tiptap/extension-highlight`, `@tiptap/extension-underline`, `@tiptap/extension-placeholder`.
+## UI 与技术细节
 
-## Next.js 16 Warning
-
-This project uses **Next.js 16.2.4**, which has breaking changes from earlier versions. Before writing Next.js-specific code (routing, API routes, config, middleware), read the relevant guide in `node_modules/next/dist/docs/01-app/` first. Do not rely on training data for Next.js APIs.
+- shadcn/ui 基于 `@base-ui/react`，不是 Radix。新增组件时不能误用 `@radix-ui`。
+- `Button` 组件没有 `asChild` 属性，链接场景需要在外层包裹 `<a>`。
+- 样式体系使用 Tailwind CSS v4 和 `globals.css` 中的 CSS 变量。
+- 图表使用 `echarts-for-react`。
+- 组织图使用 `@xyflow/react`。
+- 富文本编辑使用 Tiptap。
+- 如果涉及 Next.js 16 特有行为，应先查看 `node_modules/next/dist/docs/01-app/` 中对应文档，再决定实现方式。
