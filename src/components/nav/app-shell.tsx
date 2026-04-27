@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import { Sidebar } from "@/components/nav/sidebar";
+import type { UserPermissions } from "@/lib/authz-constants";
 
 /**
  * 根据路径条件渲染 Sidebar
@@ -10,9 +11,13 @@ import { Sidebar } from "@/components/nav/sidebar";
 export function AppShell({
   children,
   user,
+  permissions,
+  roleDisplayName,
 }: {
   children: React.ReactNode;
   user: { nickname: string; avatar: string } | null;
+  permissions: UserPermissions | null;
+  roleDisplayName: string | null;
 }) {
   const pathname = usePathname();
   const isLoginPage = pathname.startsWith("/login");
@@ -23,7 +28,7 @@ export function AppShell({
 
   return (
     <>
-      <Sidebar user={user} />
+      <Sidebar user={user} permissions={permissions} roleDisplayName={roleDisplayName} />
       <main className="ml-16 h-dvh overflow-y-auto">{children}</main>
     </>
   );

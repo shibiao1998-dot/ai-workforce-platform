@@ -4,7 +4,7 @@ import "./globals.css";
 import { HelpPanelProvider } from "@/components/help/help-panel-context";
 import { HelpPanel } from "@/components/help/help-panel";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { getCurrentUser } from "@/lib/auth";
+import { getCurrentUserWithPermissions } from "@/lib/authz-server";
 import { AppShell } from "@/components/nav/app-shell";
 
 const geistSans = Geist({
@@ -27,7 +27,7 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const user = await getCurrentUser();
+  const me = await getCurrentUserWithPermissions();
 
   return (
     <html
@@ -37,7 +37,11 @@ export default async function RootLayout({
       <body className="h-full">
         <TooltipProvider delay={300}>
         <HelpPanelProvider>
-          <AppShell user={user ? { nickname: user.nickname, avatar: user.avatar } : null}>
+          <AppShell
+            user={me ? { nickname: me.nickname, avatar: me.avatar } : null}
+            permissions={me?.permissions ?? null}
+            roleDisplayName={me?.role.displayName ?? null}
+          >
             {children}
           </AppShell>
           <HelpPanel />

@@ -21,13 +21,14 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import type { Module, UserPermissions } from "@/lib/authz-constants";
 
-const NAV_ITEMS = [
-  { href: "/dashboard", label: "驾驶舱", icon: LayoutDashboard },
-  { href: "/roster", label: "AI花名册", icon: Users },
-  { href: "/production", label: "生产看板", icon: Cpu },
-  { href: "/org", label: "组织架构", icon: GitBranch },
-  { href: "/settings", label: "系统设置", icon: Settings },
+const NAV_ITEMS: Array<{ href: string; label: string; icon: typeof LayoutDashboard; module: Module }> = [
+  { href: "/dashboard", label: "驾驶舱", icon: LayoutDashboard, module: "dashboard" },
+  { href: "/roster", label: "AI花名册", icon: Users, module: "employees" },
+  { href: "/production", label: "生产看板", icon: Cpu, module: "production" },
+  { href: "/org", label: "组织架构", icon: GitBranch, module: "org" },
+  { href: "/settings", label: "系统设置", icon: Settings, module: "settings" },
 ];
 
 function UserPopover({ user, onLogout }: { user: { nickname: string; avatar: string }; onLogout: () => void }) {
@@ -70,7 +71,15 @@ function UserPopover({ user, onLogout }: { user: { nickname: string; avatar: str
   );
 }
 
-export function Sidebar({ user: initialUser }: { user?: { nickname: string; avatar: string } | null }) {
+export function Sidebar({
+  user: initialUser,
+  permissions,
+  roleDisplayName,
+}: {
+  user?: { nickname: string; avatar: string } | null;
+  permissions?: UserPermissions | null;
+  roleDisplayName?: string | null;
+}) {
   const pathname = usePathname();
   const { toggle } = useHelpPanel();
   const [user, setUser] = useState<{ nickname: string; avatar: string } | null>(initialUser ?? null);
@@ -96,6 +105,10 @@ export function Sidebar({ user: initialUser }: { user?: { nickname: string; avat
     window.location.href = "/login";
   };
 
+  const visibleItems = permissions
+    ? NAV_ITEMS.filter((item) => permissions[item.module]?.includes("read"))
+    : NAV_ITEMS;
+
   return (
     <TooltipProvider delay={0}>
       <aside className="fixed inset-y-0 left-0 z-50 flex w-16 flex-col items-center border-r border-border bg-card">
@@ -108,7 +121,7 @@ export function Sidebar({ user: initialUser }: { user?: { nickname: string; avat
 
         {/* ── 中间导航（可滚动，自动伸缩） ── */}
         <nav className="flex-1 min-h-0 overflow-y-auto flex flex-col items-center gap-1 py-2">
-          {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
+          {visibleItems.map(({ href, label, icon: Icon }) => {
             const isActive = pathname.startsWith(href);
             return (
               <Tooltip key={href}>
