@@ -1,23 +1,22 @@
 import { NextResponse } from "next/server";
-import { getCurrentUser } from "@/lib/auth";
+import { getCurrentUserWithPermissions } from "@/lib/authz-server";
 
 /**
  * GET /api/auth/me
- * 返回当前登录用户信息
+ * 返回当前登录用户、角色和权限
  */
 export async function GET() {
-  const user = await getCurrentUser();
+  const me = await getCurrentUserWithPermissions();
 
-  if (!user) {
-    return NextResponse.json(
-      { error: "未认证" },
-      { status: 401 }
-    );
+  if (!me) {
+    return NextResponse.json({ error: "未认证" }, { status: 401 });
   }
 
   return NextResponse.json({
-    userId: user.userId,
-    nickname: user.nickname,
-    avatar: user.avatar,
+    userId: me.userId,
+    nickname: me.nickname,
+    avatar: me.avatar,
+    role: me.role,
+    permissions: me.permissions,
   });
 }
