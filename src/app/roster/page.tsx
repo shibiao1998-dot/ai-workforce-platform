@@ -1,8 +1,10 @@
 import { db } from "@/db";
 import { EmployeeGrid } from "@/components/roster/employee-grid";
 import { getEmployeeMetrics } from "@/lib/metric-engine";
+import { requirePageReadAccess } from "@/lib/authz-server";
 
 export default async function RosterPage() {
+  await requirePageReadAccess("employees");
   const rows = await db.query.employees.findMany({
     orderBy: (e, { asc }) => [asc(e.team), asc(e.name)],
   });

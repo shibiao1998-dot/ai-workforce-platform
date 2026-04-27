@@ -8,6 +8,7 @@ import {
   computeRecentAchievements,
 } from "@/lib/dashboard-data"
 import { getMetrics, getKpiItems, getTeamEfficiencyTrend } from "@/lib/metric-engine"
+import { requirePageReadAccess } from "@/lib/authz-server"
 
 function getCurrentMonth(): string {
   const now = new Date()
@@ -38,6 +39,7 @@ function getDateRange(days: number): { startDate: string; endDate: string } {
 }
 
 export default async function DashboardPage() {
+  await requirePageReadAccess("dashboard")
   const currentMonth = getCurrentMonth()
   const prevMonth = getPrevMonth(currentMonth)
   const last5Months = getLastNMonths(5)

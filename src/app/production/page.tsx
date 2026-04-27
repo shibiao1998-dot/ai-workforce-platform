@@ -2,6 +2,7 @@ import { db } from "@/db";
 import { tasks, employees } from "@/db/schema";
 import { desc, eq } from "drizzle-orm";
 import { ProductionClient } from "@/components/production/time-range-selector";
+import { requirePageReadAccess } from "@/lib/authz-server";
 
 async function getHistory() {
   const rows = await db
@@ -34,6 +35,7 @@ export default async function ProductionPage({
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
+  await requirePageReadAccess("production");
   const { employee: employeeParam, task: taskParam, sort: sortParam } = await searchParams;
   const employeeId = typeof employeeParam === "string" ? employeeParam : undefined;
   const highlightTaskId = typeof taskParam === "string" ? taskParam : undefined;

@@ -2,6 +2,7 @@ import { db } from "@/db";
 import { employees, metrics, metricConfigs } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { requirePageReadAccess } from "@/lib/authz-server";
 import { EmployeeManager } from "@/components/settings/employee-manager";
 import { MetricConfigManager } from "@/components/settings/metric-config-manager";
 import { DataManagementCenter } from "@/components/settings/data-management/data-management-center";
@@ -64,6 +65,7 @@ async function getData() {
 
 
 export default async function SettingsPage() {
+  await requirePageReadAccess("settings");
   const { employeeList, configRows } = await getData();
 
   return (

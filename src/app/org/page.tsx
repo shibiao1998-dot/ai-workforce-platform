@@ -4,6 +4,7 @@ import { OrgChartClient } from "@/components/org/org-chart-client"
 import type { EmployeeNodeData } from "@/components/org/types"
 import type { EmployeePersona } from "@/lib/types"
 import { calculateTaskXp, calculateLevel, calculateStreak } from "@/lib/gamification"
+import { requirePageReadAccess } from "@/lib/authz-server"
 
 async function getEnrichedEmployees(): Promise<EmployeeNodeData[]> {
   const employeeRows = await db
@@ -85,6 +86,7 @@ interface OrgPageProps {
 }
 
 export default async function OrgPage({ searchParams }: OrgPageProps) {
+  await requirePageReadAccess("org")
   const [enrichedEmployees, params] = await Promise.all([
     getEnrichedEmployees(),
     searchParams,
