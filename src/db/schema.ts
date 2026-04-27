@@ -155,9 +155,7 @@ export const rolePermissions = sqliteTable(
     }).notNull(),
     action: text("action", { enum: ["read", "write", "delete"] }).notNull(),
   },
-  (t) => ({
-    unq: uniqueIndex("role_perm_unq").on(t.roleId, t.module, t.action),
-  })
+  (t) => [uniqueIndex("role_perm_unq").on(t.roleId, t.module, t.action)]
 );
 
 export const userRoles = sqliteTable("user_roles", {
