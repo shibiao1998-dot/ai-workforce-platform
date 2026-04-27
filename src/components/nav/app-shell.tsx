@@ -12,12 +12,10 @@ export function AppShell({
   children,
   user,
   permissions,
-  roleDisplayName,
 }: {
   children: React.ReactNode;
   user: { nickname: string; avatar: string } | null;
   permissions: UserPermissions | null;
-  roleDisplayName: string | null;
 }) {
   const pathname = usePathname();
   const isLoginPage = pathname.startsWith("/login");
@@ -28,7 +26,7 @@ export function AppShell({
 
   return (
     <>
-      <Sidebar user={user} permissions={permissions} roleDisplayName={roleDisplayName} />
+      <Sidebar user={user} permissions={permissions} />
       <main className="ml-16 h-dvh overflow-y-auto">{children}</main>
     </>
   );

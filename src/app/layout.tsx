@@ -40,7 +40,6 @@ export default async function RootLayout({
           <AppShell
             user={me ? { nickname: me.nickname, avatar: me.avatar } : null}
             permissions={me?.permissions ?? null}
-            roleDisplayName={me?.role.displayName ?? null}
           >
             {children}
           </AppShell>

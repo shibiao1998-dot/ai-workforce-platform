@@ -74,11 +74,9 @@ function UserPopover({ user, onLogout }: { user: { nickname: string; avatar: str
 export function Sidebar({
   user: initialUser,
   permissions,
-  roleDisplayName,
 }: {
   user?: { nickname: string; avatar: string } | null;
   permissions?: UserPermissions | null;
-  roleDisplayName?: string | null;
 }) {
   const pathname = usePathname();
   const { toggle } = useHelpPanel();
