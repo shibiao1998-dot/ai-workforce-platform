@@ -2,7 +2,8 @@ import { db } from "@/db";
 import { employees, metrics, metricConfigs } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { requirePageReadAccess } from "@/lib/authz-server";
+import { requirePageReadAccess, getCurrentUserWithPermissions } from "@/lib/authz-server";
+import { PermissionManager } from "@/components/settings/permissions/permission-manager";
 import { EmployeeManager } from "@/components/settings/employee-manager";
 import { MetricConfigManager } from "@/components/settings/metric-config-manager";
 import { DataManagementCenter } from "@/components/settings/data-management/data-management-center";
@@ -67,6 +68,8 @@ async function getData() {
 export default async function SettingsPage() {
   await requirePageReadAccess("settings");
   const { employeeList, configRows } = await getData();
+  const me = await getCurrentUserWithPermissions();
+  const canManagePermissions = me?.permissions.settings.includes("write") ?? false;
 
   return (
     <div className="p-8">
@@ -80,6 +83,7 @@ export default async function SettingsPage() {
           <TabsTrigger value="metrics">指标基准配置</TabsTrigger>
           <TabsTrigger value="data">数据指标管理</TabsTrigger>
           <TabsTrigger value="help">帮助文档管理</TabsTrigger>
+          {canManagePermissions && <TabsTrigger value="permissions">权限管理</TabsTrigger>}
         </TabsList>
         <TabsContent value="employees">
           <EmployeeManager initialEmployees={employeeList} />
@@ -96,6 +100,11 @@ export default async function SettingsPage() {
         <TabsContent value="help">
           <HelpDocManager />
         </TabsContent>
+        {canManagePermissions && (
+          <TabsContent value="permissions">
+            <PermissionManager />
+          </TabsContent>
+        )}
       </Tabs>
     </div>
   );
