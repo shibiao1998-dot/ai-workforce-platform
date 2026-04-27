@@ -4,9 +4,9 @@
   "assets": {
     "smoke-test": {
       "family": "ornament",
-      "subject": "smoke test fragment",
+      "subject": "smoke test: NetDragon brand-DNA fragment",
       "promptVars": {
-        "MOTIF": "a single hexagonal energy node emitting a soft glow, surrounded by 3-4 smaller orbiting polygons"
+        "MOTIF": "a cyber-dragon coiling around a fragment of the Enterprise-starship saucer-section, the dragon's sinuous Eastern-serpent body made of glowing data ribbons and hex scales, its head gently tilted as if overseeing a data flow, one claw resting on the saucer edge, everything rendered in luminous electric-blue to cyan energy with soft bloom"
       },
       "sizes": [
         { "label": "default", "width": 1024, "height": 1024 }

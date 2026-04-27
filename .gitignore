@@ -46,3 +46,8 @@ local.db-wal
 
 # worktrees
 .worktrees/
+.superpowers/
+
+# NetDragon original PNG masters (母版 — 保留本地,避免仓库膨胀)
+# WebP 派生文件入 git,PNG 不入
+/public/netdragon/**/*.png
