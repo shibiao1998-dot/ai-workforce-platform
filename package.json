@@ -12,7 +12,8 @@
     "db:push": "drizzle-kit push",
     "db:seed": "tsx src/db/seed.ts",
     "generate:avatars": "tsx scripts/generate-avatars.ts",
-    "nd:generate": "tsx scripts/generate-netdragon-assets.ts"
+    "nd:generate": "tsx scripts/generate-netdragon-assets.ts",
+    "nd:postprocess": "tsx scripts/nd-post-process.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.4.0",
