@@ -4,8 +4,11 @@ import { employees, metrics } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { randomUUID } from "crypto";
 import { generateAvatarDescription, generateSingleAvatar } from "@/lib/avatar-generator";
+import { requirePermission } from "@/lib/authz";
 
 export async function GET(req: NextRequest) {
+  const [, err] = await requirePermission("employees", "read", req);
+  if (err) return err;
   const { searchParams } = new URL(req.url);
   const team = searchParams.get("team");
   const status = searchParams.get("status");
@@ -50,6 +53,8 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+  const [, err] = await requirePermission("employees", "write", req);
+  if (err) return err;
   const body = await req.json();
   const now = new Date();
   const id = randomUUID();

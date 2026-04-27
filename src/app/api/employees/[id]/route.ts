@@ -3,11 +3,14 @@ import { db } from "@/db";
 import { employees, skills, versionLogs, skillMetrics } from "@/db/schema";
 import { getMetrics, getMonthlyTrend } from "@/lib/metric-engine";
 import { eq } from "drizzle-orm";
+import { requirePermission } from "@/lib/authz";
 
 export async function GET(
   _req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const [, err] = await requirePermission("employees", "read", _req);
+  if (err) return err;
   const { id } = await params;
 
   const emp = await db.query.employees.findFirst({
@@ -59,6 +62,8 @@ export async function PUT(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const [, err] = await requirePermission("employees", "write", req);
+  if (err) return err;
   const { id } = await params;
   const body = await req.json();
   const now = new Date();
@@ -93,6 +98,8 @@ export async function DELETE(
   _req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const [, err] = await requirePermission("employees", "delete", _req);
+  if (err) return err;
   const { id } = await params;
   await db.delete(employees).where(eq(employees.id, id));
   return new NextResponse(null, { status: 204 });

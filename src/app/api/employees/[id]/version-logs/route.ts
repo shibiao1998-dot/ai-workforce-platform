@@ -3,11 +3,14 @@ import { db } from "@/db";
 import { versionLogs } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { randomUUID } from "crypto";
+import { requirePermission } from "@/lib/authz";
 
 export async function POST(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const [, err] = await requirePermission("employees", "write", req);
+  if (err) return err;
   const { id } = await params;
   const body = await req.json();
 
@@ -37,6 +40,8 @@ export async function GET(
   _req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const [, err] = await requirePermission("employees", "read", _req);
+  if (err) return err;
   const { id } = await params;
   const logs = await db
     .select()

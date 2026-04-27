@@ -1,10 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
+import { requirePermission } from "@/lib/authz";
 
 export async function GET(
   _req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const [, err] = await requirePermission("employees", "read", _req);
+  if (err) return err;
   const { id } = await params;
 
   const employee = await db.query.employees.findFirst({

@@ -4,11 +4,14 @@ import {
   generateAvatarDescription,
   generateSingleAvatar,
 } from "@/lib/avatar-generator";
+import { requirePermission } from "@/lib/authz";
 
 export async function POST(
   _req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const [, err] = await requirePermission("employees", "write", _req);
+  if (err) return err;
   const { id } = await params;
 
   const employee = await db.query.employees.findFirst({
