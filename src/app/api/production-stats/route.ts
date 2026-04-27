@@ -3,6 +3,7 @@ import { db } from "@/db";
 import { tasks, employees } from "@/db/schema";
 import { eq, and, gte, lte } from "drizzle-orm";
 import { getMetrics } from "@/lib/metric-engine";
+import { requirePermission } from "@/lib/authz";
 
 function getDateRange(timeRange: string) {
   const now = new Date();
@@ -19,6 +20,8 @@ function getDateRange(timeRange: string) {
 }
 
 export async function GET(req: NextRequest) {
+  const [, err] = await requirePermission("production", "read", req);
+  if (err) return err;
   const { searchParams } = new URL(req.url);
   const timeRange = searchParams.get("timeRange") ?? "today";
   const selectedDate = searchParams.get("date");

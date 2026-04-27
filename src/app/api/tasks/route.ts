@@ -2,8 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
 import { tasks, employees } from "@/db/schema";
 import { eq, desc, and, gte, lte } from "drizzle-orm";
+import { requirePermission } from "@/lib/authz";
 
 export async function GET(req: NextRequest) {
+  const [, err] = await requirePermission("production", "read", req);
+  if (err) return err;
   const { searchParams } = new URL(req.url);
   const status = searchParams.get("status") as "running" | "completed" | "failed" | null;
   const team = searchParams.get("team") as "management" | "design" | "production" | null;

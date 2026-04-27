@@ -2,11 +2,14 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
 import { tasks, employees, taskOutputs, taskSteps } from "@/db/schema";
 import { eq, asc } from "drizzle-orm";
+import { requirePermission } from "@/lib/authz";
 
 export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ taskId: string }> }
 ) {
+  const [, err] = await requirePermission("production", "read", req);
+  if (err) return err;
   const { taskId } = await params;
 
   const taskRow = await db
