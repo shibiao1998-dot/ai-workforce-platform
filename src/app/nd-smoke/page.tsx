@@ -104,7 +104,7 @@ export default function NdSmokePage() {
               className="w-64 h-64 rounded-nd-lg"
             />
             <p className="text-xs text-nd-ink-soft mt-3">
-              应当显示红色 "missing:does-not-exist-xyz" 提示,而不是崩溃。
+              应当显示红色 &quot;missing:does-not-exist-xyz&quot; 提示,而不是崩溃。
             </p>
           </div>
         </section>
