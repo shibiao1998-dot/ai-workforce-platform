@@ -5,14 +5,10 @@ import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import { userRoles, rolePermissions, roles } from "@/db/schema";
 import { getCurrentUser, verifySessionFromRequest, type SessionUser } from "@/lib/auth";
+import { MODULES, ACTIONS, type Module, type Action, type UserPermissions } from "./authz-constants";
 
-export const MODULES = ["employees", "production", "org", "dashboard", "help", "settings"] as const;
-export const ACTIONS = ["read", "write", "delete"] as const;
-
-export type Module = (typeof MODULES)[number];
-export type Action = (typeof ACTIONS)[number];
-export type Permission = `${Module}.${Action}`;
-export type UserPermissions = Record<Module, Action[]>;
+export { MODULES, ACTIONS } from "./authz-constants";
+export type { Module, Action, Permission, UserPermissions } from "./authz-constants";
 
 export interface UserRoleInfo {
   roleId: string;

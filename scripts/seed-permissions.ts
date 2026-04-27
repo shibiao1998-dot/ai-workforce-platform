@@ -27,12 +27,12 @@ function loadEnvLocal(): void {
 
 loadEnvLocal();
 
-type Module = "employees" | "production" | "org" | "dashboard" | "help" | "settings";
-type Action = "read" | "write" | "delete";
+import { MODULES, ACTIONS, type Module, type Action } from "../src/lib/authz-constants";
 
-const ALL_MODULES: Module[] = ["employees", "production", "org", "dashboard", "help", "settings"];
-const ALL_ACTIONS: Action[] = ["read", "write", "delete"];
-const BUSINESS_MODULES: Module[] = ["employees", "production", "org", "dashboard", "help"];
+// Keep as runtime arrays for flatMap / map usage
+const ALL_MODULES: Module[] = [...MODULES];
+const ALL_ACTIONS: Action[] = [...ACTIONS];
+const BUSINESS_MODULES: Module[] = MODULES.filter((m) => m !== "settings");
 
 interface BuiltinRole {
   name: string;
