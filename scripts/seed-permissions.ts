@@ -1,8 +1,31 @@
-import "dotenv/config";
 import { randomUUID } from "node:crypto";
+import { existsSync, readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { db } from "../src/db";
 import { roles, rolePermissions } from "../src/db/schema";
 import { eq } from "drizzle-orm";
+
+function loadEnvLocal(): void {
+  const envPath = resolve(process.cwd(), ".env.local");
+  if (!existsSync(envPath)) {
+    console.warn("Warning: .env.local not found, relying on existing env vars");
+    return;
+  }
+  const lines = readFileSync(envPath, "utf-8").split("\n");
+  for (const raw of lines) {
+    const line = raw.trim();
+    if (!line || line.startsWith("#")) continue;
+    const eqIdx = line.indexOf("=");
+    if (eqIdx === -1) continue;
+    const key = line.slice(0, eqIdx).trim();
+    const val = line.slice(eqIdx + 1).trim();
+    if (key && !(key in process.env)) {
+      process.env[key] = val;
+    }
+  }
+}
+
+loadEnvLocal();
 
 type Module = "employees" | "production" | "org" | "dashboard" | "help" | "settings";
 type Action = "read" | "write" | "delete";
