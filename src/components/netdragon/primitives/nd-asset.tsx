@@ -23,7 +23,7 @@ interface NdAssetProps {
   label: string;
   alt: string;
   className?: string;
-  /** 若传入,覆盖 catalog 定义 */
+  /** 覆盖 catalog 中的 fallback 样式。注意:id 在 catalog 中不存在时,此参数无效。 */
   fallbackOverride?: NdAssetFallback;
   /** 优先级高的图片(如首屏 hero)可传 eager */
   loading?: "lazy" | "eager";
@@ -50,7 +50,20 @@ function renderFallback(fb: NdAssetFallback, alt: string, className?: string) {
       />
     );
   }
-  // svg
+  // svg — catalog 是本地可信文件,但加一层防御避免路径穿越
+  if (fb.path.includes("..") || fb.path.startsWith("/")) {
+    if (typeof console !== "undefined") {
+      console.warn(`[NdAsset] suspicious fallback path rejected: ${fb.path}`);
+    }
+    return (
+      <div
+        role="img"
+        aria-label={alt}
+        className={className}
+        style={{ background: "#fef2f2" }}
+      />
+    );
+  }
   return (
     // eslint-disable-next-line @next/next/no-img-element
     <img
