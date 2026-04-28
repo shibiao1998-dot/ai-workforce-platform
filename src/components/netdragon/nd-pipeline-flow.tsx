@@ -16,7 +16,7 @@ interface PipelineNode {
   key: string;
   label: string;
   count: number;
-  /** 该节点是否已激活(有任务流过),未激活节点灰化 */
+  /** 该节点是否已激活(有任务流过),未激活时圆圈灰化;count 数字始终显示真实任务数,不灰化 */
   active?: boolean;
 }
 
@@ -46,9 +46,9 @@ export function NdPipelineFlow({ nodes, className }: NdPipelineFlowProps) {
       />
 
       {/* 节点 */}
-      <div className="relative z-10 flex items-start justify-between">
+      <ol className="relative z-10 flex list-none items-start justify-between">
         {nodes.map((n) => (
-          <div key={n.key} className="flex flex-col items-center gap-1">
+          <li key={n.key} className="flex flex-col items-center gap-1">
             <div
               className={cn(
                 "flex h-11 w-11 items-center justify-center rounded-full text-xs font-semibold",
@@ -59,10 +59,15 @@ export function NdPipelineFlow({ nodes, className }: NdPipelineFlowProps) {
             >
               {n.label}
             </div>
-            <div className="font-nd-display text-xs text-nd-ink">{n.count}</div>
-          </div>
+            <div
+              aria-label={`${n.count} 项任务`}
+              className="font-nd-display text-xs text-nd-ink"
+            >
+              {n.count}
+            </div>
+          </li>
         ))}
-      </div>
+      </ol>
     </div>
   );
 }
