@@ -79,11 +79,12 @@ export function HelpPanel() {
   // Fetch categories on mount
   useEffect(() => {
     fetch("/api/help/categories")
-      .then((r) => r.json())
-      .then((data: Category[]) => {
-        setCategories(data);
-        if (data.length > 0 && activeCategory === null) {
-          setActiveCategory(data[0].id);
+      .then((r) => (r.ok ? r.json() : []))
+      .then((data: Category[] | unknown) => {
+        const list = Array.isArray(data) ? data : [];
+        setCategories(list);
+        if (list.length > 0 && activeCategory === null) {
+          setActiveCategory(list[0].id);
         }
       })
       .catch(() => {});
@@ -107,8 +108,8 @@ export function HelpPanel() {
       params.set("categoryId", activeCategory);
     }
     fetch(`/api/help/articles?${params.toString()}`)
-      .then((r) => r.json())
-      .then((data: ArticleListItem[]) => setArticles(data))
+      .then((r) => (r.ok ? r.json() : []))
+      .then((data: ArticleListItem[] | unknown) => setArticles(Array.isArray(data) ? data : []))
       .catch(() => setArticles([]));
   }, [activeCategory, searchQuery]);
 
