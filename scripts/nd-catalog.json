@@ -23,8 +23,8 @@
       },
       "sizes": [
         { "label": "desktop", "width": 1920, "height": 640 },
-        { "label": "tablet",  "width": 1024, "height": 384 },
-        { "label": "mobile",  "width": 640,  "height": 352 }
+        { "label": "tablet",  "width": 1376, "height": 768 },
+        { "label": "mobile",  "width": 1024, "height": 640 }
       ],
       "tier": "top",
       "fallback": { "type": "gradient", "from": "#0B1A3A", "to": "#142651" }
@@ -123,7 +123,7 @@
       "promptVars": {
         "ICON-CONCEPT": "a five-pointed star fused with a coiled cyber-dragon, floating above a tiny Enterprise-starship saucer silhouette"
       },
-      "sizes": [{ "label": "default", "width": 512, "height": 512 }],
+      "sizes": [{ "label": "default", "width": 1024, "height": 1024 }],
       "tier": "top",
       "fallback": { "type": "svg", "path": "badge-generic.svg" }
     },
@@ -133,7 +133,7 @@
       "promptVars": {
         "ICON-CONCEPT": "a stylized lightning bolt passing through a hexagonal gem, with a subtle dragon-scale texture on the rim"
       },
-      "sizes": [{ "label": "default", "width": 512, "height": 512 }],
+      "sizes": [{ "label": "default", "width": 1024, "height": 1024 }],
       "tier": "top",
       "fallback": { "type": "svg", "path": "badge-generic.svg" }
     },
@@ -143,7 +143,7 @@
       "promptVars": {
         "ICON-CONCEPT": "a shield with a checkmark in its center, flanked by two dragon whiskers made of light ribbons"
       },
-      "sizes": [{ "label": "default", "width": 512, "height": 512 }],
+      "sizes": [{ "label": "default", "width": 1024, "height": 1024 }],
       "tier": "top",
       "fallback": { "type": "svg", "path": "badge-generic.svg" }
     },
@@ -153,7 +153,7 @@
       "promptVars": {
         "ICON-CONCEPT": "a glowing idea-spark emerging from a dragon's mouth, composed of hexagonal data fragments"
       },
-      "sizes": [{ "label": "default", "width": 512, "height": 512 }],
+      "sizes": [{ "label": "default", "width": 1024, "height": 1024 }],
       "tier": "top",
       "fallback": { "type": "svg", "path": "badge-generic.svg" }
     },
@@ -163,7 +163,7 @@
       "promptVars": {
         "ICON-CONCEPT": "three interlocking hexagonal nodes connected by flowing blue-cyan energy ribbons forming a triangle"
       },
-      "sizes": [{ "label": "default", "width": 512, "height": 512 }],
+      "sizes": [{ "label": "default", "width": 1024, "height": 1024 }],
       "tier": "top",
       "fallback": { "type": "svg", "path": "badge-generic.svg" }
     },
@@ -173,7 +173,7 @@
       "promptVars": {
         "ICON-CONCEPT": "a fortified octagonal core with an infinity loop made of dragon-energy encircling it"
       },
-      "sizes": [{ "label": "default", "width": 512, "height": 512 }],
+      "sizes": [{ "label": "default", "width": 1024, "height": 1024 }],
       "tier": "top",
       "fallback": { "type": "svg", "path": "badge-generic.svg" }
     },
@@ -184,7 +184,7 @@
       "promptVars": {
         "MOTIF": "a flowing cascade of interconnected hexagons forming a half-arch in the top-right area, with a tiny cyber-dragon tail curling through it, positioned against transparent background for overlay use"
       },
-      "sizes": [{ "label": "default", "width": 1024, "height": 512 }],
+      "sizes": [{ "label": "default", "width": 1024, "height": 1024 }],
       "tier": "top",
       "fallback": { "type": "gradient", "from": "#1E6EFF", "to": "#14C7C1" }
     },
@@ -194,7 +194,7 @@
       "promptVars": {
         "MOTIF": "a single horizontal beam of flowing blue-cyan energy with soft particles drifting along it, 4:1 aspect, meant to be placed as a divider between page sections, hints of Enterprise-starship warp-nacelle on the right end"
       },
-      "sizes": [{ "label": "default", "width": 1200, "height": 400 }],
+      "sizes": [{ "label": "default", "width": 1600, "height": 544 }],
       "tier": "top",
       "fallback": { "type": "gradient", "from": "#1E6EFF", "to": "#14C7C1" }
     }

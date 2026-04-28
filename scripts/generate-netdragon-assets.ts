@@ -233,10 +233,22 @@ async function main(): Promise<void> {
       if (ratio > 3) {
         badSizes.push(`  ${id} [${s.label}] ${s.width}x${s.height}  (aspect ratio ${ratio.toFixed(3)}:1 exceeds 3:1)`);
       }
+      const pixels = s.width * s.height;
+      if (pixels < 655_360) {
+        badSizes.push(`  ${id} [${s.label}] ${s.width}x${s.height}  (total pixels ${pixels} below minimum 655360)`);
+      }
+      if (s.width > 3840 || s.height > 3840) {
+        badSizes.push(`  ${id} [${s.label}] ${s.width}x${s.height}  (longest side exceeds 3840)`);
+      }
     }
   }
   if (badSizes.length > 0) {
-    console.error("gpt-image-2 requires width/height divisible by 16 AND aspect ratio ≤ 3:1. Offenders:");
+    console.error("gpt-image-2 size constraints violated:");
+    console.error("  - width/height divisible by 16");
+    console.error("  - aspect ratio ≤ 3:1");
+    console.error("  - total pixels ≥ 655360 (~1024x640)");
+    console.error("  - longest side ≤ 3840");
+    console.error("Offenders:");
     for (const line of badSizes) console.error(line);
     process.exit(1);
   }
