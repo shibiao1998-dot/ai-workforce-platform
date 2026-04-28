@@ -48,9 +48,9 @@ export function NdAchievementBadge({
           <div
             tabIndex={0}
             role="img"
-            aria-label={description ? `${name}:${description}` : name}
+            aria-label={description ? `${name}：${description}` : name}
             className={cn(
-              "relative inline-flex items-center justify-center rounded-full outline-none focus-visible:ring-offset-2",
+              "relative inline-flex items-center justify-center rounded-full outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-nd-primary)]/50",
               RANK_RING[rank],
               className,
             )}
