@@ -73,7 +73,10 @@ export async function proxy(request: NextRequest) {
   // 通过 fetch /api/auth/me 读取权限(官方 "optimistic check" 模式)。
   // Server Component 中 requirePageReadAccess() 是第二道防线,真正的授权判断在那里做,
   // Proxy 只是提前重定向,避免无权页面被渲染。
-  const meResp = await fetch(new URL("/api/auth/me", request.url), {
+  //
+  // 用 loopback + 当前请求端口自引用,避免走外部域名的 HTTPS 反代链(容器内无法 SSL 握手)。
+  const internalBase = `http://127.0.0.1:${request.nextUrl.port || process.env.PORT || "3000"}`;
+  const meResp = await fetch(`${internalBase}/api/auth/me`, {
     headers: { cookie: request.headers.get("cookie") || "" },
     cache: "no-store",
   });
