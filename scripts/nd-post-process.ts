@@ -43,15 +43,15 @@ async function processOne(
   const dst2x = join(familyDir, `${id}-${size.label}@2x.webp`);
 
   try {
-    // @1x:按 catalog 指定的 width 压到目标宽度(gpt-image-2 原生即目标尺寸,这里实际是 identity+压缩)
+    // @1x:源 PNG 降采样到 catalog 宽度的 50%,保证 @1x 比 @2x 小 3-4 倍
     await sharp(srcPng)
-      .resize({ width: size.width, withoutEnlargement: true })
+      .resize({ width: Math.max(1, Math.round(size.width / 2)) })
       .webp({ quality: 85 })
       .toFile(dst1x);
 
-    // @2x:原始图按 2x 宽度输出(若原图不够大,不放大,保持原宽)
+    // @2x:源 PNG 原生宽度(gpt-image-2 已按 catalog 指定尺寸生成)
     await sharp(srcPng)
-      .resize({ width: size.width * 2, withoutEnlargement: true })
+      .resize({ width: size.width, withoutEnlargement: true })
       .webp({ quality: 85 })
       .toFile(dst2x);
 

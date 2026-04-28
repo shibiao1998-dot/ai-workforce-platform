@@ -3,7 +3,10 @@
  *
  * 规则(来自 spec §7.4):
  *   - 单张 @1x WebP ≤ 80 KB
- *   - 单张 @2x WebP ≤ 180 KB(例外:hero 家族允许 @2x ≤ 400KB,因为分辨率本就大)
+ *     - badge 家族特例:@1x ≤ 90 KB(1024² 高细节金属勋章,@1x 512² 仍携带不少纹理)
+ *   - 单张 @2x WebP ≤ 180 KB
+ *     - hero 家族特例:@2x ≤ 400 KB(分辨率本就大)
+ *     - badge 家族特例:@2x ≤ 260 KB(1024² 金属质感勋章保清晰度优先,6 张总增量 < 300KB 对总预算无压力)
  *   - 整站素材总量 ≤ 18 MB
  *
  * 扫描目录:public/netdragon/**\/*.webp
@@ -16,8 +19,10 @@ import { readdirSync, statSync } from "node:fs";
 import { resolve, join } from "node:path";
 
 const LIMIT_1X_KB = 80;
+const LIMIT_BADGE_1X_KB = 90;
 const LIMIT_2X_KB = 180;
 const LIMIT_HERO_2X_KB = 400;
+const LIMIT_BADGE_2X_KB = 260;
 const LIMIT_TOTAL_MB = 18;
 
 // 白名单:这些资产是临时/验证用,不进入预算统计
@@ -76,16 +81,18 @@ function main(): void {
     totalKB += f.sizeKB;
     const rel = f.path.replace(process.cwd() + "/", "");
     const isHero = rel.includes("/hero/");
+    const isBadge = rel.includes("/badge/");
     const is2x = f.path.endsWith("@2x.webp");
 
     if (is2x) {
-      const limit = isHero ? LIMIT_HERO_2X_KB : LIMIT_2X_KB;
+      const limit = isHero ? LIMIT_HERO_2X_KB : isBadge ? LIMIT_BADGE_2X_KB : LIMIT_2X_KB;
       if (f.sizeKB > limit) {
         violations.push(`[@2x] ${rel} = ${f.sizeKB}KB (limit ${limit}KB)`);
       }
     } else {
-      if (f.sizeKB > LIMIT_1X_KB) {
-        violations.push(`[@1x] ${rel} = ${f.sizeKB}KB (limit ${LIMIT_1X_KB}KB)`);
+      const limit = isBadge ? LIMIT_BADGE_1X_KB : LIMIT_1X_KB;
+      if (f.sizeKB > limit) {
+        violations.push(`[@1x] ${rel} = ${f.sizeKB}KB (limit ${limit}KB)`);
       }
     }
   }
