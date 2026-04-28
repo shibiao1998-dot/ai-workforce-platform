@@ -33,7 +33,7 @@ export function NdScenePortrait({
   onClick,
 }: NdScenePortraitProps) {
   const isClickable = !!onClick;
-  const accessibleName = meta ? `${name}：${title}：${meta}` : `${name}：${title}`;
+  const accessibleName = meta ? `${name}、${title}、${meta}` : `${name}、${title}`;
 
   return (
     <div
@@ -53,7 +53,7 @@ export function NdScenePortrait({
       <NdAsset
         id={assetId}
         label="card"
-        alt={`${name} - ${title}`}
+        alt={isClickable ? "" : `${name} - ${title}`}
         className="absolute inset-0 h-full w-full object-cover"
         loading="lazy"
       />
@@ -66,14 +66,14 @@ export function NdScenePortrait({
       {/* 底部玻璃信息条 */}
       <div
         className={cn(
-          "absolute inset-x-0 bottom-0 p-3",
+          "absolute inset-x-0 bottom-0 z-10 p-3",
           "bg-[color:var(--color-nd-glass-bg)] backdrop-blur-[var(--nd-glass-blur)]",
           "border-t border-[color:var(--color-nd-glass-border)]",
         )}
       >
         <div className="text-sm font-bold leading-tight text-nd-ink">{name}</div>
         <div className="mt-0.5 text-xs text-nd-ink-soft">{title}</div>
-        {meta && <div className="mt-1 text-[11px] text-nd-ink-soft/80">{meta}</div>}
+        {meta && <div className="mt-1 text-[11px] text-nd-ink-soft">{meta}</div>}
       </div>
     </div>
   );
