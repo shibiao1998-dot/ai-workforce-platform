@@ -22,16 +22,17 @@ export async function POST(request: NextRequest) {
     }
 
     // --- upsert user_roles ---
+    const ucUserId = String(userId);
     const superAdminIds = (process.env.SUPER_ADMIN_UC_IDS || "")
       .split(",")
       .map((s) => s.trim())
       .filter(Boolean);
 
-    const existing = await db.select().from(userRoles).where(eq(userRoles.ucUserId, userId));
+    const existing = await db.select().from(userRoles).where(eq(userRoles.ucUserId, ucUserId));
     const now = new Date();
 
     if (existing.length === 0) {
-      const targetRoleName = superAdminIds.includes(userId) ? "super-admin" : "default";
+      const targetRoleName = superAdminIds.includes(ucUserId) ? "super-admin" : "default";
       const roleRows = await db.select().from(roles).where(eq(roles.name, targetRoleName));
       if (roleRows.length === 0) {
         return NextResponse.json(
@@ -58,14 +59,14 @@ export async function POST(request: NextRequest) {
         updatedAt: now,
       };
 
-      if (superAdminIds.includes(userId)) {
+      if (superAdminIds.includes(ucUserId)) {
         const adminRole = await db.select().from(roles).where(eq(roles.name, "super-admin"));
         if (adminRole.length > 0 && existing[0].roleId !== adminRole[0].id) {
           updates.roleId = adminRole[0].id;
         }
       }
 
-      await db.update(userRoles).set(updates).where(eq(userRoles.ucUserId, userId));
+      await db.update(userRoles).set(updates).where(eq(userRoles.ucUserId, ucUserId));
     }
 
     // --- 原有 session cookie ---
@@ -73,7 +74,7 @@ export async function POST(request: NextRequest) {
     const expiresInMs = (expiresIn || 7 * 24 * 3600) * 1000;
 
     const session = await createSession(
-      { userId: String(userId), nickname, avatar: avatar || "" },
+      { userId: ucUserId, nickname, avatar: avatar || "" },
       expiresInMs
     );
 
