@@ -52,20 +52,18 @@ export function NdStatCard({
   const isClickable = !!onClick;
 
   const trendColor =
-    trendPct == null
+    trendPct == null || trendPct === 0
       ? "text-nd-ink-soft"
       : (trendPct > 0) === higherIsBetter
         ? "text-[color:var(--color-nd-success)]"
         : "text-[color:var(--color-nd-danger)]";
 
   const TrendIcon =
-    trendPct == null
+    trendPct == null || trendPct === 0
       ? Minus
       : trendPct > 0
         ? ArrowUp
-        : trendPct < 0
-          ? ArrowDown
-          : Minus;
+        : ArrowDown;
 
   return (
     <div
@@ -76,6 +74,7 @@ export function NdStatCard({
       )}
       onClick={onClick}
       role={isClickable ? "button" : undefined}
+      aria-label={isClickable ? label : undefined}
       tabIndex={isClickable ? 0 : undefined}
       onKeyDown={isClickable ? (e) => (e.key === "Enter" || e.key === " ") && onClick?.() : undefined}
     >
