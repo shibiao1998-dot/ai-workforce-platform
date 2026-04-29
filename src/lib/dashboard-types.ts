@@ -68,3 +68,9 @@ export interface RecentTaskEntry {
   tokenUsage: number | null
   startTime: number | null
 }
+
+export interface PipelineNodeStat {
+  key: "intake" | "design" | "production" | "review" | "archive"
+  label: string
+  count: number
+}

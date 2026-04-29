@@ -7,6 +7,7 @@ import type {
   HeatmapEntry,
   LeaderboardEntry,
   RecentTaskEntry,
+  PipelineNodeStat,
 } from "./dashboard-types"
 import type { TeamType } from "@/lib/types"
 
@@ -259,12 +260,6 @@ export function computeRecentAchievements(raw: GamificationRawData, limit: numbe
 
 // ─── Pipeline Flow Stats (Step C1) ─────────────────────────────────────────
 
-export interface PipelineNodeStat {
-  key: "intake" | "design" | "production" | "review" | "archive";
-  label: string;
-  count: number;
-}
-
 /**
  * 返回今日任务在产线 5 个节点上的分布。
  *
@@ -281,43 +276,30 @@ export interface PipelineNodeStat {
 export async function getPipelineFlowStats(): Promise<PipelineNodeStat[]> {
   const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD (UTC)
 
+  const bucketExpr = sql<string>`
+    case
+      when ${tasks.status} = 'completed'
+           and date(${tasks.actualEndTime}, 'unixepoch') = ${today}
+        then 'archive'
+      when ${tasks.status} = 'running' and ${tasks.currentStep} is null
+        then 'intake'
+      when ${tasks.status} = 'running' and ${tasks.team} = 'design'
+        then 'design'
+      when ${tasks.status} = 'running' and ${tasks.team} = 'production'
+        then 'production'
+      when ${tasks.status} = 'running' and ${tasks.team} = 'management'
+        then 'review'
+      else 'skip'
+    end
+  `;
+
   const rows = await db
     .select({
-      bucket: sql<string>`
-        case
-          when ${tasks.status} = 'completed'
-               and date(${tasks.actualEndTime}, 'unixepoch') = ${today}
-            then 'archive'
-          when ${tasks.status} = 'running' and ${tasks.currentStep} is null
-            then 'intake'
-          when ${tasks.status} = 'running' and ${tasks.team} = 'design'
-            then 'design'
-          when ${tasks.status} = 'running' and ${tasks.team} = 'production'
-            then 'production'
-          when ${tasks.status} = 'running' and ${tasks.team} = 'management'
-            then 'review'
-          else 'skip'
-        end
-      `.as("bucket"),
+      bucket: bucketExpr.as("bucket"),
       count: sql<number>`count(*)`,
     })
     .from(tasks)
-    .groupBy(
-      sql`case
-          when ${tasks.status} = 'completed'
-               and date(${tasks.actualEndTime}, 'unixepoch') = ${today}
-            then 'archive'
-          when ${tasks.status} = 'running' and ${tasks.currentStep} is null
-            then 'intake'
-          when ${tasks.status} = 'running' and ${tasks.team} = 'design'
-            then 'design'
-          when ${tasks.status} = 'running' and ${tasks.team} = 'production'
-            then 'production'
-          when ${tasks.status} = 'running' and ${tasks.team} = 'management'
-            then 'review'
-          else 'skip'
-        end`
-    );
+    .groupBy(bucketExpr);
 
   const bucketMap = new Map<string, number>();
   for (const r of rows) {
