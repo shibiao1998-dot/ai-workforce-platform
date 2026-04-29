@@ -256,3 +256,81 @@ export function computeRecentAchievements(raw: GamificationRawData, limit: numbe
   allEarned.sort((a, b) => b.earnedAt.localeCompare(a.earnedAt))
   return allEarned.slice(0, limit)
 }
+
+// ─── Pipeline Flow Stats (Step C1) ─────────────────────────────────────────
+
+export interface PipelineNodeStat {
+  key: "intake" | "design" | "production" | "review" | "archive";
+  label: string;
+  count: number;
+}
+
+/**
+ * 返回今日任务在产线 5 个节点上的分布。
+ *
+ * 节点定义(schema 退化映射,当前 tasks.status 只有 running/completed/failed,
+ * 没有 queued/review/qa,所以按以下近似):
+ *   intake     := status="running" AND currentStep IS NULL (已接单但未开始)
+ *   design     := status="running" AND currentStep IS NOT NULL AND team="design"
+ *   production := status="running" AND currentStep IS NOT NULL AND team="production"
+ *   review     := status="running" AND currentStep IS NOT NULL AND team="management"
+ *   archive    := status="completed" AND actualEndTime 是今日(UTC 自然日)
+ *
+ * 未被分类的:status="failed" 不计入任何节点。
+ */
+export async function getPipelineFlowStats(): Promise<PipelineNodeStat[]> {
+  const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD (UTC)
+
+  const rows = await db
+    .select({
+      bucket: sql<string>`
+        case
+          when ${tasks.status} = 'completed'
+               and date(${tasks.actualEndTime}, 'unixepoch') = ${today}
+            then 'archive'
+          when ${tasks.status} = 'running' and ${tasks.currentStep} is null
+            then 'intake'
+          when ${tasks.status} = 'running' and ${tasks.team} = 'design'
+            then 'design'
+          when ${tasks.status} = 'running' and ${tasks.team} = 'production'
+            then 'production'
+          when ${tasks.status} = 'running' and ${tasks.team} = 'management'
+            then 'review'
+          else 'skip'
+        end
+      `.as("bucket"),
+      count: sql<number>`count(*)`,
+    })
+    .from(tasks)
+    .groupBy(
+      sql`case
+          when ${tasks.status} = 'completed'
+               and date(${tasks.actualEndTime}, 'unixepoch') = ${today}
+            then 'archive'
+          when ${tasks.status} = 'running' and ${tasks.currentStep} is null
+            then 'intake'
+          when ${tasks.status} = 'running' and ${tasks.team} = 'design'
+            then 'design'
+          when ${tasks.status} = 'running' and ${tasks.team} = 'production'
+            then 'production'
+          when ${tasks.status} = 'running' and ${tasks.team} = 'management'
+            then 'review'
+          else 'skip'
+        end`
+    );
+
+  const bucketMap = new Map<string, number>();
+  for (const r of rows) {
+    if (r.bucket && r.bucket !== "skip") {
+      bucketMap.set(r.bucket, Number(r.count ?? 0));
+    }
+  }
+
+  return [
+    { key: "intake", label: "立项", count: bucketMap.get("intake") ?? 0 },
+    { key: "design", label: "设计", count: bucketMap.get("design") ?? 0 },
+    { key: "production", label: "生产", count: bucketMap.get("production") ?? 0 },
+    { key: "review", label: "评审", count: bucketMap.get("review") ?? 0 },
+    { key: "archive", label: "入库", count: bucketMap.get("archive") ?? 0 },
+  ];
+}
