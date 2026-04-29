@@ -47,7 +47,6 @@ export function DashboardShell({
   pipelineNodes,
 }: DashboardShellProps) {
   const router = useRouter()
-  const [selectedTeam] = useState<string | null>(null)
   const [selectedEmployeeId, setSelectedEmployeeId] = useState<string | null>(null)
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null)
   const [drawerTeam, setDrawerTeam] = useState<string | null>(null)
@@ -68,7 +67,7 @@ export function DashboardShell({
     <div className="min-h-screen bg-nd-canvas p-6">
       {/* 区块 1 · Hero 欢迎区 */}
       <NdVoidBlock className="mb-4">
-        <div className="flex items-center justify-between gap-6">
+        <div className="flex items-center">
           <div className="flex-1">
             <div className="text-xs uppercase tracking-widest text-[color:var(--color-nd-void-edge)]">
               NetDragon · Digital Craft Factory
@@ -104,14 +103,11 @@ export function DashboardShell({
 
       {/* 区块 4 · 活动热力 + 成就 + 近期任务(3 列) */}
       <div className="grid grid-cols-3 gap-4">
-        <Card className="p-4">
-          <h3 className="mb-3 text-sm font-semibold text-nd-ink">活动热力</h3>
-          <ActivityHeatmap
-            data={heatmapData}
-            filterTeam={selectedTeam}
-            onEmployeeClick={handleEmployeeClick}
-          />
-        </Card>
+        <ActivityHeatmap
+          data={heatmapData}
+          filterTeam={null}
+          onEmployeeClick={handleEmployeeClick}
+        />
         <AchievementFeed
           achievements={recentAchievements.map((a, i) => ({
             id: `${a.employeeId}-${a.achievementKey}-${i}`,
@@ -124,10 +120,7 @@ export function DashboardShell({
             earnedAt: a.earnedAt,
           }))}
         />
-        <Card className="p-4">
-          <h3 className="mb-3 text-sm font-semibold text-nd-ink">近期任务</h3>
-          <TaskFeed tasks={recentTasks} onTaskClick={setSelectedTaskId} />
-        </Card>
+        <TaskFeed tasks={recentTasks} onTaskClick={setSelectedTaskId} />
       </div>
 
       {/* 弹窗层 */}
