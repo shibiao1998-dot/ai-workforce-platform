@@ -1,59 +1,47 @@
 "use client"
 
+import { Card } from "@/components/ui/card"
+import { NdTeamCrest } from "@/components/netdragon"
 import type { TeamStatus } from "@/lib/dashboard-types"
-import { MetricTooltip } from "@/components/shared/metric-tooltip"
 
 interface Props {
   teamStatus: TeamStatus[]
   onTeamClick: (team: string) => void
 }
 
-const TEAM_COLORS: Record<string, { border: string; bar: string; bg: string }> = {
-  management: { border: "#8b5cf6", bar: "#8b5cf6", bg: "rgba(139,92,246,0.08)" },
-  design: { border: "#3b82f6", bar: "#3b82f6", bg: "rgba(59,130,246,0.08)" },
-  production: { border: "#22c55e", bar: "#22c55e", bg: "rgba(34,197,94,0.08)" },
-}
-
 export function TeamStatusPanel({ teamStatus, onTeamClick }: Props) {
-
   return (
-    <div
-      className="rounded-2xl p-5 h-full flex flex-col gap-3"
-      style={{
-        background: "rgba(255,255,255,0.75)",
-        backdropFilter: "blur(12px)",
-        border: "1px solid rgba(255,255,255,0.8)",
-        boxShadow: "0 4px 24px rgba(0,0,0,0.06), 0 1px 4px rgba(0,0,0,0.04)",
-      }}
-    >
-      <h3 className="text-sm font-semibold text-[#1e293b] mb-1">团队状态概览</h3>
-      {teamStatus.map((ts) => {
-        const colors = TEAM_COLORS[ts.team] ?? { border: "#64748b", bar: "#64748b", bg: "rgba(100,116,139,0.08)" }
-        const healthPct = Math.round(ts.healthRate * 100)
-
-        return (
-          <div
-            key={ts.team}
-            onClick={() => onTeamClick(ts.team)}
-            className="flex-1 rounded-xl p-4 cursor-pointer transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
-            style={{ borderLeft: `4px solid ${colors.border}`, background: colors.bg }}
-          >
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-semibold text-[#1e293b]">{ts.teamLabel}</span>
-              <span className="text-xs text-[#64748b]">{ts.activeCount}/{ts.totalCount} 在线</span>
+    <Card className="h-full p-4">
+      <h3 className="mb-3 text-sm font-semibold text-nd-ink">团队状态</h3>
+      <div className="flex flex-col gap-2">
+        {teamStatus.map((ts) => {
+          const healthPct = Math.round(ts.healthRate * 100)
+          return (
+            <div
+              key={ts.team}
+              onClick={() => onTeamClick(ts.team)}
+              className="flex cursor-pointer items-center gap-3 rounded-[var(--radius-nd-md)] p-2 transition-colors hover:bg-[color:var(--color-nd-canvas)]"
+              role="button"
+              tabIndex={0}
+              aria-label={`${ts.teamLabel}、在岗 ${ts.activeCount} / ${ts.totalCount}、产能 ${healthPct}%`}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") onTeamClick(ts.team)
+              }}
+            >
+              <div aria-hidden="true">
+                <NdTeamCrest team={ts.team} className="w-8" />
+              </div>
+              <div className="flex-1">
+                <div className="text-sm font-medium text-nd-ink">{ts.teamLabel}</div>
+                <div className="text-xs text-nd-ink-soft">
+                  {ts.activeCount}/{ts.totalCount} 在岗 · 产能 {healthPct}%
+                </div>
+              </div>
+              <div className="font-nd-display text-sm font-bold text-nd-ink">{healthPct}%</div>
             </div>
-            <div className="h-1.5 rounded-full bg-white/60 overflow-hidden">
-              <div
-                className="h-full rounded-full transition-all duration-700"
-                style={{ width: `${healthPct}%`, background: colors.bar }}
-              />
-            </div>
-            <MetricTooltip metricKey="teamHealth">
-              <p className="text-xs text-[#64748b] mt-1">健康度 {healthPct}%</p>
-            </MetricTooltip>
-          </div>
-        )
-      })}
-    </div>
+          )
+        })}
+      </div>
+    </Card>
   )
 }
