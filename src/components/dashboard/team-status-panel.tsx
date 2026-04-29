@@ -20,7 +20,7 @@ export function TeamStatusPanel({ teamStatus, onTeamClick }: Props) {
             <div
               key={ts.team}
               onClick={() => onTeamClick(ts.team)}
-              className="flex cursor-pointer items-center gap-3 rounded-[var(--radius-nd-md)] p-2 transition-colors hover:bg-[color:var(--color-nd-canvas)]"
+              className="flex cursor-pointer items-center gap-3 rounded-nd-md p-2 transition-colors hover:bg-nd-canvas"
               role="button"
               tabIndex={0}
               aria-label={`${ts.teamLabel}、在岗 ${ts.activeCount} / ${ts.totalCount}、产能 ${healthPct}%`}
