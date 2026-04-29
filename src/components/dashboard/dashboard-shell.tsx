@@ -4,13 +4,12 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { EmployeeDetailModal } from "@/components/shared/employee-detail-modal"
 import { TaskDetailDialog } from "@/components/production/task-detail-dialog"
+import { Card } from "@/components/ui/card"
+import { NdVoidBlock, NdPipelineFlow } from "@/components/netdragon"
 import { KpiSection } from "./kpi-section"
-import { TeamComparisonChart } from "./team-comparison-chart"
 import { ActivityHeatmap } from "./activity-heatmap"
 import { TaskFeed } from "./task-feed"
-import { OperationalIndexGauge } from "./operational-index-gauge"
 import { TeamStatusPanel } from "./team-status-panel"
-import { LeaderboardPanel } from "./leaderboard-panel"
 import { TeamDrawer } from "./team-drawer"
 import { AchievementFeed } from "./achievement-feed"
 import type {
@@ -21,6 +20,7 @@ import type {
   HeatmapEntry,
   LeaderboardEntry,
   RecentTaskEntry,
+  PipelineNodeStat,
 } from "@/lib/dashboard-types"
 import type { AchievementFeedEntry } from "@/lib/dashboard-data"
 
@@ -33,27 +33,24 @@ interface DashboardShellProps {
   leaderboard: LeaderboardEntry[]
   recentTasks: RecentTaskEntry[]
   recentAchievements: AchievementFeedEntry[]
+  pipelineNodes: PipelineNodeStat[]
 }
 
 export function DashboardShell({
   summary,
   teamStatus,
   kpiItems,
-  efficiencyTrend,
   heatmapData,
   leaderboard,
   recentTasks,
   recentAchievements,
+  pipelineNodes,
 }: DashboardShellProps) {
   const router = useRouter()
-  const [selectedTeam, setSelectedTeam] = useState<string | null>(null)
+  const [selectedTeam] = useState<string | null>(null)
   const [selectedEmployeeId, setSelectedEmployeeId] = useState<string | null>(null)
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null)
   const [drawerTeam, setDrawerTeam] = useState<string | null>(null)
-
-  function handleTeamClick(team: string) {
-    setSelectedTeam((prev) => (prev === team ? null : team))
-  }
 
   function handleEmployeeClick(employeeId: string) {
     setSelectedEmployeeId(employeeId)
@@ -63,72 +60,77 @@ export function DashboardShell({
     if (href) router.push(href)
   }
 
+  // 派生:在岗总数(TeamStatus activeCount 之和)
+  const totalActive = teamStatus.reduce((sum, t) => sum + t.activeCount, 0)
+  const operationalPct = Math.round((summary.operationalIndex ?? 0) * 100)
+
   return (
-    <div
-      className="min-h-screen p-6"
-      style={{ background: "linear-gradient(135deg, #f0f4f8, #e8eef5)" }}
-    >
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-[#1e293b]">AI 驾驶舱</h1>
-        <p className="text-[#64748b] mt-1 text-sm">AI团队运营全景 · 实时数据驱动</p>
-      </div>
-
-      <div className="grid grid-cols-5 gap-4 mb-4">
-        <div className="col-span-3">
-          <OperationalIndexGauge summary={summary} />
+    <div className="min-h-screen bg-nd-canvas p-6">
+      {/* 区块 1 · Hero 欢迎区 */}
+      <NdVoidBlock className="mb-4">
+        <div className="flex items-center justify-between gap-6">
+          <div className="flex-1">
+            <div className="text-xs uppercase tracking-widest text-[color:var(--color-nd-void-edge)]">
+              NetDragon · Digital Craft Factory
+            </div>
+            <h1 className="mt-2 text-3xl font-bold">早安,今日产线已启动</h1>
+            <p className="mt-3 text-sm opacity-80">
+              <span className="font-nd-display text-[color:var(--color-nd-accent)]">{totalActive}</span>
+              <span> 位 AI 员工在岗 · 本月</span>
+              <span className="font-nd-display text-[color:var(--color-nd-accent)]">{summary.monthlyTaskCount}</span>
+              <span> 个任务流转 · 整体产能 </span>
+              <span className="font-nd-display text-[color:var(--color-nd-void-edge)]">{operationalPct}%</span>
+            </p>
+          </div>
         </div>
-        <div className="col-span-2">
-          <TeamStatusPanel teamStatus={teamStatus} onTeamClick={setDrawerTeam} />
-        </div>
-      </div>
+      </NdVoidBlock>
 
+      {/* 区块 2 · KPI 矩阵 */}
       <div className="mb-4">
         <KpiSection kpiItems={kpiItems} onNavigate={handleKpiNavigate} />
       </div>
 
-      <div className="grid grid-cols-3 gap-4 mb-4">
-        <div className="col-span-2">
-          <TeamComparisonChart
-            data={efficiencyTrend}
-            selectedTeam={selectedTeam}
-            onTeamClick={handleTeamClick}
-          />
-        </div>
-        <div className="col-span-1">
-          <LeaderboardPanel
-            entries={leaderboard}
-            onEmployeeClick={handleEmployeeClick}
-          />
-        </div>
+      {/* 区块 3 · 产线流转 + 团队状态 */}
+      <div className="mb-4 grid grid-cols-3 gap-4">
+        <Card className="col-span-2 p-4">
+          <div className="mb-3 flex items-center justify-between">
+            <h3 className="text-sm font-semibold text-nd-ink">今日产线流转</h3>
+            <span className="text-xs text-nd-ink-soft">实时更新</span>
+          </div>
+          <NdPipelineFlow nodes={pipelineNodes.map((n) => ({ ...n, active: n.count > 0 }))} />
+        </Card>
+        <TeamStatusPanel teamStatus={teamStatus} onTeamClick={setDrawerTeam} />
       </div>
 
+      {/* 区块 4 · 活动热力 + 成就 + 近期任务(3 列) */}
       <div className="grid grid-cols-3 gap-4">
-        <div>
+        <Card className="p-4">
+          <h3 className="mb-3 text-sm font-semibold text-nd-ink">活动热力</h3>
           <ActivityHeatmap
             data={heatmapData}
             filterTeam={selectedTeam}
             onEmployeeClick={handleEmployeeClick}
           />
-        </div>
-        <div>
-          <AchievementFeed
-            achievements={recentAchievements.map((a, i) => ({
-              id: `${a.employeeId}-${a.achievementKey}-${i}`,
-              employeeId: a.employeeId,
-              employeeName: a.employeeName,
-              team: a.team,
-              achievementKey: a.achievementKey,
-              achievementEmoji: a.achievementEmoji,
-              achievementName: a.achievementName,
-              earnedAt: a.earnedAt,
-            }))}
-          />
-        </div>
-        <div>
+        </Card>
+        <AchievementFeed
+          achievements={recentAchievements.map((a, i) => ({
+            id: `${a.employeeId}-${a.achievementKey}-${i}`,
+            employeeId: a.employeeId,
+            employeeName: a.employeeName,
+            team: a.team,
+            achievementKey: a.achievementKey,
+            achievementEmoji: a.achievementEmoji,
+            achievementName: a.achievementName,
+            earnedAt: a.earnedAt,
+          }))}
+        />
+        <Card className="p-4">
+          <h3 className="mb-3 text-sm font-semibold text-nd-ink">近期任务</h3>
           <TaskFeed tasks={recentTasks} onTaskClick={setSelectedTaskId} />
-        </div>
+        </Card>
       </div>
 
+      {/* 弹窗层 */}
       <EmployeeDetailModal
         employeeId={selectedEmployeeId}
         open={selectedEmployeeId !== null}

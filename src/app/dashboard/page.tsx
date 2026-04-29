@@ -6,6 +6,7 @@ import {
   getGamificationData,
   computeLeaderboard,
   computeRecentAchievements,
+  getPipelineFlowStats,
 } from "@/lib/dashboard-data"
 import { getMetrics, getKpiItems, getTeamEfficiencyTrend } from "@/lib/metric-engine"
 import { requirePageReadAccess } from "@/lib/authz-server"
@@ -45,7 +46,7 @@ export default async function DashboardPage() {
   const last5Months = getLastNMonths(5)
   const { startDate, endDate } = getDateRange(30)
 
-  const [engineMetrics, teamStatus, kpiItems, efficiencyTrend, heatmapData, recentTasks, gamificationRaw] =
+  const [engineMetrics, teamStatus, kpiItems, efficiencyTrend, heatmapData, recentTasks, gamificationRaw, pipelineNodes] =
     await Promise.all([
       getMetrics({ period: currentMonth }),
       getTeamStatus(),
@@ -54,6 +55,7 @@ export default async function DashboardPage() {
       getHeatmapData(startDate, endDate),
       getRecentTasks(8),
       getGamificationData(),
+      getPipelineFlowStats(),
     ])
 
   const summary = {
@@ -79,6 +81,7 @@ export default async function DashboardPage() {
       leaderboard={leaderboard}
       recentTasks={recentTasks}
       recentAchievements={recentAchievements}
+      pipelineNodes={pipelineNodes}
     />
   )
 }
