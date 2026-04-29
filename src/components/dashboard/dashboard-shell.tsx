@@ -117,6 +117,7 @@ export function DashboardShell({
               employeeId: a.employeeId,
               employeeName: a.employeeName,
               team: a.team,
+              achievementKey: a.achievementKey,
               achievementEmoji: a.achievementEmoji,
               achievementName: a.achievementName,
               earnedAt: a.earnedAt,
