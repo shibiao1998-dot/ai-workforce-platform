@@ -4,8 +4,9 @@ import { eq, sql } from "drizzle-orm";
 import { db } from "@/db";
 import { roles, rolePermissions, userRoles } from "@/db/schema";
 import { requirePermission } from "@/lib/authz";
-import { MODULES, ACTIONS, type Module, type Action } from "@/lib/authz-constants";
+import { type Module, type Action } from "@/lib/authz-constants";
 import { logAudit } from "@/lib/audit";
+import { validatePermissionInputs } from "@/lib/role-permission-validation";
 
 interface CreateRoleBody {
   name: string;
@@ -51,10 +52,11 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "name 和 displayName 必填" }, { status: 400 });
   }
 
-  for (const p of body.permissions ?? []) {
-    if (!MODULES.includes(p.module) || !ACTIONS.includes(p.action)) {
-      return NextResponse.json({ error: `非法权限: ${p.module}.${p.action}` }, { status: 400 });
-    }
+  let permissions: Array<{ module: Module; action: Action }>;
+  try {
+    permissions = validatePermissionInputs(body.permissions ?? []);
+  } catch (err) {
+    return NextResponse.json({ error: err instanceof Error ? err.message : "权限格式非法" }, { status: 400 });
   }
 
   const existing = await db.select().from(roles).where(eq(roles.name, body.name));
@@ -75,7 +77,7 @@ export async function POST(request: NextRequest) {
     updatedAt: now,
   });
 
-  for (const p of body.permissions ?? []) {
+  for (const p of permissions) {
     await db.insert(rolePermissions).values({
       id: randomUUID(),
       roleId: id,
@@ -87,7 +89,7 @@ export async function POST(request: NextRequest) {
   await logAudit(request, user, {
     action: "role.create",
     target: { type: "role", id },
-    details: { name: body.name, permissions: body.permissions },
+    details: { name: body.name, permissions },
   });
 
   return NextResponse.json({ id });

@@ -8,7 +8,7 @@ import {
   computeRecentAchievements,
   getPipelineFlowStats,
 } from "@/lib/dashboard-data"
-import { getMetrics, getKpiItems, getTeamEfficiencyTrend } from "@/lib/metric-engine"
+import { getMetrics, getKpiItems, getTeamEfficiencyTrend, getKpiTrendSeries } from "@/lib/metric-engine"
 import { requirePageReadAccess } from "@/lib/authz-server"
 
 function getCurrentMonth(): string {
@@ -44,9 +44,10 @@ export default async function DashboardPage() {
   const currentMonth = getCurrentMonth()
   const prevMonth = getPrevMonth(currentMonth)
   const last5Months = getLastNMonths(5)
+  const last3Months = getLastNMonths(3)
   const { startDate, endDate } = getDateRange(30)
 
-  const [engineMetrics, teamStatus, kpiItems, efficiencyTrend, heatmapData, recentTasks, gamificationRaw, pipelineNodes] =
+  const [engineMetrics, teamStatus, kpiItems, efficiencyTrend, heatmapData, recentTasks, gamificationRaw, pipelineNodes, kpiTrend] =
     await Promise.all([
       getMetrics({ period: currentMonth }),
       getTeamStatus(),
@@ -56,6 +57,7 @@ export default async function DashboardPage() {
       getRecentTasks(8),
       getGamificationData(),
       getPipelineFlowStats(),
+      getKpiTrendSeries(last3Months),
     ])
 
   const summary = {
@@ -76,6 +78,7 @@ export default async function DashboardPage() {
       summary={summary}
       teamStatus={teamStatus}
       kpiItems={kpiItems}
+      kpiTrend={kpiTrend}
       efficiencyTrend={efficiencyTrend}
       heatmapData={heatmapData}
       leaderboard={leaderboard}

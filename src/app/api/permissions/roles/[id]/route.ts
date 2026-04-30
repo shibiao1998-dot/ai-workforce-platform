@@ -4,9 +4,10 @@ import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import { roles, rolePermissions, userRoles } from "@/db/schema";
 import { requirePermission } from "@/lib/authz";
-import { MODULES, ACTIONS, type Module, type Action } from "@/lib/authz-constants";
+import { type Module, type Action } from "@/lib/authz-constants";
 import { logAudit } from "@/lib/audit";
 import { sql } from "drizzle-orm";
+import { validatePermissionInputs } from "@/lib/role-permission-validation";
 
 interface UpdateRoleBody {
   displayName?: string;
@@ -43,6 +44,14 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
   if (existing[0].isSystem) return NextResponse.json({ error: "内置角色不可修改" }, { status: 403 });
 
   const body = (await request.json()) as UpdateRoleBody;
+  let permissions: Array<{ module: Module; action: Action }> | null = null;
+  if (body.permissions !== undefined) {
+    try {
+      permissions = validatePermissionInputs(body.permissions);
+    } catch (err) {
+      return NextResponse.json({ error: err instanceof Error ? err.message : "权限格式非法" }, { status: 400 });
+    }
+  }
   const beforePerms = await loadRolePerms(id);
 
   const updates: Record<string, unknown> = { updatedAt: new Date() };
@@ -51,14 +60,9 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 
   await db.update(roles).set(updates).where(eq(roles.id, id));
 
-  if (body.permissions) {
-    for (const p of body.permissions) {
-      if (!MODULES.includes(p.module) || !ACTIONS.includes(p.action)) {
-        return NextResponse.json({ error: `非法权限: ${p.module}.${p.action}` }, { status: 400 });
-      }
-    }
+  if (permissions) {
     await db.delete(rolePermissions).where(eq(rolePermissions.roleId, id));
-    for (const p of body.permissions) {
+    for (const p of permissions) {
       await db.insert(rolePermissions).values({
         id: randomUUID(),
         roleId: id,
@@ -73,7 +77,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     target: { type: "role", id },
     details: {
       before: { permissions: beforePerms },
-      after: { displayName: body.displayName, permissions: body.permissions },
+      after: { displayName: body.displayName, permissions },
     },
   });
 

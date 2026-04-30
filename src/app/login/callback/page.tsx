@@ -2,14 +2,12 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { loginByUcKey, getUcUserInfo, getAvatarURL } from "@/lib/uc-client";
 
 /**
  * /login/callback?uckey=xxx — UC SSO 回调页
- * 1. 用 uckey 换取 token
- * 2. 获取用户信息
- * 3. POST /api/auth/login 让服务端设置 session cookie
- * 4. 跳转到首页
+ * 1. POST uckey 到服务端
+ * 2. 服务端校验 UC 登录身份并设置 session cookie
+ * 3. 跳转到首页
  */
 export default function LoginCallbackPage() {
   const router = useRouter();
@@ -24,30 +22,16 @@ export default function LoginCallbackPage() {
 
     async function handleCallback(key: string) {
       try {
-        // 1. UC SDK 登录，换取 token
-        const loginResult = await loginByUcKey(key);
-
-        // 2. 获取用户详细信息
-        const userInfo = await getUcUserInfo();
-        const avatar = getAvatarURL(Number(loginResult.userId));
-
-        // 3. 调用服务端 API 设置 session cookie
         const res = await fetch("/api/auth/login", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            userId: loginResult.userId || userInfo.userId,
-            nickname: userInfo.nickname,
-            avatar,
-            expiresIn: loginResult.expiresIn,
-          }),
+          body: JSON.stringify({ uckey: key }),
         });
 
         if (!res.ok) {
           throw new Error("服务端登录失败");
         }
 
-        // 4. 跳转到首页
         router.replace("/");
       } catch (err) {
         console.error("登录回调失败:", err);

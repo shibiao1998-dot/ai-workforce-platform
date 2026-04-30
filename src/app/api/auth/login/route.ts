@@ -4,6 +4,7 @@ import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import { userRoles, roles } from "@/db/schema";
 import { createSession } from "@/lib/auth";
+import { verifyUcLoginBody } from "@/lib/uc-server";
 
 /**
  * POST /api/auth/login
@@ -12,17 +13,17 @@ import { createSession } from "@/lib/auth";
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { userId, nickname, avatar, expiresIn } = body;
+    const verifiedLogin = await verifyUcLoginBody(body, new URL(request.url).origin).catch((err) => {
+      console.warn("[auth] UC login verification failed", err);
+      return null;
+    });
 
-    if (!userId || !nickname) {
-      return NextResponse.json(
-        { error: "缺少必要的用户信息" },
-        { status: 400 }
-      );
+    if (!verifiedLogin) {
+      return NextResponse.json({ error: "登录凭据校验失败" }, { status: 401 });
     }
 
     // --- upsert user_roles ---
-    const ucUserId = String(userId);
+    const { userId: ucUserId, nickname, avatar, expiresIn } = verifiedLogin;
     const superAdminIds = (process.env.SUPER_ADMIN_UC_IDS || "")
       .split(",")
       .map((s) => s.trim())
@@ -42,7 +43,7 @@ export async function POST(request: NextRequest) {
       }
       await db.insert(userRoles).values({
         id: randomUUID(),
-        ucUserId: String(userId),
+        ucUserId,
         nickname,
         avatar: avatar || "",
         roleId: roleRows[0].id,

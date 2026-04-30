@@ -16,6 +16,7 @@ import type {
   DashboardSummary,
   TeamStatus,
   KpiItem,
+  KpiTrendSeries,
   TeamEfficiencyPoint,
   HeatmapEntry,
   LeaderboardEntry,
@@ -28,6 +29,7 @@ interface DashboardShellProps {
   summary: DashboardSummary
   teamStatus: TeamStatus[]
   kpiItems: KpiItem[]
+  kpiTrend: KpiTrendSeries
   efficiencyTrend: TeamEfficiencyPoint[]
   heatmapData: HeatmapEntry[]
   leaderboard: LeaderboardEntry[]
@@ -40,6 +42,7 @@ export function DashboardShell({
   summary,
   teamStatus,
   kpiItems,
+  kpiTrend,
   heatmapData,
   leaderboard,
   recentTasks,
@@ -61,24 +64,46 @@ export function DashboardShell({
 
   // 派生:在岗总数(TeamStatus activeCount 之和)
   const totalActive = teamStatus.reduce((sum, t) => sum + t.activeCount, 0)
-  const operationalPct = Math.round((summary.operationalIndex ?? 0) * 100)
+  const operationalPct = Math.round(summary.operationalIndex ?? 0)
+  const taskKpi = kpiItems.find((k) => k.key === "taskCount")
+  const taskTrendPct = taskKpi?.trendPct ?? 0
+  const taskTrendDir = taskKpi?.trendDirection ?? "neutral"
+  const trendText =
+    taskTrendDir === "up"
+      ? `较上月 ↑${taskTrendPct}%`
+      : taskTrendDir === "down"
+        ? `较上月 ↓${taskTrendPct}%`
+        : `与上月持平`
+  const trendColor =
+    taskTrendDir === "up"
+      ? "var(--color-nd-emerald)"
+      : taskTrendDir === "down"
+        ? "var(--color-nd-accent)"
+        : "var(--color-nd-void-edge)"
 
   return (
     <div className="min-h-screen bg-nd-canvas p-6">
       {/* 区块 1 · Hero 欢迎区 */}
-      <NdVoidBlock className="mb-4">
+      <NdVoidBlock
+        className="mb-4"
+        bgImage="/netdragon/hero/hero-dashboard-desktop.webp"
+      >
         <div className="flex items-center">
           <div className="flex-1">
             <div className="text-xs uppercase tracking-widest text-[color:var(--color-nd-void-edge)]">
               NetDragon · Digital Craft Factory
             </div>
-            <h1 className="mt-2 text-3xl font-bold">早安,今日产线已启动</h1>
+            <h1 className="mt-2 text-3xl font-bold">本月经营概览</h1>
             <p className="mt-3 text-sm opacity-80">
-              <span className="font-nd-display text-[color:var(--color-nd-accent)]">{totalActive}</span>
-              <span> 位 AI 员工在岗 · 本月</span>
+              <span>本月任务 </span>
               <span className="font-nd-display text-[color:var(--color-nd-accent)]">{summary.monthlyTaskCount}</span>
-              <span> 个任务流转 · 整体产能 </span>
+              <span> 个 · </span>
+              <span className="font-nd-display" style={{ color: trendColor }}>{trendText}</span>
+              <span> · 整体产能 </span>
               <span className="font-nd-display text-[color:var(--color-nd-void-edge)]">{operationalPct}%</span>
+              <span> · </span>
+              <span className="font-nd-display text-[color:var(--color-nd-accent)]">{totalActive}</span>
+              <span> 位 AI 员工在岗</span>
             </p>
           </div>
         </div>
@@ -86,7 +111,7 @@ export function DashboardShell({
 
       {/* 区块 2 · KPI 矩阵 */}
       <div className="mb-4">
-        <KpiSection kpiItems={kpiItems} onNavigate={handleKpiNavigate} />
+        <KpiSection kpiItems={kpiItems} trendSeries={kpiTrend} onNavigate={handleKpiNavigate} />
       </div>
 
       {/* 区块 3 · 产线流转 + 团队状态 */}

@@ -11,6 +11,7 @@
 
 import { cn } from "@/lib/utils";
 import { ArrowDown, ArrowUp, Minus } from "lucide-react";
+import { NdSparkline } from "./nd-sparkline";
 
 type Tone = "primary" | "violet" | "emerald" | "accent";
 
@@ -21,10 +22,14 @@ interface NdStatCardProps {
   unit?: string;
   /** 趋势百分比(正=上升,负=下降,null=无) */
   trendPct?: number | null;
+  /** 趋势方向;当 trendPct 已经被取绝对值时由调用方显式传入 */
+  trendDirection?: "up" | "down" | "neutral";
   /** 趋势是否"越高越好"(accuracy ↑ = good,cost ↑ = bad) */
   higherIsBetter?: boolean;
   /** 副标题(例如"≈ 79 个 FTE/月") */
   footer?: string;
+  /** 近 N 个月走势序列,用于底部 sparkline */
+  trendSeries?: number[];
   /** 顶部流光带色调 */
   tone?: Tone;
   className?: string;
@@ -43,25 +48,30 @@ export function NdStatCard({
   value,
   unit,
   trendPct,
+  trendDirection,
   higherIsBetter = true,
   footer,
+  trendSeries,
   tone = "primary",
   className,
   onClick,
 }: NdStatCardProps) {
   const isClickable = !!onClick;
+  const resolvedTrendDirection =
+    trendDirection ??
+    (trendPct == null || trendPct === 0 ? "neutral" : trendPct > 0 ? "up" : "down");
 
   const trendColor =
-    trendPct == null || trendPct === 0
+    resolvedTrendDirection === "neutral"
       ? "text-nd-ink-soft"
-      : (trendPct > 0) === higherIsBetter
+      : (resolvedTrendDirection === "up") === higherIsBetter
         ? "text-[color:var(--color-nd-success)]"
         : "text-[color:var(--color-nd-danger)]";
 
   const TrendIcon =
-    trendPct == null || trendPct === 0
+    resolvedTrendDirection === "neutral"
       ? Minus
-      : trendPct > 0
+      : resolvedTrendDirection === "up"
         ? ArrowUp
         : ArrowDown;
 
@@ -107,6 +117,12 @@ export function NdStatCard({
             </span>
           )}
           {footer && <span className="text-nd-ink-soft">{footer}</span>}
+        </div>
+      )}
+
+      {trendSeries && trendSeries.length >= 2 && (
+        <div className="mt-3">
+          <NdSparkline data={trendSeries} width={160} height={36} direction={resolvedTrendDirection} className="w-full" />
         </div>
       )}
     </div>

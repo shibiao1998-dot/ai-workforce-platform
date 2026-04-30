@@ -74,3 +74,11 @@ export interface PipelineNodeStat {
   label: string
   count: number
 }
+
+export interface KpiTrendSeries {
+  taskCount: number[]
+  adoptionRate: number[]
+  accuracyRate: number[]
+  hoursSaved: number[]
+  costSaved: number[]
+}

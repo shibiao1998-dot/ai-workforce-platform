@@ -40,7 +40,7 @@ declare module "@sdp.nd/nd-uc-sdk" {
 
   class UC {
     constructor(options: UCOptions);
-    loginByUCKey(params: { uckey: string }): Promise<void>;
+    loginByUCKey(params: { uckey: string; url?: string }): Promise<void>;
     getToken(): TokenInfo;
     getCurrentAccount(): Account;
     getAvatarURL(options: AvatarOptions): string;
@@ -48,4 +48,8 @@ declare module "@sdp.nd/nd-uc-sdk" {
 
   export { UC };
   export default { UC: typeof UC };
+}
+
+declare module "@sdp.nd/nd-uc-sdk/dist/UC-SDK.node.js" {
+  export { UC } from "@sdp.nd/nd-uc-sdk";
 }

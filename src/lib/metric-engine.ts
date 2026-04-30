@@ -298,6 +298,39 @@ export async function getMonthlyTrend(employeeId: string, months: string[]): Pro
   return result
 }
 
+export interface KpiTrendSeries {
+  taskCount: number[]
+  adoptionRate: number[]
+  accuracyRate: number[]
+  hoursSaved: number[]
+  costSaved: number[]
+}
+
+/**
+ * 返回 6 个月(或 months 指定)全员 KPI 序列,用于 dashboard sparkline。
+ * 与 getKpiItems 的聚合逻辑一致 —— 同 computeMetrics 单一口径。
+ */
+export async function getKpiTrendSeries(months: string[]): Promise<KpiTrendSeries> {
+  const [baselines, costPerHour] = await Promise.all([getHumanBaselines(), getGlobalCostPerHour()])
+  const series: KpiTrendSeries = {
+    taskCount: [],
+    adoptionRate: [],
+    accuracyRate: [],
+    hoursSaved: [],
+    costSaved: [],
+  }
+  for (const month of months) {
+    const rows = await queryTasks({ period: month })
+    const m = computeMetrics(rows, baselines, costPerHour)
+    series.taskCount.push(m.taskCount)
+    series.adoptionRate.push(m.adoptionRate)
+    series.accuracyRate.push(m.accuracyRate)
+    series.hoursSaved.push(m.hoursSaved)
+    series.costSaved.push(m.costSaved)
+  }
+  return series
+}
+
 // ─── Step 6: Employee ranking and per-employee metrics ────────────────────────
 
 export interface EmployeeMetricSummary {
