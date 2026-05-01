@@ -229,6 +229,55 @@
   background-color: color-mix(in srgb, var(--color-nd-surface) 92%, transparent) !important;
 }
 
+.nd-cockpit-wing {
+  pointer-events: none;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  z-index: 1;
+  display: none;
+  width: max(240px, calc((100vw - 64px - 1480px) / 2 + 260px));
+  background-repeat: no-repeat;
+  background-size: cover;
+  opacity: 0.78;
+  transform: translate3d(0, 0, 0);
+  will-change: transform, opacity;
+}
+
+.nd-cockpit-wing-left {
+  left: 64px;
+  background-image:
+    linear-gradient(90deg, hsl(225 52% 7% / 0.1), hsl(225 52% 7% / 0.74) 78%, hsl(225 52% 7% / 0.96)),
+    image-set(
+      url("/netdragon/perimeter/dashboard-perimeter-left-default.webp") 1x,
+      url("/netdragon/perimeter/dashboard-perimeter-left-default@2x.webp") 2x
+  );
+  background-position: left center;
+  -webkit-mask-image: linear-gradient(90deg, black 0%, black 52%, transparent 100%);
+  mask-image: linear-gradient(90deg, black 0%, black 52%, transparent 100%);
+  animation: nd-wing-left-drift 24s var(--ease-nd-out) infinite alternate;
+}
+
+.nd-cockpit-wing-right {
+  right: 0;
+  background-image:
+    linear-gradient(270deg, hsl(225 52% 7% / 0.1), hsl(225 52% 7% / 0.7) 76%, hsl(225 52% 7% / 0.96)),
+    image-set(
+      url("/netdragon/perimeter/dashboard-perimeter-right-default.webp") 1x,
+      url("/netdragon/perimeter/dashboard-perimeter-right-default@2x.webp") 2x
+  );
+  background-position: right center;
+  -webkit-mask-image: linear-gradient(270deg, black 0%, black 54%, transparent 100%);
+  mask-image: linear-gradient(270deg, black 0%, black 54%, transparent 100%);
+  animation: nd-wing-right-drift 26s var(--ease-nd-out) infinite alternate;
+}
+
+@media (min-width: 1536px) {
+  .nd-cockpit-wing {
+    display: block;
+  }
+}
+
 /* ──────────────────────────────────────────────────────────
  * NetDragon · 能量流动动效
  * 任何元素加上 .nd-flow 即可让一道光沿水平方向循环流动
@@ -305,11 +354,34 @@
   will-change: transform, opacity;
 }
 
+@keyframes nd-wing-left-drift {
+  from {
+    opacity: 0.68;
+    transform: translate3d(-10px, -8px, 0) scale(1.02);
+  }
+  to {
+    opacity: 0.82;
+    transform: translate3d(6px, 10px, 0) scale(1.05);
+  }
+}
+
+@keyframes nd-wing-right-drift {
+  from {
+    opacity: 0.7;
+    transform: translate3d(10px, 8px, 0) scale(1.02);
+  }
+  to {
+    opacity: 0.84;
+    transform: translate3d(-8px, -10px, 0) scale(1.05);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .nd-flow,
   .nd-scanline,
   .nd-live-dot,
-  .nd-pulse-sweep {
+  .nd-pulse-sweep,
+  .nd-cockpit-wing {
     animation: none;
   }
 

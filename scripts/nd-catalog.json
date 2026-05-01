@@ -29,6 +29,28 @@
       "tier": "top",
       "fallback": { "type": "gradient", "from": "#0B1A3A", "to": "#142651" }
     },
+    "dashboard-perimeter-left": {
+      "family": "perimeter",
+      "subject": "desktop cockpit left-side ambient perimeter",
+      "promptVars": {
+        "SIDE": "left side of the cockpit, visual weight on the far-left edge, inner-right edge fades into quiet navy",
+        "MOTIF": "a sweeping Enterprise saucer hull fragment receding diagonally upward with fine blue hull plating, a restrained data-wind trail flowing toward the center, tiny cyan particles and faint dragon-scale hex nodes"
+      },
+      "sizes": [{ "label": "default", "width": 768, "height": 1536 }],
+      "tier": "top",
+      "fallback": { "type": "gradient", "from": "#071126", "to": "#10336f" }
+    },
+    "dashboard-perimeter-right": {
+      "family": "perimeter",
+      "subject": "desktop cockpit right-side ambient perimeter",
+      "promptVars": {
+        "SIDE": "right side of the cockpit, visual weight on the far-right edge, inner-left edge fades into quiet navy",
+        "MOTIF": "a luminous Eastern cyber-dragon ribbon curling around a distant starship nacelle, blue-cyan mane light, subtle orbital glass reflections, sparse amber instrument glints"
+      },
+      "sizes": [{ "label": "default", "width": 768, "height": 1536 }],
+      "tier": "top",
+      "fallback": { "type": "gradient", "from": "#071126", "to": "#0e5f76" }
+    },
     "scene-ai-game-designer": {
       "family": "scene",
       "subject": "AI Game Designer workstation (placeholder for phase 1)",

@@ -199,6 +199,8 @@ export function DashboardShell({
         aria-hidden="true"
         className="pointer-events-none fixed inset-0 z-0 bg-[linear-gradient(90deg,rgba(19,236,209,0.055)_1px,transparent_1px),linear-gradient(180deg,rgba(18,102,249,0.055)_1px,transparent_1px),linear-gradient(135deg,rgba(18,102,249,0.20),transparent_32%,rgba(10,13,31,0.92)_72%)] bg-[size:42px_42px,42px_42px,100%_100%]"
       />
+      <div aria-hidden="true" className="nd-cockpit-wing nd-cockpit-wing-left" />
+      <div aria-hidden="true" className="nd-cockpit-wing nd-cockpit-wing-right" />
 
       <div className="relative z-10 mx-auto flex max-w-[1480px] flex-col gap-4">
         <section className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1.28fr)_minmax(360px,0.72fr)]">

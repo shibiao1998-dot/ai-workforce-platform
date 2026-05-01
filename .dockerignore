@@ -3,3 +3,4 @@
 .env*
 *.md
 .superpowers
+public/netdragon/**/*.png
