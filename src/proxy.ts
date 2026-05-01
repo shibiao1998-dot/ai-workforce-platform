@@ -35,9 +35,12 @@ function isStaticPath(pathname: string): boolean {
   return (
     pathname.startsWith("/_next/") ||
     pathname.startsWith("/avatars/") ||
+    pathname.startsWith("/netdragon/") ||
     pathname.startsWith("/favicon") ||
     pathname.endsWith(".png") ||
     pathname.endsWith(".jpg") ||
+    pathname.endsWith(".jpeg") ||
+    pathname.endsWith(".webp") ||
     pathname.endsWith(".svg") ||
     pathname.endsWith(".ico")
   );
