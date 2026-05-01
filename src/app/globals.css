@@ -7,9 +7,9 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-sans);
-  --font-mono: var(--font-geist-mono);
-  --font-heading: var(--font-sans);
+  --font-sans: "HarmonyOS Sans SC", "PingFang SC", "Noto Sans CJK SC", "Microsoft YaHei UI", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+  --font-heading: "HarmonyOS Sans SC", "PingFang SC", "Noto Sans CJK SC", system-ui, sans-serif;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -81,8 +81,8 @@
   --color-nd-info:         hsl(172 85% 42%); /* 语义信息(= secondary,可独立演化) */
 
   /* 字体 */
-  --font-nd-sans:    var(--font-geist-sans), "HarmonyOS Sans SC", "PingFang SC", "Noto Sans CJK SC", system-ui, sans-serif;
-  --font-nd-display: var(--font-geist-mono), "HarmonyOS Sans SC", monospace;
+  --font-nd-sans:    "HarmonyOS Sans SC", "PingFang SC", "Noto Sans CJK SC", "Microsoft YaHei UI", system-ui, sans-serif;
+  --font-nd-display: "JetBrains Mono", "SFMono-Regular", "HarmonyOS Sans SC", monospace;
   --font-nd-serif:   "Source Han Serif SC", "Noto Serif CJK", serif;
   --font-nd-mono:    "JetBrains Mono", monospace;
 

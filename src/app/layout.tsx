@@ -1,21 +1,10 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { HelpPanelProvider } from "@/components/help/help-panel-context";
 import { HelpPanel } from "@/components/help/help-panel";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { getCurrentUserWithPermissions } from "@/lib/authz-server";
 import { AppShell } from "@/components/nav/app-shell";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   title: "AI Workforce Platform",
@@ -30,10 +19,7 @@ export default async function RootLayout({
   const me = await getCurrentUserWithPermissions();
 
   return (
-    <html
-      lang="zh"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
+    <html lang="zh" className="h-full antialiased">
       <body className="h-full">
         <TooltipProvider delay={300}>
         <HelpPanelProvider>
