@@ -12,11 +12,13 @@
 import { cn } from "@/lib/utils";
 import { ArrowDown, ArrowUp, Minus } from "lucide-react";
 import { NdSparkline } from "./nd-sparkline";
+import { MetricTooltip } from "@/components/shared/metric-tooltip";
 
 type Tone = "primary" | "violet" | "emerald" | "accent";
 
 interface NdStatCardProps {
   label: string;
+  metricKey?: string;
   value: string | number;
   /** 大数字旁的单位,例如 "%" / "k" / "¥" */
   unit?: string;
@@ -45,6 +47,7 @@ const TONE_GRADIENT: Record<Tone, string> = {
 
 export function NdStatCard({
   label,
+  metricKey,
   value,
   unit,
   trendPct,
@@ -78,8 +81,9 @@ export function NdStatCard({
   return (
     <div
       className={cn(
-        "relative overflow-hidden rounded-nd-lg bg-nd-surface p-5 shadow-nd-sm transition-shadow",
-        isClickable && "cursor-pointer hover:shadow-nd-md",
+        "relative overflow-hidden rounded-nd-lg border border-[color:var(--color-nd-line)]/80 bg-nd-surface/90 p-4 shadow-nd-xs transition-all duration-300",
+        "shadow-[inset_0_1px_0_rgba(255,255,255,0.85),0_12px_28px_rgba(18,102,249,0.06)]",
+        isClickable && "cursor-pointer hover:-translate-y-0.5 hover:border-[color:var(--color-nd-primary)]/30 hover:shadow-nd-md active:translate-y-[1px]",
         className,
       )}
       onClick={onClick}
@@ -97,12 +101,12 @@ export function NdStatCard({
         )}
       />
 
-      <div className="text-xs font-medium uppercase tracking-wider text-nd-ink-soft">
-        {label}
+      <div className="text-[10px] font-semibold uppercase tracking-[0.16em] text-nd-ink-soft">
+        {metricKey ? <MetricTooltip metricKey={metricKey}>{label}</MetricTooltip> : label}
       </div>
 
       <div className="mt-2 flex items-baseline gap-1">
-        <span className="font-nd-display text-4xl font-bold leading-none tracking-tight text-nd-ink">
+        <span className="font-nd-display text-3xl font-bold leading-none tracking-tight text-nd-ink">
           {value}
         </span>
         {unit && <span className="text-lg text-nd-ink-soft">{unit}</span>}
@@ -121,7 +125,7 @@ export function NdStatCard({
       )}
 
       {trendSeries && trendSeries.length >= 2 && (
-        <div className="mt-3">
+        <div className="mt-4">
           <NdSparkline data={trendSeries} width={160} height={36} direction={resolvedTrendDirection} className="w-full" />
         </div>
       )}

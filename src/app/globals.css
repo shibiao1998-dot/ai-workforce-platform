@@ -81,8 +81,8 @@
   --color-nd-info:         hsl(172 85% 42%); /* 语义信息(= secondary,可独立演化) */
 
   /* 字体 */
-  --font-nd-sans:    "HarmonyOS Sans SC", "PingFang SC", "Noto Sans CJK SC", "Inter", system-ui, sans-serif;
-  --font-nd-display: "Orbitron", "HarmonyOS Sans SC", sans-serif;
+  --font-nd-sans:    var(--font-geist-sans), "HarmonyOS Sans SC", "PingFang SC", "Noto Sans CJK SC", system-ui, sans-serif;
+  --font-nd-display: var(--font-geist-mono), "HarmonyOS Sans SC", monospace;
   --font-nd-serif:   "Source Han Serif SC", "Noto Serif CJK", serif;
   --font-nd-mono:    "JetBrains Mono", monospace;
 
@@ -187,6 +187,48 @@
   }
 }
 
+.nd-command-cockpit {
+  --color-nd-ink: hsl(210 42% 94%);
+  --color-nd-ink-soft: hsl(214 18% 68%);
+  --color-nd-surface: hsl(225 44% 13%);
+  --color-nd-canvas: hsl(225 52% 7%);
+  --color-nd-line: hsl(215 34% 26% / 0.68);
+  --color-nd-glass-bg: hsl(225 46% 12% / 0.76);
+  --color-nd-glass-border: hsl(184 82% 56% / 0.24);
+  --shadow-nd-xs: 0 1px 2px hsl(0 0% 0% / 0.22);
+  --shadow-nd-sm: 0 8px 20px hsl(0 0% 0% / 0.24);
+  --shadow-nd-md: 0 18px 46px hsl(0 0% 0% / 0.28);
+  --shadow-nd-lg: 0 28px 82px hsl(0 0% 0% / 0.36);
+  background-color: var(--color-nd-canvas) !important;
+  color: var(--color-nd-ink);
+}
+
+.nd-command-cockpit .text-nd-ink {
+  color: var(--color-nd-ink) !important;
+}
+
+.nd-command-cockpit .text-nd-ink-soft {
+  color: var(--color-nd-ink-soft) !important;
+}
+
+.nd-command-cockpit .bg-nd-canvas {
+  background-color: var(--color-nd-canvas) !important;
+}
+
+.nd-command-cockpit .bg-nd-line,
+.nd-command-cockpit [class*="bg-nd-line"] {
+  background-color: var(--color-nd-line) !important;
+}
+
+.nd-command-cockpit .bg-nd-surface,
+.nd-command-cockpit [class*="bg-nd-surface/"] {
+  background-color: color-mix(in srgb, var(--color-nd-surface) 78%, transparent) !important;
+}
+
+.nd-command-cockpit [class*="hover:bg-nd-surface"]:hover {
+  background-color: color-mix(in srgb, var(--color-nd-surface) 92%, transparent) !important;
+}
+
 /* ──────────────────────────────────────────────────────────
  * NetDragon · 能量流动动效
  * 任何元素加上 .nd-flow 即可让一道光沿水平方向循环流动
@@ -209,9 +251,69 @@
   animation: nd-flow 2.5s linear infinite;
 }
 
+@keyframes nd-scanline {
+  0% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  18% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+.nd-scanline {
+  animation: nd-scanline 4.8s var(--ease-nd-out) infinite;
+  will-change: transform, opacity;
+}
+
+@keyframes nd-live-dot {
+  0%, 100% {
+    transform: scale(0.86);
+    opacity: 0.72;
+  }
+  50% {
+    transform: scale(1.18);
+    opacity: 1;
+  }
+}
+
+.nd-live-dot {
+  animation: nd-live-dot 1.8s var(--ease-nd-out) infinite;
+  will-change: transform, opacity;
+}
+
+@keyframes nd-pulse-sweep {
+  0% {
+    transform: translateX(-120%);
+    opacity: 0;
+  }
+  12% {
+    opacity: 0.85;
+  }
+  100% {
+    transform: translateX(680%);
+    opacity: 0;
+  }
+}
+
+.nd-pulse-sweep {
+  animation: nd-pulse-sweep 6s linear infinite;
+  will-change: transform, opacity;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .nd-flow {
+  .nd-flow,
+  .nd-scanline,
+  .nd-live-dot,
+  .nd-pulse-sweep {
     animation: none;
+  }
+
+  .nd-flow {
     background-image: linear-gradient(90deg, hsl(218 95% 52% / 0.4), hsl(172 85% 50% / 0.4));
   }
 }

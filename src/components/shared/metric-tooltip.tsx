@@ -26,10 +26,12 @@ export function MetricTooltip({
   return (
     <Tooltip>
       <TooltipTrigger
-        className="cursor-help border-b border-dashed border-muted-foreground/40"
-      >
-        {children}
-      </TooltipTrigger>
+        render={
+          <span className="inline-flex cursor-help border-b border-dashed border-current/40 outline-none">
+            {children}
+          </span>
+        }
+      />
       <TooltipContent side={side}>{text}</TooltipContent>
     </Tooltip>
   )

@@ -9,7 +9,7 @@ const cardVariants = cva("", {
     variant: {
       default: "",
       glass:
-        "!bg-[color:var(--color-nd-glass-bg)] !ring-[color:var(--color-nd-glass-border)] shadow-nd-md backdrop-blur-[16px]",
+        "!border-[color:var(--color-nd-glass-border)] !bg-[color:var(--color-nd-glass-bg)] !ring-[color:var(--color-nd-glass-border)] shadow-nd-md shadow-[inset_0_1px_0_rgba(255,255,255,0.10),0_18px_42px_rgba(0,0,0,0.18)] backdrop-blur-[16px]",
       void:
         "!bg-[color:var(--color-nd-void)] !text-white !ring-[color:var(--color-nd-void-edge)]/30 shadow-nd-lg",
     },
@@ -29,7 +29,7 @@ function Card({
       data-size={size}
       data-variant={variant ?? "default"}
       className={cn(
-        "group/card flex flex-col gap-4 overflow-hidden rounded-xl bg-card py-4 text-sm text-card-foreground ring-1 ring-foreground/10 has-data-[slot=card-footer]:pb-0 has-[>img:first-child]:pt-0 data-[size=sm]:gap-3 data-[size=sm]:py-3 data-[size=sm]:has-data-[slot=card-footer]:pb-0 *:[img:first-child]:rounded-t-xl *:[img:last-child]:rounded-b-xl",
+        "group/card flex flex-col gap-4 overflow-hidden rounded-xl border border-transparent bg-card py-4 text-sm text-card-foreground ring-1 ring-foreground/10 has-data-[slot=card-footer]:pb-0 has-[>img:first-child]:pt-0 data-[size=sm]:gap-3 data-[size=sm]:py-3 data-[size=sm]:has-data-[slot=card-footer]:pb-0 *:[img:first-child]:rounded-t-xl *:[img:last-child]:rounded-b-xl",
         cardVariants({ variant }),
         className
       )}

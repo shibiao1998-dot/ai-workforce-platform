@@ -41,6 +41,7 @@ function getDateRange(days: number): { startDate: string; endDate: string } {
 
 export default async function DashboardPage() {
   await requirePageReadAccess("dashboard")
+  const renderedAtMs = new Date().getTime()
   const currentMonth = getCurrentMonth()
   const prevMonth = getPrevMonth(currentMonth)
   const last5Months = getLastNMonths(5)
@@ -80,6 +81,8 @@ export default async function DashboardPage() {
       kpiItems={kpiItems}
       kpiTrend={kpiTrend}
       efficiencyTrend={efficiencyTrend}
+      heatmapEndDate={endDate}
+      renderedAtMs={renderedAtMs}
       heatmapData={heatmapData}
       leaderboard={leaderboard}
       recentTasks={recentTasks}
