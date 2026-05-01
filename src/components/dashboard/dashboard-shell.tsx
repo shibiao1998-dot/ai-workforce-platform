@@ -1,7 +1,6 @@
 "use client"
 
 import { useState } from "react"
-import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { EmployeeDetailModal } from "@/components/shared/employee-detail-modal"
 import { TaskDetailDialog } from "@/components/production/task-detail-dialog"
@@ -204,18 +203,13 @@ export function DashboardShell({
       <div className="relative z-10 mx-auto flex max-w-[1480px] flex-col gap-4">
         <section className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1.28fr)_minmax(360px,0.72fr)]">
           <div className="relative min-h-[430px] overflow-hidden rounded-nd-xl bg-[color:var(--color-nd-void)] p-5 text-white shadow-nd-lg sm:p-7 lg:p-8">
-            <Image
+            <div
               aria-hidden="true"
-              src="/netdragon/hero/hero-dashboard-desktop.webp"
-              alt=""
-              fill
-              priority
-              sizes="(min-width: 1280px) 62vw, 100vw"
-              className="absolute inset-0 h-full w-full object-cover opacity-80"
+              className="absolute inset-0 bg-[url('/netdragon/hero/hero-dashboard-desktop.webp')] bg-cover bg-[position:center_right] opacity-95"
             />
             <div
               aria-hidden="true"
-              className="absolute inset-0 bg-[linear-gradient(115deg,rgba(10,13,31,0.95)_0%,rgba(10,13,31,0.78)_42%,rgba(10,13,31,0.28)_100%)]"
+              className="absolute inset-0 bg-[linear-gradient(115deg,rgba(10,13,31,0.92)_0%,rgba(10,13,31,0.62)_40%,rgba(10,13,31,0.08)_100%)]"
             />
             <div
               aria-hidden="true"
