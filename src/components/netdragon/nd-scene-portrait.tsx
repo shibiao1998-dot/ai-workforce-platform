@@ -10,11 +10,15 @@
 "use client";
 
 import { cn } from "@/lib/utils";
+import { AiAvatar } from "@/components/shared/ai-avatar";
 import { NdAsset } from "./primitives";
 import type { ReactNode } from "react";
 
 interface NdScenePortraitProps {
   assetId: string;
+  employeeId?: string;
+  team?: string;
+  avatar?: string | null;
   name: string;
   title: string;
   meta?: string;
@@ -25,6 +29,9 @@ interface NdScenePortraitProps {
 
 export function NdScenePortrait({
   assetId,
+  employeeId,
+  team,
+  avatar,
   name,
   title,
   meta,
@@ -34,6 +41,7 @@ export function NdScenePortrait({
 }: NdScenePortraitProps) {
   const isClickable = !!onClick;
   const accessibleName = meta ? `${name}、${title}、${meta}` : `${name}、${title}`;
+  const hasEmployeeAvatarSource = !!employeeId && !!team;
 
   return (
     <div
@@ -50,13 +58,24 @@ export function NdScenePortrait({
       onKeyDown={isClickable ? (e) => (e.key === "Enter" || e.key === " ") && onClick?.() : undefined}
     >
       {/* 背景立绘 */}
-      <NdAsset
-        id={assetId}
-        label="card"
-        alt={isClickable ? "" : `${name} - ${title}`}
-        className="absolute inset-0 h-full w-full object-cover"
-        loading="lazy"
-      />
+      {hasEmployeeAvatarSource ? (
+        <AiAvatar
+          employeeId={employeeId}
+          team={team}
+          avatar={avatar ?? null}
+          name={name}
+          fill
+          className="absolute inset-0 h-full w-full"
+        />
+      ) : (
+        <NdAsset
+          id={assetId}
+          label="card"
+          alt={isClickable ? "" : `${name} - ${title}`}
+          className="absolute inset-0 h-full w-full object-cover"
+          loading="lazy"
+        />
+      )}
 
       {/* 右上角排名徽章 */}
       {rankBadge && (

@@ -47,14 +47,7 @@ const TEAM_LABEL: Record<string, string> = {
   production: "生产",
 }
 
-const SCENE_ASSETS = [
-  "scene-ai-product-manager",
-  "scene-ai-character-designer",
-  "scene-ai-game-designer",
-  "scene-ai-screenwriter",
-  "scene-ai-movie-artist",
-  "scene-ai-role-designer",
-]
+const FEATURED_FALLBACK_ASSET = "scene-ai-product-manager"
 
 function formatPct(value: number): string {
   return `${Math.round(value)}%`
@@ -278,7 +271,10 @@ export function DashboardShell({
               <div className="mt-4 grid flex-1 grid-cols-[1.05fr_0.95fr] gap-3">
                 {topLeaders[0] ? (
                   <NdScenePortrait
-                    assetId={SCENE_ASSETS[0]}
+                    assetId={FEATURED_FALLBACK_ASSET}
+                    employeeId={topLeaders[0].employeeId}
+                    team={topLeaders[0].team}
+                    avatar={topLeaders[0].avatar}
                     name={topLeaders[0].employeeName}
                     title={`${TEAM_LABEL[topLeaders[0].team] ?? topLeaders[0].team}团队`}
                     meta={`${topLeaders[0].xp.toLocaleString("zh-CN")} XP · Lv.${topLeaders[0].level}`}
